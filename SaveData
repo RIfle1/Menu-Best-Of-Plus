@@ -60,7 +60,7 @@ end_ID():
 
 ========================================================
 
-# Game Data
+GAME Data:
 
 chosen_character = character_ID
 current_life = "int"
