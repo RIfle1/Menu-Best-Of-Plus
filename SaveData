@@ -60,12 +60,12 @@ end_ID():
 
 ========================================================
 
-| GAME
-STATE
-| RealPlayer_player =
-| Current_life = "int"
-| Current_attack = "int"
-| Current_defense = "int"
-| Current_paragraph = paragraph_ID
-| Current_objects = "list"
+# Game Data
+
+chosen_character = character_ID
+current_life = "int"
+current_attack = "int"
+current_defense = "int"
+current_paragraph = paragraph_ID
+current_objects = "list"
 
