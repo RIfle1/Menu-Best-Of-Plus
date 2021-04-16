@@ -1,0 +1,71 @@
+Menu - Best - Of - Plus
+
+----------------------------------------------------------------
+----------------------------------------------------------------
+
+PLAYER Data
+
+    player_number = "int"
+    player_name = "str"
+    player_race = "str"
+    player_life = "str"
+    player_strength = "int"
+    player_defense = "int"
+    player_attack = "int"
+    player_age = "int"
+    player_genre = "str"
+    player_Background = "str"
+
+OBJECT Data:
+
+    object_name = "str"
+    object_effect1 = "str"
+    object_effect2 = "str"
+    object_effect3 = "str"
+    object_Intro = "str"
+    object_ID = "int"
+    object_location = paragraph_ID
+
+# Tous les objets creé vont etre regroupés dans une liste
+    objects_list = "list"
+
+
+PARAGRAPHS Function:
+
+paragraph_ID():
+    Paragraph_text = "str"
+    Paragraph_c1_text = "str"
+    Paragraph_c1_condition = object_ID , paragraph_ID
+    Paragraph_c1_redirection = paragraphID
+    Paragraph_cx_text = "str"
+    Paragraph_cx_condition = object_ID , paragraph_ID
+    Paragraph_cx_redirection = paragraphID
+
+# c1 , cx -> choix1, choix2, etc...
+
+
+STARTING Function:
+
+start_ID():
+    start_1_text = paragraph_ID
+    start_1_ID = "int"
+
+
+ENDING Function:
+
+end_ID():
+    end_1_text = paragraph_ID
+    end_1_ID = "int"
+
+
+========================================================
+
+| GAME
+STATE
+| RealPlayer_player =
+| Current_life = "int"
+| Current_attack = "int"
+| Current_defense = "int"
+| Current_paragraph = paragraph_ID
+| Current_objects = "list"
+
