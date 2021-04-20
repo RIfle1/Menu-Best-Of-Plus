@@ -11,7 +11,7 @@ myFont = font.Font(size=20)
 
 #def of all necessary variables
 Character1_set = Character2_set = Character3_set= Character4_set = 0 # To know which character is used and which is not
-active_character = 0 # to know will character will get the props when you click on "Done"
+active_character = 0 # It's the Character which is editing in the editor page
 
 player_name       = player1_name       = player2_name       = player3_name       = player4_name       = str("")
 player_breed      = player1_breed      = player2_breed      = player3_breed      = player4_breed      = str("")
@@ -120,7 +120,7 @@ def Hide_all_lines(): # Just hide all lines together
     Background.place_forget()
     Background_box.place_forget()
 
-def CH1_component(): # Determine if the "Character 1" component has to be displayed or not
+def CH1_component(): # Define the "Character 1" component and if it has to be displayed or not
     global Character1_set, CH1
     CH1 = tkinter.Button(UI, text= player1_name, bd=0, bg="#FFFFFF", fg="#4285F4", width=63, height=2, font="Montserrat", relief=FLAT, command=CH1_action)
     CH1['font'] = myFont
@@ -149,7 +149,7 @@ def CH1_action():  # When CH1_component is clicked
     Hide_CH_components()
     Show_all_lines()
 
-def CH2_component(): # Determine if the "Character 2" component has to be displayed or not
+def CH2_component(): # Define the "Character 2" component and if it has to be displayed or not
     global Character2_set, CH2
     CH2 = tkinter.Button(UI, text=player2_name, bd=0, bg="#FFFFFF", fg="#4285F4", width=63, height=2, font="Montserrat", relief=FLAT, command=CH2_action)
     CH2['font'] = myFont
@@ -178,7 +178,7 @@ def CH2_action():  # When CH2_component is clicked
     Hide_CH_components()
     Show_all_lines()
 
-def CH3_component(): # Determine if the "Character 3" component has to be displayed or not
+def CH3_component(): # Define the "Character 3" component and if it has to be displayed or not
     global Character3_set, CH3
     CH3 = tkinter.Button(UI, text=player3_name, bd=0, bg="#FFFFFF", fg="#4285F4", width=63, height=2, font="Montserrat", relief=FLAT, command=CH3_action)
     CH3['font'] = myFont
@@ -207,7 +207,7 @@ def CH3_action():  # When CH3_component is clicked
     Hide_CH_components()
     Show_all_lines()
 
-def CH4_component(): # Determine if the "Character 4" component has to be displayed or not
+def CH4_component(): # Define the "Character 4" component and if it has to be displayed or not
     global Character4_set,CH4
     CH4 = tkinter.Button(UI, text=player4_name, bd=0, bg="#FFFFFF", fg="#4285F4", width=63, height=2, font="Montserrat", relief=FLAT, command=CH4_action)
     CH4['font'] = myFont
@@ -250,51 +250,32 @@ def Hide_CH_components(): # Just hide all CH components
     CH1.place_forget()
 
 def Delete_action(): #When "delete this character" is pressed
-    global CreateButton, player1_name, player1_breed, player1_life, player1_speed, player1_defense, player1_attack, player1_Background, Character1_set
+    global CreateButton, player1_name, player1_breed, player1_life, player1_speed, player1_defense, player1_attack, player1_Background, Character1_set ,player_name, player_breed, player_speed, player_defense, player_attack, player_Background, player_life
     global player2_name, player2_breed, player2_life, player2_speed, player2_defense, player2_attack, player2_Background, Character2_set
     global player3_name, player3_breed, player3_life, player3_speed, player3_defense, player3_attack, player3_Background, Character3_set
     global player4_name, player4_breed, player4_life, player4_speed, player4_defense, player4_attack, player4_Background, Character4_set
     result = messagebox.askquestion(title="Not so fast", message="You're about to delete this character. Are you sure do you want to continue ?", icon="warning")
     if result == 'yes':
 
-        # determine which is the character to delete
-        if active_character == 1:
-            player1_name = ""
-            player1_breed = ""
-            player1_life = 0
-            player1_speed = 0
-            player1_defense = 0
-            player1_attack = 0
-            player1_Background = ""
-            Character1_set = 0
-        elif active_character == 2:
-            player2_name = ""
-            player2_breed = ""
-            player2_life = 0
-            player2_speed = 0
-            player2_defense = 0
-            player2_attack = 0
-            player2_Background = ""
-            Character2_set = 0
-        elif active_character == 3:
-            player3_name = ""
-            player3_breed = ""
-            player3_life = 0
-            player3_speed = 0
-            player3_defense = 0
-            player3_attack = 0
-            player3_Background = ""
-            Character3_set = 0
-        elif active_character == 4:
-            player4_name = ""
-            player4_breed = ""
-            player4_life = 0
-            player4_speed = 0
-            player4_defense = 0
-            player4_attack = 0
-            player4_Background = ""
-            Character4_set = 0
+        # First, Clear the default values
+        player_name = player_Background = player_breed = ""
+        player_life = player_speed = player_defense = player_attack = 0
 
+        # Second, determine which is the character to delete
+        if active_character == 1:
+            player1_name = player1_Background = player1_breed = ""
+            player1_life = player1_speed = player1_defense = player1_attack = Character1_set = 0
+        elif active_character == 2:
+            player2_name = player2_Background = player2_breed = ""
+            player2_life = Character2_set = player2_attack = player2_defense = player2_speed = 0
+        elif active_character == 3:
+            player3_name = player3_Background = player3_breed = ""
+            player3_life = player3_attack = Character3_set = player3_defense = player3_speed = 0
+        elif active_character == 4:
+            player4_name = player4_breed = player4_Background = ""
+            player4_life = player4_attack = Character4_set = player4_defense = player4_speed = 0
+
+        # Third, update the UI
         CreateButton["state"] = "normal"
         CreateButton["bg"] = "#4285F4"
         DeleteButton["state"] = "disabled"
@@ -333,40 +314,41 @@ def DoneButton_action(): # When "done" button is pressed
 
     # Define which Character will gets the props.
     if active_character == 1:
-        player1_name = Character_name_box.get("1.0", END)
-        player1_breed = Breed_box.get("1.0", END)
-        player1_life = Health_box.get("1.0", END)
-        player1_speed = Speed_box.get("1.0", END)
-        player1_defense = Defense_box.get("1.0", END)
-        player1_attack = Attack_box.get("1.0", END)
-        player1_Background = Background_box.get("1.0", END)
+        player1_name = ""
+        player1_name = Character_name_box.get("1.0",END+"-1c")
+        player1_breed = Breed_box.get("1.0", END+"-1c")
+        player1_life = Health_box.get("1.0", END+"-1c")
+        player1_speed = Speed_box.get("1.0", END+"-1c")
+        player1_defense = Defense_box.get("1.0", END+"-1c")
+        player1_attack = Attack_box.get("1.0", END+"-1c")
+        player1_Background = Background_box.get("1.0", END+"-1c")
         Character1_set = 1
     elif active_character == 2:
-        player2_name = Character_name_box.get("1.0", END)
-        player2_breed = Breed_box.get("1.0", END)
-        player2_life = Health_box.get("1.0", END)
-        player2_speed = Speed_box.get("1.0", END)
-        player2_defense = Defense_box.get("1.0", END)
-        player2_attack = Attack_box.get("1.0", END)
-        player2_Background = Background_box.get("1.0", END)
+        player2_name = Character_name_box.get("1.0", END+"-1c")
+        player2_breed = Breed_box.get("1.0", END+"-1c")
+        player2_life = Health_box.get("1.0", END+"-1c")
+        player2_speed = Speed_box.get("1.0", END+"-1c")
+        player2_defense = Defense_box.get("1.0", END+"-1c")
+        player2_attack = Attack_box.get("1.0", END+"-1c")
+        player2_Background = Background_box.get("1.0", END+"-1c")
         Character2_set = 1
     elif active_character == 3:
-        player3_name = Character_name_box.get("1.0", END)
-        player3_breed = Breed_box.get("1.0", END)
-        player3_life = Health_box.get("1.0", END)
-        player3_speed = Speed_box.get("1.0", END)
-        player3_defense = Defense_box.get("1.0", END)
-        player3_attack = Attack_box.get("1.0", END)
-        player3_Background = Background_box.get("1.0", END)
+        player3_name = Character_name_box.get("1.0", END+"-1c")
+        player3_breed = Breed_box.get("1.0", END+"-1c")
+        player3_life = Health_box.get("1.0", END+"-1c")
+        player3_speed = Speed_box.get("1.0", END+"-1c")
+        player3_defense = Defense_box.get("1.0", END+"-1c")
+        player3_attack = Attack_box.get("1.0", END+"-1c")
+        player3_Background = Background_box.get("1.0", END+"-1c")
         Character3_set = 1
     elif active_character == 4:
-        player4_name = Character_name_box.get("1.0", END)
-        player4_breed = Breed_box.get("1.0", END)
-        player4_life = Health_box.get("1.0", END)
-        player4_speed = Speed_box.get("1.0", END)
-        player4_defense = Defense_box.get("1.0", END)
-        player4_attack = Attack_box.get("1.0", END)
-        player4_Background = Background_box.get("1.0", END)
+        player4_name = Character_name_box.get("1.0", END+"-1c")
+        player4_breed = Breed_box.get("1.0", END+"-1c")
+        player4_life = Health_box.get("1.0", END+"-1c")
+        player4_speed = Speed_box.get("1.0", END+"-1c")
+        player4_defense = Defense_box.get("1.0", END+"-1c")
+        player4_attack = Attack_box.get("1.0", END+"-1c")
+        player4_Background = Background_box.get("1.0", END+"-1c")
         Character4_set = 1
 
     if Character1_set == Character2_set == Character3_set == Character4_set == 1:
