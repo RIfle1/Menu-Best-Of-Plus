@@ -13,6 +13,7 @@ myFont = font.Font(size=20)
 Character1_set = Character2_set = Character3_set= Character4_set = 0 # To know which character is used and which is not
 active_character = 0 # It's the Character which is editing in the editor page
 
+# All important variables
 player_name       = player1_name       = player2_name       = player3_name       = player4_name       = str("")
 player_breed      = player1_breed      = player2_breed      = player3_breed      = player4_breed      = str("")
 player_life       = player1_life       = player2_life       = player3_life       = player4_life       = int("0")
@@ -133,14 +134,7 @@ def CH1_action():  # When CH1_component is clicked
     global active_character, player_name, player_breed, player_speed, player_defense, player_attack, player_Background, player_life
     global player1_name, player1_breed, player1_speed, player1_defense, player1_attack, player1_Background, player1_life
     active_character = 1
-    player_name = player1_name
-    player_breed = player1_breed
-    player_speed = player1_speed
-    player_life = player1_life
-    player_defense = player1_defense
-    player_attack = player1_attack
-    player_Background = player1_Background
-
+    player_name, player_breed, player_speed, player_life, player_defense, player_attack, player_Background = player1_name, player1_breed, player1_speed ,player1_life, player1_defense, player1_attack, player1_Background
     CreateButton["state"] = "disabled"
     CreateButton["bg"] = "#C4C4C4"
     DeleteButton["state"] = "normal"
@@ -162,14 +156,7 @@ def CH2_action():  # When CH2_component is clicked
     global active_character, player_name, player_breed, player_speed, player_defense, player_attack, player_Background, player_life
     global player2_name, player2_breed, player2_speed, player2_defense, player2_attack, player2_Background, player2_life
     active_character = 2
-    player_name = player2_name
-    player_breed = player2_breed
-    player_speed = player2_speed
-    player_life = player2_life
-    player_defense = player2_defense
-    player_attack = player2_attack
-    player_Background = player2_Background
-
+    player_name, player_breed, player_speed, player_life, player_defense, player_attack, player_Background = player2_name, player2_breed, player2_speed, player2_life, player2_defense, player2_attack, player2_Background
     CreateButton["state"] = "disabled"
     CreateButton["bg"] = "#C4C4C4"
     DeleteButton["state"] = "normal"
@@ -191,14 +178,7 @@ def CH3_action():  # When CH3_component is clicked
     global active_character, player_name, player_breed, player_speed, player_defense, player_attack, player_Background, player_life
     global player3_name, player3_breed, player3_speed, player3_defense, player3_attack, player3_Background, player3_life
     active_character = 3
-    player_name = player3_name
-    player_breed = player3_breed
-    player_speed = player3_speed
-    player_life = player3_life
-    player_defense = player3_defense
-    player_attack = player3_attack
-    player_Background = player3_Background
-
+    player_name, player_breed, player_speed, player_life, player_defense, player_attack, player_Background = player3_name, player3_breed, player3_speed, player3_life, player3_defense, player3_attack, player3_Background
     CreateButton["state"] = "disabled"
     CreateButton["bg"] = "#C4C4C4"
     DeleteButton["state"] = "normal"
@@ -220,14 +200,7 @@ def CH4_action():  # When CH4_component is clicked
     global active_character, player_name, player_breed, player_speed, player_defense, player_attack, player_Background, player_life
     global player4_name, player4_breed, player4_speed, player4_defense, player4_attack, player4_Background, player4_life
     active_character = 4
-    player_name = player4_name
-    player_breed = player4_breed
-    player_speed = player4_speed
-    player_life = player4_life
-    player_defense = player4_defense
-    player_attack = player4_attack
-    player_Background = player4_Background
-
+    player_name, player_breed, player_speed, player_life, player_defense, player_attack, player_Background = player4_name, player4_breed, player4_speed, player4_life, player4_defense, player4_attack, player4_Background
     CreateButton["state"] = "disabled"
     CreateButton["bg"] = "#C4C4C4"
     DeleteButton["state"] = "normal"
@@ -297,6 +270,7 @@ def CreateButton_action(): #When "create new character" is pressed
     elif Character4_set == 0:
         active_character = 4
 
+    # To update the UI
     CreateButton["state"] = "disabled"
     CreateButton["bg"] = "#C4C4C4"
     DeleteButton["state"] = "normal"
@@ -312,7 +286,7 @@ def DoneButton_action(): # When "done" button is pressed
     global player4_name, player4_breed, player4_life, player4_speed, player4_defense, player4_attack, player4_Background, Character4_set
     global  Character_name_box, Breed_box, Health_box, Speed_box, Defense_box, Attack_box, Background_box
 
-    # Define which Character will gets the props.
+    # This following lines is for get which is write in the text box
     if active_character == 1:
         player1_name = ""
         player1_name = Character_name_box.get("1.0",END+"-1c")
@@ -351,6 +325,7 @@ def DoneButton_action(): # When "done" button is pressed
         player4_Background = Background_box.get("1.0", END+"-1c")
         Character4_set = 1
 
+    # If there are 4 Characters configured, disable the "Create new character" button
     if Character1_set == Character2_set == Character3_set == Character4_set == 1:
         CreateButton["state"] = "disabled"
         CreateButton["bg"] = "#C4C4C4"
@@ -358,6 +333,7 @@ def DoneButton_action(): # When "done" button is pressed
         CreateButton["state"] = "normal"
         CreateButton["bg"] = "#4285F4"
 
+    # Updating the UI ...
     active_character = 0
     DeleteButton["state"] = "disabled"
     DeleteButton["bg"] = "#C4C4C4"
@@ -365,7 +341,7 @@ def DoneButton_action(): # When "done" button is pressed
     Hide_all_lines()
     Show_CH_components()
 
-
+# MAIN CODE
 # "Create New character" button UI
 CreateButton = tkinter.Button(UI, text="New Character", bd=0, bg="#3285F4", fg="White", padx=30, pady=10, font="Montserrat", relief=FLAT, command=CreateButton_action)
 CreateButton['font'] = myFont
