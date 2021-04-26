@@ -14,7 +14,7 @@ editor.title("Game Editor")
 screen_x = editor.winfo_screenwidth()
 screen_y = editor.winfo_screenheight()
 window_x = 1200
-window_y = 825
+window_y = 800
 
 pos_X = int((screen_x - window_x) / 2)
 pos_Y = int((screen_y - window_y) / 2)
@@ -76,7 +76,7 @@ player_speed = player1_speed = player2_speed = player3_speed = player4_speed = i
 player_defense = player1_defense = player2_defense = player3_defense = player4_defense = int("0")
 player_attack = player1_attack = player2_attack = player3_attack = player4_attack = int("0")
 player_Background = player1_Background = player2_Background = player3_Background = player4_Background = str("")
-Compile_blue, Compile_grey, Test_blue, Test_fail, Test_pass, Back, Coding_Success = PhotoImage(file='Compile_blue.png'), PhotoImage(file='Compile_grey.png'), PhotoImage(file='Test_blue.png'), PhotoImage(file='Test_fail.png'), PhotoImage(file='Test_pass.png'), PhotoImage(file='Back_button.png'), PhotoImage(file='Coding_success.png')
+Compile_blue, Compile_grey, Test_blue, Test_fail, Test_pass, Back, Coding_Success, Test_il = PhotoImage(file='Compile_blue.png'), PhotoImage(file='Compile_grey.png'), PhotoImage(file='Test_blue.png'), PhotoImage(file='Test_fail.png'), PhotoImage(file='Test_pass.png'), PhotoImage(file='Back_button.png'), PhotoImage(file='Coding_success.png'), PhotoImage(file='Test_illustration.png')
 Character_name = Character_name_box = Breed = Breed_box = Health = Health_box = Speed = Speed_box = Attack = Attack_box = Defense = Defense_box = Background = Background_box = None
 CH1 = CH2 = CH3 = CH4 = ""
 
@@ -468,7 +468,7 @@ def Test_action_pass():  # If the test pass / is succeed
     Pass_illustration.pack()
     Pass_illustration.create_image(0, -5, anchor=NW, image=Coding_Success)
     Back_button.place(x=25, y=25)
-    Compile_button["state"] = "normal"
+    Compile_button.place(x=850, y=10)
 
 def Back_action():  # When you click on "Back" button
     Fail_explain.place_forget()
@@ -476,12 +476,16 @@ def Back_action():  # When you click on "Back" button
     Pass_illustration.pack_forget()
     Fail_canvas.pack_forget()
     Back_button.place_forget()
+    Compile_button.place_forget()
     Test_button.place(x=470, y=25)
-    Compile_button.place(x=433, y=150)
+    Test_illustration.pack()
+    Test_illustration.create_image(0, 150, anchor=NW, image=Test_il)
 
 def TestButton_action():  # When "test" in pressed. fin t'as compris t pas con si ?
+    Test_illustration.pack_forget()
     Back_button.place(x=25, y=25)
     Test_button.place_forget()
+    Test_illustration.place_forget()
     Compile_button.place_forget()
     Safety_Check_Up()
 
@@ -619,8 +623,12 @@ def Safety_Check_Up():  # It's all the process behind the "test" button
 
 # "Compile" button UI
 Compile_button = Button(test_tab, image=Compile_blue, border=0)
-Compile_button.place(x=433, y=150)
-Compile_button["state"] = "disabled"
+Compile_button.place_forget
+
+# "Test" illustration (by Matthieu)(Some icons were made by @PixelPerfect & @PixelMAn)
+Test_illustration = Canvas(test_tab, width=1000, height=700)
+Test_illustration.pack()
+Test_illustration.create_image(0, 150, anchor=NW, image=Test_il)
 
 # "Test" button UI
 Test_button = Button(test_tab, image=Test_blue, border=0, command=TestButton_action, state=NORMAL)
