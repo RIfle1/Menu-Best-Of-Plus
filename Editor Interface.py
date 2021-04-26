@@ -493,6 +493,7 @@ def Safety_Check_Up():  # It's all the process behind the "test" button
 
     # Write bellow all conditions that the editor have to respect
     while True:
+        # This following conditions are for the "Character" tab
         if Character1_set == Character2_set == Character3_set == Character4_set == 0:
             Fail_reason = "You must set up at least one Character"
             Test_action_fail()
@@ -513,8 +514,106 @@ def Safety_Check_Up():  # It's all the process behind the "test" button
             Fail_reason = "Your Character 4 has no name"
             Test_action_fail()
             break
+        try:
+            n = int(player1_attack)
+        except ValueError as e:
+            Fail_reason = e
+            Test_action_fail()
+            break
+        try:
+            n = int(player1_life)
+        except ValueError as e:
+            Fail_reason = e
+            Test_action_fail()
+            break
+        try:
+            n = int(player1_speed)
+        except ValueError as e:
+            Fail_reason = e
+            Test_action_fail()
+            break
+        try:
+            n = int(player1_speed)
+        except ValueError as e:
+            Fail_reason = e
+            Test_action_fail()
+            break
+        try:
+            n = int(player2_attack)
+        except ValueError as e:
+            Fail_reason = e
+            Test_action_fail()
+            break
+        try:
+            n = int(player2_life)
+        except ValueError as e:
+            Fail_reason = e
+            Test_action_fail()
+            break
+        try:
+            n = int(player2_speed)
+        except ValueError as e:
+            Fail_reason = e
+            Test_action_fail()
+            break
+        try:
+            n = int(player2_speed)
+        except ValueError as e:
+            Fail_reason = e
+            Test_action_fail()
+            break
+        try:
+            n = int(player3_attack)
+        except ValueError as e:
+            Fail_reason = e
+            Test_action_fail()
+            break
+        try:
+            n = int(player3_life)
+        except ValueError as e:
+            Fail_reason = e
+            Test_action_fail()
+            break
+        try:
+            n = int(player3_speed)
+        except ValueError as e:
+            Fail_reason = e
+            Test_action_fail()
+            break
+        try:
+            n = int(player3_speed)
+        except ValueError as e:
+            Fail_reason = e
+            Test_action_fail()
+            break
+        try:
+            n = int(player4_attack)
+        except ValueError as e:
+            Fail_reason = e
+            Test_action_fail()
+            break
+        try:
+            n = int(player4_life)
+        except ValueError as e:
+            Fail_reason = e
+            Test_action_fail()
+            break
+        try:
+            n = int(player4_speed)
+        except ValueError as e:
+            Fail_reason = e
+            Test_action_fail()
+            break
+        try:
+            n = int(player4_speed)
+        except ValueError as e:
+            Fail_reason = e
+            Test_action_fail()
+            break
+        # End of conditions for "Characters" tab
+
         else:
-            Test_action_pass() # If the editor have done everything well
+            Test_action_pass()  # If the editor have done everything well
             break
 
 
