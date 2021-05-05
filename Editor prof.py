@@ -106,13 +106,19 @@ def Breed_line():  # Display text "Breed" text with the text box UI
 
 def Health_line():  # Display text "Health" text with the text box UI
     global Health, Health_box
-    Health = Label(characters_tab, text="Health", font=("Montserrat", 14), fg="#323232")
-    Health.place_forget()
-    Health_box = tkinter.Text(characters_tab, height=1, width=30, font=("Montserrat", 14), fg="#4285F4")
-    Health_box.place_forget()
-    Health_box.insert(tkinter.END, player_life)
-    Health.place(x=25, y=250)
-    Health_box.place(x=325, y=250)
+    Setup_Infos(label, box)
+
+
+def Setup_Infos(label,box):
+
+    label = Label(characters_tab, text="Health", font=("Montserrat", 14), fg="#323232")
+    label.place_forget()
+
+    box = tkinter.Text(characters_tab, height=1, width=30, font=("Montserrat", 14), fg="#4285F4")
+    box.place_forget()
+    box.insert(tkinter.END, player_life)
+    label.place(x=25, y=250)
+    box.place(x=325, y=250)
 
 
 def Speed_line():  # Display text "Speed" text with the text box UI
@@ -287,11 +293,14 @@ def CH4_action():  # When CH4_component is clicked
 
 
 def Show_CH_components():  # Show and update the four CH components at once AND "Test" button
-    CH1_component()
-    CH2_component()
-    CH3_component()
-    CH4_component()
 
+    i = 0
+    for charac in dico_perso.values():
+        charac_button = tkinter.Button(characters_tab, text=charac[0], bd=0, bg="#FFFFFF", fg="#4285F4", width=63, height=2,
+                             font="Montserrat", relief=FLAT, command=CH1_action)
+        charac_button['font'] = myFont
+        charac_button.place(x=25, y=175 + i* 175)
+        i += 1
 
 def Hide_CH_components():  # Just hide all CH components
     global CH4, CH3, CH2, CH1
@@ -338,19 +347,20 @@ def Delete_action():  # When "delete this character" is pressed
         Hide_all_lines()
         Show_CH_components()
 
-
+dico_perso = {}
 def CreateButton_action():  # When "create new character" is pressed
     global CreateButton, DeleteButton, DoneButton, active_character, Character1_set, Character2_set, Character3_set, Character4_set
 
+
     # Define which character will get the values
-    if Character1_set == 0:
-        active_character = 1
-    elif Character2_set == 0:
-        active_character = 2
-    elif Character3_set == 0:
-        active_character = 3
-    elif Character4_set == 0:
-        active_character = 4
+    # if Character1_set == 0:
+    #     active_character = 1
+    # elif Character2_set == 0:
+    #     active_character = 2
+    # elif Character3_set == 0:
+    #     active_character = 3
+    # elif Character4_set == 0:
+    #     active_character = 4
 
     # To update the UI
     CreateButton["state"] = "disabled"
@@ -368,45 +378,18 @@ def DoneButton_action():  # When "done" button is pressed
     global player3_name, player3_breed, player3_life, player3_speed, player3_defense, player3_attack, player3_Background, Character3_set
     global player4_name, player4_breed, player4_life, player4_speed, player4_defense, player4_attack, player4_Background, Character4_set
     global Character_name_box, Breed_box, Health_box, Speed_box, Defense_box, Attack_box, Background_box
+    global dico_perso
 
-    # This following lines is for get which is write in the text box
-    if active_character == 1:
-        player1_name = ""
-        player1_name = Character_name_box.get("1.0", END + "-1c")
-        player1_breed = Breed_box.get("1.0", END + "-1c")
-        player1_life = Health_box.get("1.0", END + "-1c")
-        player1_speed = Speed_box.get("1.0", END + "-1c")
-        player1_defense = Defense_box.get("1.0", END + "-1c")
-        player1_attack = Attack_box.get("1.0", END + "-1c")
-        player1_Background = Background_box.get("1.0", END + "-1c")
-        Character1_set = 1
-    elif active_character == 2:
-        player2_name = Character_name_box.get("1.0", END + "-1c")
-        player2_breed = Breed_box.get("1.0", END + "-1c")
-        player2_life = Health_box.get("1.0", END + "-1c")
-        player2_speed = Speed_box.get("1.0", END + "-1c")
-        player2_defense = Defense_box.get("1.0", END + "-1c")
-        player2_attack = Attack_box.get("1.0", END + "-1c")
-        player2_Background = Background_box.get("1.0", END + "-1c")
-        Character2_set = 1
-    elif active_character == 3:
-        player3_name = Character_name_box.get("1.0", END + "-1c")
-        player3_breed = Breed_box.get("1.0", END + "-1c")
-        player3_life = Health_box.get("1.0", END + "-1c")
-        player3_speed = Speed_box.get("1.0", END + "-1c")
-        player3_defense = Defense_box.get("1.0", END + "-1c")
-        player3_attack = Attack_box.get("1.0", END + "-1c")
-        player3_Background = Background_box.get("1.0", END + "-1c")
-        Character3_set = 1
-    elif active_character == 4:
-        player4_name = Character_name_box.get("1.0", END + "-1c")
-        player4_breed = Breed_box.get("1.0", END + "-1c")
-        player4_life = Health_box.get("1.0", END + "-1c")
-        player4_speed = Speed_box.get("1.0", END + "-1c")
-        player4_defense = Defense_box.get("1.0", END + "-1c")
-        player4_attack = Attack_box.get("1.0", END + "-1c")
-        player4_Background = Background_box.get("1.0", END + "-1c")
-        Character4_set = 1
+    current_perso = []
+    current_perso.append(Character_name_box.get("1.0", END + "-1c"))
+    current_perso.append( Breed_box.get("1.0", END + "-1c"))
+    current_perso.append(Health_box.get("1.0", END + "-1c"))
+    current_perso.append( Speed_box.get("1.0", END + "-1c"))
+    current_perso.append(Defense_box.get("1.0", END + "-1c"))
+    current_perso.append( Attack_box.get("1.0", END + "-1c"))
+    current_perso.append(Background_box.get("1.0", END + "-1c"))
+    dico_perso[current_perso[0]] = current_perso
+
 
     # If there are 4 Characters configured, disable the "Create new character" button
     if Character1_set == Character2_set == Character3_set == Character4_set == 1:
@@ -424,6 +407,8 @@ def DoneButton_action():  # When "done" button is pressed
     Hide_all_lines()
     Show_CH_components()
 
+    print(dico_perso)
+
 
 # MAIN CODE
 # "Create New character" button UI
@@ -437,6 +422,11 @@ DeleteButton = tkinter.Button(characters_tab, text="Delete this character", bd=0
                               pady=10, font="Montserrat", relief=FLAT, state=DISABLED, command=Delete_action)
 DeleteButton['font'] = myFont
 DeleteButton.place(x=335, y=25)
+
+display_charac = tkinter.Canvas(characters_tab, bd=0, highlightthickness=0)
+vScroll = tkinter.Scrollbar(display_charac, orient='vertical')
+vScroll.grid(row=0, column=1, sticky='ns')
+display_charac.grid(row=0, column=0, sticky='nsew')
 
 # "Done" button UI
 DoneButton = tkinter.Button(characters_tab, text="Done", bd=0, bg="#4285F4", fg="White", padx=30, pady=10,
@@ -660,32 +650,5 @@ Fail_canvas.pack_forget()
 # -----------------------------------------------
 
 
-# -------------------------------------------
-# THIS FOLLOWING CODE IS FOR "CHARACTER" TAB
-# -------------------------------------------
-
-
-def new_text():
-    text = tkinter.Text(paragraphs_tab, height=1, width=30, font=("Montserrat", 14), fg="#4285F4")
-    text.pack()
-
-
-create_paragraph_button = tkinter.Button(paragraphs_tab,
-                                         text="New Paragraph",
-                                         bd=0, bg="#3285F4",
-                                         fg="White", padx=30, pady=10,
-                                         font="Montserrat", relief=FLAT, command=new_text)
-create_paragraph_button.pack()
-
-del_paragraph_button = tkinter.Button(paragraphs_tab,
-                                      text="Delete this paragraph",
-                                      bd=0, bg="#C4C4C4", fg="White", padx=30,
-                                      pady=10, font="Montserrat", relief=FLAT,
-                                      state=DISABLED, command=None)
-del_paragraph_button.pack()
-
-# -------------------------------------------
-# LOOP END
-# -------------------------------------------
 editor.config(menu=main_menu)
 editor.mainloop()
