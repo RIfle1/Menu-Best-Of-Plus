@@ -5,6 +5,7 @@ from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
 import tkinter.font as font
+import sqlite3
 
 # Main App
 editor = Tk()
@@ -661,28 +662,155 @@ Fail_canvas.pack_forget()
 
 
 # -------------------------------------------
-# THIS FOLLOWING CODE IS FOR "CHARACTER" TAB
+# THIS FOLLOWING CODE IS FOR "PARAGRAPH" TAB
 # -------------------------------------------
 
+# Function for creating the Cells with all widgets
 
-def new_text():
-    text = tkinter.Text(paragraphs_tab, height=1, width=30, font=("Montserrat", 14), fg="#4285F4")
-    text.pack()
+def cell_creator():
+
+    # Function to create new choices
+
+    def add_choice():
+        # Create Connection and cursor
+        counter_connection = sqlite3.connect("counter.db")
+        c = counter_connection.cursor()
+
+        # Create a table if one does not exist
+        c.execute("""CREATE TABLE IF NOT EXISTS counter (old_number integer, new_number integer)""")
+
+        # Insert into Table
+        c.execute("INSERT INTO counter VALUES(:old_number, :new_number)",
+                  {"old_number": 1}
+
+                  )
+
+        choice_label = tkinter.Label(frame_cell_creator, text=f"Choice {1}", font=("Montserrat", 14),
+                                     fg="#323232", padx=15, pady=5)
+        choice_label.grid(column=0, stick="w", padx=20, pady=20)
+
+        choice_entry = tkinter.Entry(frame_cell_creator, width=49)
+        choice_entry.grid(column=1, columnspan=2, stick="w", padx=20, pady=20)
+
+    text_label = tkinter.Label(frame_cell_creator, text="Main Paragraph", font=("Montserrat", 14), fg="#323232",
+                               padx=15, pady=5)
+    text_label.grid(row=0, column=0, stick="w")
+
+    text_entry = tkinter.Entry(frame_cell_creator, width=49)
+    text_entry.grid(row=0, column=1, columnspan=2, stick="w",  padx=20, pady=20)
+
+    # Add Choice Button
+
+    add_choice_button = tkinter.Button(frame_cell_creator, text="Add Choice", fg="White", padx=15, pady=5,
+                                       font="Montserrat", bg="#3285F4", width=10,
+                                       command=add_choice)
+
+    add_choice_button.grid(row=3, column=0, stick="w", padx=20, pady=20)
+
+    # Edit Cell Button
+
+    edit_cell_button = tkinter.Button(frame_cell_creator, text="Edit cell", fg="White", padx=15, pady=5,
+                                      font="Montserrat", bg="#3285F4", width=10, command=None)
+    edit_cell_button.grid(row=3, column=1, stick="w", padx=20, pady=20)
+
+    # Delete Cell Button
+
+    delete_cell_button = tkinter.Button(frame_cell_creator, text="Delete cell", fg="White", padx=15, pady=5,
+                                        font="Montserrat", bg="#C4C4C4", state=DISABLED, width=10,
+                                        command=None)
+    delete_cell_button.grid(row=3, column=2, stick="w", padx=20, pady=20)
+
+    frame_cell_creator.grid(row=1, column=0, columnspan=1, stick="w")
 
 
-create_paragraph_button = tkinter.Button(paragraphs_tab,
-                                         text="New Paragraph",
-                                         bd=0, bg="#3285F4",
+
+# Main Frame
+
+main_frame_paragraph = tkinter.Frame(paragraphs_tab, padx=20, pady=20)
+main_frame_paragraph.grid(row=0, column=0, columnspan=3, stick="w")
+
+# Cell Frame
+
+frame_cell_creator = tkinter.LabelFrame(paragraphs_tab, text=f"First Paragraph")
+
+# Create new PARAGRAPH Button
+
+create_paragraph_button = tkinter.Button(main_frame_paragraph,
+                                         text="New Paragraph", bg="#3285F4",
                                          fg="White", padx=30, pady=10,
-                                         font="Montserrat", relief=FLAT, command=new_text)
-create_paragraph_button.pack()
+                                         font=("Montserrat", 18),
+                                         width=21, command=cell_creator)
+create_paragraph_button.pack(side="left")
 
-del_paragraph_button = tkinter.Button(paragraphs_tab,
+# Delete Paragraph Button
+
+del_paragraph_button = tkinter.Button(main_frame_paragraph,
                                       text="Delete this paragraph",
-                                      bd=0, bg="#C4C4C4", fg="White", padx=30,
-                                      pady=10, font="Montserrat", relief=FLAT,
-                                      state=DISABLED, command=None)
-del_paragraph_button.pack()
+                                      bg="#C4C4C4", fg="White", padx=30,
+                                      pady=10, font=("Montserrat", 18),
+                                      width=21, state=DISABLED, command=None)
+"""del_paragraph_button.pack(side="right")"""
+
+# Create a function that creates tables in the Database connection
+def table_creator():
+    conn = sqlite3.connect("EditorData.db")
+    c = conn.cursor()
+
+    # Create Table
+    
+# Window Pop-up to get X and Y values for package Frames
+
+
+def position_window():
+
+    def get_position():
+        x_pos = text_pos_x_df.get()
+        y_pos = text_pos_y_df.get()
+        return x_pos, y_pos
+
+    # Main window
+    window = Tk()
+    window.title("Select Position")
+
+    # Center the Screen
+    screen_x_2 = window.winfo_screenwidth()
+    screen_y_2 = window.winfo_screenheight()
+    window_x_2 = 390
+    window_y_2 = 150
+
+    pos_x_2 = int((screen_x_2 - window_x_2) / 2)
+    pos_y_2 = int((screen_y_2 - window_y_2) / 2)
+
+    window.geometry(f"{window_x_2}x{window_y_2}+{pos_x_2}+{pos_y_2}")
+
+    # Widgets
+
+    package = tkinter.Frame(window)
+
+    label_pos_x = tkinter.Label(package, text="Row", font=("Montserrat", 14), fg="#323232", padx=30, pady=10)
+    label_pos_x.grid(row=0, column=0, stick="w")
+
+    label_pos_y = tkinter.Label(package, text="Column", font=("Montserrat", 14), fg="#323232", padx=30, pady=10)
+    label_pos_y.grid(row=1, column=0, stick="w")
+
+    text_pos_x_df = IntVar(package, value=0)
+    text_pos_x = tkinter.Entry(package, textvariable=text_pos_x_df)
+    text_pos_x.grid(row=0, column=1)
+
+    text_pos_y_df = IntVar(package, value=0)
+    text_pos_y = tkinter.Entry(package, textvariable=text_pos_y_df)
+    text_pos_y.grid(row=1, column=1)
+
+    enter = tkinter.Button(package, text="Enter", bd=0, bg="#3285F4", fg="White", padx=30, pady=10, font="Montserrat",
+                           relief=FLAT, command=get_position)
+    enter.grid(row=3, column=3)
+
+    package.grid(row=0, column=0)
+    window.mainloop()
+
+
+
+
 
 # -------------------------------------------
 # LOOP END
