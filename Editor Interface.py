@@ -388,59 +388,7 @@ def table_creator():
     top.mainloop()
 
 
-# Window Pop-up to get X and Y values for package Frames
-
-
-def position_window():
-
-    def get_position():
-        x_pos = text_pos_x_df.get()
-        y_pos = text_pos_y_df.get()
-        return x_pos, y_pos
-
-    # Main window
-    window = Tk()
-    window.title("Select Position")
-
-    # Center the Screen
-    screen_x_2 = window.winfo_screenwidth()
-    screen_y_2 = window.winfo_screenheight()
-    window_x_2 = 390
-    window_y_2 = 150
-
-    pos_x_2 = int((screen_x_2 - window_x_2) / 2)
-    pos_y_2 = int((screen_y_2 - window_y_2) / 2)
-
-    window.geometry(f"{window_x_2}x{window_y_2}+{pos_x_2}+{pos_y_2}")
-
-    # Widgets
-
-    package = tkinter.Frame(window)
-
-    label_pos_x = tkinter.Label(package, text="Row", font=("Montserrat", 14), fg="#323232", padx=30, pady=10)
-    label_pos_x.grid(row=0, column=0, stick="w")
-
-    label_pos_y = tkinter.Label(package, text="Column", font=("Montserrat", 14), fg="#323232", padx=30, pady=10)
-    label_pos_y.grid(row=1, column=0, stick="w")
-
-    text_pos_x_df = IntVar(package, value=0)
-    text_pos_x = tkinter.Entry(package, textvariable=text_pos_x_df)
-    text_pos_x.grid(row=0, column=1)
-
-    text_pos_y_df = IntVar(package, value=0)
-    text_pos_y = tkinter.Entry(package, textvariable=text_pos_y_df)
-    text_pos_y.grid(row=1, column=1)
-
-    enter = tkinter.Button(package, text="Enter", bd=0, bg="#3285F4", fg="White", padx=30, pady=10, font="Montserrat",
-                           relief=FLAT, command=get_position)
-    enter.grid(row=3, column=3)
-
-    package.grid(row=0, column=0)
-    window.mainloop()
-
-
 # Main Frame
-
 main_frame_paragraph = tkinter.Frame(paragraphs_tab, padx=20, pady=20)
 main_frame_paragraph.grid(row=0, column=0, columnspan=3, stick="w")
 
@@ -450,7 +398,6 @@ frame_cell_creator = tkinter.LabelFrame(paragraphs_tab)
 frame_cell_creator.grid(row=1, column=0, columnspan=3, stick="w")
 
 # Create new PARAGRAPH Button
-
 create_paragraph_button = tkinter.Button(main_frame_paragraph,
                                          text="New Paragraph", bg="#3285F4",
                                          fg="White", padx=30, pady=10,
@@ -459,7 +406,6 @@ create_paragraph_button = tkinter.Button(main_frame_paragraph,
 create_paragraph_button.grid(row=0, column=0, stick="w", padx=(0, 10))
 
 # Create update PARAGRAPH Button
-
 show_paragraphs_button = tkinter.Button(main_frame_paragraph,
                                         text="Show Paragraphs", bg="#3285F4",
                                         fg="White", padx=30, pady=10,
@@ -468,7 +414,6 @@ show_paragraphs_button = tkinter.Button(main_frame_paragraph,
 show_paragraphs_button.grid(row=0, column=1, stick="w", padx=(10, 10))
 
 # Delete Paragraph Button
-
 edit_paragraph_button = tkinter.Button(main_frame_paragraph, text="Edit Paragraph",
                                        bg="#3285F4", fg="White", padx=30, pady=10,
                                        font=("Montserrat", 18), width=21, command=update_paragraph)
