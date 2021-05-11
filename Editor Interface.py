@@ -665,31 +665,60 @@ Fail_canvas.pack_forget()
 # THIS FOLLOWING CODE IS FOR "PARAGRAPH" TAB
 # -------------------------------------------
 
-# Main Frame
+# Create a function to save the changes in the new window and display the new paragraph
 
-main_frame_paragraph = tkinter.Frame(paragraphs_tab, padx=20, pady=20)
-main_frame_paragraph.grid(row=0, column=0, columnspan=3, stick="w")
+def save_changes():
+    # Create a connection to the database
+    conn = sqlite3.connect("EditorData.db")
+    c = conn.cursor()
 
-# Cell Frame
+    # Fetch information provided by the table_creator
+    # Query The database
+    c.execute("SELECT , oid FROM paragraphs")
+    paragraphs = c.fetchall()
+    print(paragraphs)
 
-frame_cell_creator = tkinter.LabelFrame(paragraphs_tab, text=f"First Paragraph")
+    # Creates a new frame
+    paragraph_frame = LabelFrame(editor, text=f"Paragraph {paragraphs[5]}")
+    paragraph_frame.grid(row=paragraphs[5], column=1)
 
-# Create new PARAGRAPH Button
+    # Labels
+    paragraph_label = Label(paragraph_frame, text="Main Paragraph")
+    paragraph_label.grid(row=0, column=0)
 
-create_paragraph_button = tkinter.Button(main_frame_paragraph,
-                                         text="New Paragraph", bg="#3285F4",
-                                         fg="White", padx=30, pady=10,
-                                         font=("Montserrat", 18),
-                                         width=21, command=info_input)
-create_paragraph_button.pack(side="left")
+    choice_1_label = Label(paragraph_frame, text="Choice 1:")
+    choice_1_label.grid(row=1, column=0)
 
-# Delete Paragraph Button
+    choice_2_label = Label(paragraph_frame, text="Choice 2:")
+    choice_2_label.grid(row=2, column=0)
 
-del_paragraph_button = tkinter.Button(main_frame_paragraph,
-                                      text="Delete this paragraph",
-                                      bg="#C4C4C4", fg="White", padx=30,
-                                      pady=10, font=("Montserrat", 18),
-                                      width=21, state=DISABLED, command=None)
+    choice_3_label = Label(paragraph_frame, text="Choice 3:")
+    choice_3_label.grid(row=3, column=0)
+
+    choice_4_label = Label(paragraph_frame, text="Choice 4:")
+    choice_4_label.grid(row=4, column=0)
+
+    # Input information
+    paragraph_text = Label(paragraph_frame, text=str(paragraphs[0]))
+    paragraph_text.grid(row=0, column=1)
+
+    choice_1_label = Label(paragraph_frame, text=str(paragraphs[1]))
+    choice_1_label.grid(row=1, column=1)
+
+    choice_2_label = Label(paragraph_frame, text=str(paragraphs[2]))
+    choice_2_label.grid(row=2, column=1)
+
+    choice_3_label = Label(paragraph_frame, text=str(paragraphs[3]))
+    choice_3_label.grid(row=3, column=1)
+
+    choice_4_label = Label(paragraph_frame, text=str(paragraphs[4]))
+    choice_4_label.grid(row=4, column=1)
+
+    print_records = ""
+    for paragraph in paragraphs:
+        for item in paragraph:
+            print_records += str(item) + "\n"
+    print(print_records)
 
 
 # Create a function that creates tables in the Database connection
@@ -698,43 +727,80 @@ def table_creator():
     # Create New Window
     top = Toplevel()
     top.title("Add New paragraph")
-    screen_x = top.winfo_screenwidth()
-    screen_y = top.winfo_screenheight()
-    window_x = 356
-    window_y = 600
-    pos_X = int((screen_x - window_x) / 2)
-    pos_Y = int((screen_y - window_y) / 2)
-    root.geometry(f"{window_x}x{window_y}+{pos_X}+{pos_Y}")
+    screen_x_2 = top.winfo_screenwidth()
+    screen_y_2 = top.winfo_screenheight()
+    window_x_2 = 500
+    window_y_2 = 250
+    pos_x_2 = int((screen_x_2 - window_x_2) / 2)
+    pos_y_2 = int((screen_y_2 - window_y_2) / 2)
+    top.geometry(f"{window_x_2}x{window_y_2}+{pos_x_2}+{pos_y_2}")
 
+    # Labels
+    main_paragraph_label = Label(top, text="Main Paragraph:")
+    main_paragraph_label.grid(row=0, column=0)
 
+    choice_1_label = Label(top, text="Choice 1:")
+    choice_1_label.grid(row=1, column=0)
 
+    choice_2_label = Label(top, text="Choice 2:")
+    choice_2_label.grid(row=2, column=0)
 
+    choice_3_label = Label(top, text="Choice 3:")
+    choice_3_label.grid(row=3, column=0)
+
+    choice_4_label = Label(top, text="Choice 4:")
+    choice_4_label.grid(row=4, column=0)
+
+    # Entries
+    main_paragraph_entry = Entry(top, width=30)
+    main_paragraph_entry.grid(row=0, column=1, padx=20)
+
+    choice_1_entry = Entry(top, width=30)
+    choice_1_entry.grid(row=1, column=1, padx=20)
+
+    choice_2_entry = Entry(top, width=30)
+    choice_2_entry.grid(row=2, column=1, padx=20)
+
+    choice_3_entry = Entry(top, width=30)
+    choice_3_entry.grid(row=3, column=1, padx=20)
+
+    choice_4_entry = Entry(top, width=30)
+    choice_4_entry.grid(row=4, column=1, padx=20)
+
+    # Save Button
+    save_button = Button(top, text="Save Changes", command=save_changes)
+    save_button.grid(row=5, column=0, columnspan=2, pady=10, padx=10, ipadx=131)
+
+    # Create a connection to the database
     conn = sqlite3.connect("EditorData.db")
     c = conn.cursor()
 
     # Create Table
     c.execute("""CREATE TABLE IF NOT EXISTS paragraphs 
-        (main_paragraph text,
-        choice_1 text,
-        choice_2 text,
-        choice_3 text,
-        choice_4 text)""")
+            (main_paragraph text,
+            choice_1 text,
+            choice_2 text,
+            choice_3 text,
+            choice_4 text)""")
 
     # Insert into table
-    c.execute("INSERT INTO addresses VALUES (:main_paragraph, :choice_1, :choice_2, :choice_3, :choice_4)",
+    c.execute("INSERT INTO paragraphs VALUES (:main_paragraph, :choice_1, :choice_2, :choice_3, :choice_4)",
               {
-                  "main_paragraph": None,
-                  "choice_1": None,
-                  "choice_2": None,
-                  "choice_3": None,
-                  "choice_4": None
+                  "main_paragraph": main_paragraph_entry.get(),
+                  "choice_1": choice_1_entry.get(),
+                  "choice_2": choice_2_entry.get(),
+                  "choice_3": choice_3_entry.get(),
+                  "choice_4": choice_4_entry.get()
               })
 
     # Commit changes
     conn.commit()
     # Close Connection
     conn.close()
-    
+
+    top.mainloop()
+
+
 # Window Pop-up to get X and Y values for package Frames
 
 
@@ -784,6 +850,33 @@ def position_window():
 
     package.grid(row=0, column=0)
     window.mainloop()
+
+
+# Main Frame
+
+main_frame_paragraph = tkinter.Frame(paragraphs_tab, padx=20, pady=20)
+main_frame_paragraph.grid(row=0, column=0, columnspan=3, stick="w")
+
+# Cell Frame
+
+frame_cell_creator = tkinter.LabelFrame(paragraphs_tab, text=f"First Paragraph")
+
+# Create new PARAGRAPH Button
+
+create_paragraph_button = tkinter.Button(main_frame_paragraph,
+                                         text="New Paragraph", bg="#3285F4",
+                                         fg="White", padx=30, pady=10,
+                                         font=("Montserrat", 18),
+                                         width=21, command=table_creator)
+create_paragraph_button.pack(side="left")
+
+# Delete Paragraph Button
+
+del_paragraph_button = tkinter.Button(main_frame_paragraph,
+                                      text="Delete this paragraph",
+                                      bg="#C4C4C4", fg="White", padx=30,
+                                      pady=10, font=("Montserrat", 18),
+                                      width=21, state=DISABLED, command=None)
 
 # -------------------------------------------
 # LOOP END
