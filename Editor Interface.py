@@ -446,7 +446,7 @@ main_frame_paragraph.grid(row=0, column=0, columnspan=3, stick="w")
 
 # Cell Frame
 global frame_cell_creator
-frame_cell_creator = tkinter.LabelFrame(paragraphs_tab, text=f"First Paragraph")
+frame_cell_creator = tkinter.LabelFrame(paragraphs_tab)
 frame_cell_creator.grid(row=1, column=0, columnspan=3, stick="w")
 
 # Create new PARAGRAPH Button
