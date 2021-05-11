@@ -665,65 +665,6 @@ Fail_canvas.pack_forget()
 # THIS FOLLOWING CODE IS FOR "PARAGRAPH" TAB
 # -------------------------------------------
 
-# Function for creating the Cells with all widgets
-
-def cell_creator():
-
-    # Function to create new choices
-
-    def add_choice():
-        # Create Connection and cursor
-        counter_connection = sqlite3.connect("counter.db")
-        c = counter_connection.cursor()
-
-        # Create a table if one does not exist
-        c.execute("""CREATE TABLE IF NOT EXISTS counter (old_number integer, new_number integer)""")
-
-        # Insert into Table
-        c.execute("INSERT INTO counter VALUES(:old_number, :new_number)",
-                  {"old_number": 1}
-
-                  )
-
-        choice_label = tkinter.Label(frame_cell_creator, text=f"Choice {1}", font=("Montserrat", 14),
-                                     fg="#323232", padx=15, pady=5)
-        choice_label.grid(column=0, stick="w", padx=20, pady=20)
-
-        choice_entry = tkinter.Entry(frame_cell_creator, width=49)
-        choice_entry.grid(column=1, columnspan=2, stick="w", padx=20, pady=20)
-
-    text_label = tkinter.Label(frame_cell_creator, text="Main Paragraph", font=("Montserrat", 14), fg="#323232",
-                               padx=15, pady=5)
-    text_label.grid(row=0, column=0, stick="w")
-
-    text_entry = tkinter.Entry(frame_cell_creator, width=49)
-    text_entry.grid(row=0, column=1, columnspan=2, stick="w",  padx=20, pady=20)
-
-    # Add Choice Button
-
-    add_choice_button = tkinter.Button(frame_cell_creator, text="Add Choice", fg="White", padx=15, pady=5,
-                                       font="Montserrat", bg="#3285F4", width=10,
-                                       command=add_choice)
-
-    add_choice_button.grid(row=3, column=0, stick="w", padx=20, pady=20)
-
-    # Edit Cell Button
-
-    edit_cell_button = tkinter.Button(frame_cell_creator, text="Edit cell", fg="White", padx=15, pady=5,
-                                      font="Montserrat", bg="#3285F4", width=10, command=None)
-    edit_cell_button.grid(row=3, column=1, stick="w", padx=20, pady=20)
-
-    # Delete Cell Button
-
-    delete_cell_button = tkinter.Button(frame_cell_creator, text="Delete cell", fg="White", padx=15, pady=5,
-                                        font="Montserrat", bg="#C4C4C4", state=DISABLED, width=10,
-                                        command=None)
-    delete_cell_button.grid(row=3, column=2, stick="w", padx=20, pady=20)
-
-    frame_cell_creator.grid(row=1, column=0, columnspan=1, stick="w")
-
-
-
 # Main Frame
 
 main_frame_paragraph = tkinter.Frame(paragraphs_tab, padx=20, pady=20)
@@ -739,7 +680,7 @@ create_paragraph_button = tkinter.Button(main_frame_paragraph,
                                          text="New Paragraph", bg="#3285F4",
                                          fg="White", padx=30, pady=10,
                                          font=("Montserrat", 18),
-                                         width=21, command=cell_creator)
+                                         width=21, command=info_input)
 create_paragraph_button.pack(side="left")
 
 # Delete Paragraph Button
@@ -749,14 +690,50 @@ del_paragraph_button = tkinter.Button(main_frame_paragraph,
                                       bg="#C4C4C4", fg="White", padx=30,
                                       pady=10, font=("Montserrat", 18),
                                       width=21, state=DISABLED, command=None)
-"""del_paragraph_button.pack(side="right")"""
+
 
 # Create a function that creates tables in the Database connection
+
 def table_creator():
+    # Create New Window
+    top = Toplevel()
+    top.title("Add New paragraph")
+    screen_x = top.winfo_screenwidth()
+    screen_y = top.winfo_screenheight()
+    window_x = 356
+    window_y = 600
+    pos_X = int((screen_x - window_x) / 2)
+    pos_Y = int((screen_y - window_y) / 2)
+    root.geometry(f"{window_x}x{window_y}+{pos_X}+{pos_Y}")
+
+
+
+
     conn = sqlite3.connect("EditorData.db")
     c = conn.cursor()
 
     # Create Table
+    c.execute("""CREATE TABLE IF NOT EXISTS paragraphs 
+        (main_paragraph text,
+        choice_1 text,
+        choice_2 text,
+        choice_3 text,
+        choice_4 text)""")
+
+    # Insert into table
+    c.execute("INSERT INTO addresses VALUES (:main_paragraph, :choice_1, :choice_2, :choice_3, :choice_4)",
+              {
+                  "main_paragraph": None,
+                  "choice_1": None,
+                  "choice_2": None,
+                  "choice_3": None,
+                  "choice_4": None
+              })
+
+    # Commit changes
+    conn.commit()
+    # Close Connection
+    conn.close()
     
 # Window Pop-up to get X and Y values for package Frames
 
@@ -807,10 +784,6 @@ def position_window():
 
     package.grid(row=0, column=0)
     window.mainloop()
-
-
-
-
 
 # -------------------------------------------
 # LOOP END
