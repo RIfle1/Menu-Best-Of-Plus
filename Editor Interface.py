@@ -116,6 +116,7 @@ def edit_changes():
     conn.commit()
     conn.close()
 
+
 # Functions to close the pop-up windows
 def cancel_top():
     top.destroy()
@@ -202,7 +203,7 @@ def update_paragraph():
 
 def show_paragraphs():
     # Delete previous paragraphs in the frame
-    for widgets in frame_cell_creator.winfo_children():
+    for widgets in main_paragraph_frame.winfo_children():
         widgets.destroy()
 
     conn = sqlite3.connect("EditorData.db")
@@ -237,7 +238,7 @@ def show_paragraphs():
         conn.close()
 
         # Creates a new frame
-        paragraph_frame = LabelFrame(frame_cell_creator, text=f"Paragraph {number}")
+        paragraph_frame = LabelFrame(main_paragraph_frame, text=f"Paragraph {number}")
         paragraph_frame.grid(row=number, column=1)
 
         # Labels
@@ -389,16 +390,16 @@ def table_creator():
 
 
 # Main Frame
-main_frame_paragraph = tkinter.Frame(paragraphs_tab, padx=20, pady=20)
-main_frame_paragraph.grid(row=0, column=0, columnspan=3, stick="w")
+main_button_frame = tkinter.Frame(paragraphs_tab, padx=20, pady=20)
+main_button_frame.grid(row=0, column=0, columnspan=3, stick="w")
 
 # Cell Frame
-global frame_cell_creator
-frame_cell_creator = tkinter.LabelFrame(paragraphs_tab)
-frame_cell_creator.grid(row=1, column=0, columnspan=3, stick="w")
+global main_paragraph_frame
+main_paragraph_frame = tkinter.LabelFrame(paragraphs_tab, text="All Paragraphs")
+main_paragraph_frame.grid(row=1, column=0, columnspan=3, stick="w")
 
 # Create new PARAGRAPH Button
-create_paragraph_button = tkinter.Button(main_frame_paragraph,
+create_paragraph_button = tkinter.Button(main_button_frame,
                                          text="New Paragraph", bg="#3285F4",
                                          fg="White", padx=30, pady=10,
                                          font=("Montserrat", 18),
@@ -406,7 +407,7 @@ create_paragraph_button = tkinter.Button(main_frame_paragraph,
 create_paragraph_button.grid(row=0, column=0, stick="w", padx=(0, 10))
 
 # Create update PARAGRAPH Button
-show_paragraphs_button = tkinter.Button(main_frame_paragraph,
+show_paragraphs_button = tkinter.Button(main_button_frame,
                                         text="Show Paragraphs", bg="#3285F4",
                                         fg="White", padx=30, pady=10,
                                         font=("Montserrat", 18),
@@ -414,7 +415,7 @@ show_paragraphs_button = tkinter.Button(main_frame_paragraph,
 show_paragraphs_button.grid(row=0, column=1, stick="w", padx=(10, 10))
 
 # Delete Paragraph Button
-edit_paragraph_button = tkinter.Button(main_frame_paragraph, text="Edit Paragraph",
+edit_paragraph_button = tkinter.Button(main_button_frame, text="Edit Paragraph",
                                        bg="#3285F4", fg="White", padx=30, pady=10,
                                        font=("Montserrat", 18), width=21, command=update_paragraph)
 edit_paragraph_button.grid(row=0, column=2, stick="w", padx=(10, 0))
