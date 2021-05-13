@@ -48,6 +48,7 @@ objects_tab = ttk.Frame(tabcontrol)
 game_settings_tab = ttk.Frame(tabcontrol)
 test_tab = ttk.Frame(tabcontrol)
 
+
 # Adding Tabs
 tabcontrol.add(paragraphs_tab, text="Paragraphs")
 tabcontrol.add(characters_tab, text="Characters")

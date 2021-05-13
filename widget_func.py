@@ -7,6 +7,9 @@ from tkinter import ttk
 import tkinter.font as font
 import sqlite3
 
+# .py files import
+import story_buttons_func
+
 
 # Function to create new tabs
 def new_tab(root, id):

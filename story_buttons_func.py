@@ -6,6 +6,7 @@ from tkinter import messagebox
 from tkinter import ttk
 import tkinter.font as font
 import sqlite3
+import id
 
 
 # Function to save new stories
@@ -14,51 +15,46 @@ def save_story():
     conn = sqlite3.connect("EditorDataV3.db")
     c = conn.cursor()
 
+    # Create Table
+    c.execute("""CREATE TABLE IF NOT EXISTS stories
+    (s_id text, 
+    s_text text)""")
+
+    s_id = story_id_entry.get()
     text_length = len(beginning_story_entry.get("1.0", "end"))
+    c.execute(f"""SELECT s_id FROM stories WHERE s_id = '{id.story_id(s_id)}'""")
+    s_id_raw = c.fetchall()
 
     if text_length != 1:
-        try:
-            story_id = int(story_id_entry.get())
+        if len(s_id_raw) == 0:
+            try:
+                s_id = int(story_id_entry.get())
+                if s_id > 0:
+                    # Insert into table if that id does not exist
+                    c.execute(
+                        "INSERT INTO stories VALUES (:s_id, :s_text)",
+                        {
+                            "s_id": f"{id.story_id(s_id)}",
+                            "s_text": str(beginning_story_entry.get("1.0", "end"))
+                        })
+                    # Show Success pop-up
+                    messagebox.showinfo("Success", f"Story Number {s_id} has been successfully created.")
 
-            if story_id > 0:
-                try:
-                    # Create Table
-                    c.execute("""CREATE TABLE IF NOT EXISTS stories 
-                                (story_id integer,
-                                story_text text)""")
+                else:
+                    messagebox.showerror("Syntax Error", "Story ID Must Be Positive")
 
-                    # Check if the story id exists first or not
-                    c.execute(f"SELECT story_id FROM stories WHERE story_id={story_id}")
-                    list_id = c.fetchall()
+            except ValueError:
+                messagebox.showerror("Syntax Error", "Story ID Must Be A Number")
 
-                    if not list_id:
-                        # Insert into table if that id does not exist
-                        c.execute(
-                            "INSERT INTO stories VALUES (:story_id, :story_text)",
-                            {
-                                "story_id": int(story_id_entry.get()),
-                                "story_text": str(beginning_story_entry.get("1.0", "end"))
-                            })
-
-                    else:
-                        messagebox.showerror("Duplication Error", f"Paragraph Number {story_id} Already Exists")
-
-                    # Commit changes
-                    conn.commit()
-                    # Close Connection
-                    conn.close()
-
-                except sqlite3.OperationalError:
-                    messagebox.showerror("Operational Error", "You Must Input A Story ID")
-
-            else:
-                messagebox.showerror("Syntax Error", "Story ID Must Be Positive")
-
-        except ValueError:
-            messagebox.showerror("Syntax Error", "Story ID Must Be A Number")
+        else:
+            messagebox.showerror("Duplication Error", f"Story Number {s_id} Already Exists")
 
     else:
-        messagebox.showerror("Input Error", "You Must Write Something In The Beginning Paragraph")
+        messagebox.showerror("Input Error", "Story Text Is Empty")
+
+    # End Connection
+    conn.commit()
+    conn.close()
 
     # Clear the Text Boxes
     story_id_entry.delete(0, END)
@@ -121,32 +117,35 @@ def edit_story():
     text_length = len(beginning_story_edit_entry.get("1.0", "end"))
 
     if text_length != 1:
-
         try:
-            story_id = int(story_id_edit_entry.get())
-            if story_id > 0:
+            s_id = int(story_id_edit_entry.get())
+            if s_id > 0:
                 try:
                     # Check if the story id exists
-                    c.execute(f"SELECT story_id FROM stories WHERE story_id={story_id}")
+                    c.execute(f"SELECT s_id FROM stories WHERE s_id = '{id.story_id(s_id)}'")
                     list_id = c.fetchall()
 
                     if list_id:
                         # Update Table
-                        story_id = story_id_edit_entry.get()
+                        s_id = story_id_edit_entry.get()
                         c.execute("""UPDATE stories SET
-                                    story_text = :story_text
+                                    s_text = :s_text
         
-                                     WHERE story_id = :story_id""",
-                                    {
-                                        "story_text": beginning_story_edit_entry.get("1.0", "end"),
-                                        "story_id": story_id
-                                    })
+                                     WHERE s_id = :s_id""",
+                                  {
+                                        "s_text": beginning_story_edit_entry.get("1.0", "end"),
+                                        "s_id": f'{id.story_id(s_id)}'
+                                  })
+
+                        # Show Success pop-up
+                        messagebox.showinfo("Success", f"Story Number {s_id} has been successfully modified.")
 
                     else:
-                        messagebox.showerror("Index Error", f"Paragraph Number {story_id} Does Not Exist")
+                        messagebox.showerror("Index Error", f"Paragraph Number {s_id} Does Not Exist")
 
-                except sqlite3.OperationalError:
+                except sqlite3.OperationalError as e:
                     messagebox.showerror("Operational Error", "You Must Input A Story ID")
+                    print(e)
 
             else:
                 messagebox.showerror("Syntax Error", "Story ID Must Be Positive")
@@ -174,13 +173,13 @@ def insert_edit():
     conn = sqlite3.connect("EditorDataV3.db")
     c = conn.cursor()
     try:
-        story_id = int(story_id_edit_entry.get())
+        s_id = int(story_id_edit_entry.get())
 
-        if story_id > 0:
+        if s_id > 0:
             try:
                 # Insert Stored Data Into Text Box
-                story_id = story_id_edit_entry.get()
-                c.execute(f"SELECT story_text FROM stories WHERE story_id = {story_id}")
+                s_id = story_id_edit_entry.get()
+                c.execute(f"SELECT s_text FROM stories WHERE s_id = '{id.story_id(s_id)}'")
                 text_raw = c.fetchall()
                 original_text = ((text_raw[0])[0])
 
@@ -191,7 +190,7 @@ def insert_edit():
                 messagebox.showerror("Operational Error", "You Must Input A Story ID")
 
             except IndexError:
-                messagebox.showerror("Index Error", f"Story Number {story_id} Does Not Exist")
+                messagebox.showerror("Index Error", f"Story Number {s_id} Does Not Exist")
 
         else:
             messagebox.showerror("Syntax Error", "Story ID Must Be Positive")
@@ -266,44 +265,46 @@ def edit_story_window():
 
 # Function to delete a story from the delete window
 def delete_story():
-    try:
-        # Create connection to retrieve data
-        conn = sqlite3.connect("EditorDataV3.db")
-        c = conn.cursor()
+    # Create connection to retrieve data
+    conn = sqlite3.connect("EditorDataV3.db")
+    c = conn.cursor()
 
-        story_id = story_id_del_entry.get()
-        c.execute(f"SELECT *, oid FROM stories WHERE story_id = {story_id}")
+    s_id = story_id_del_entry.get()
+
+    try:
+        c.execute(f"SELECT *, oid FROM stories WHERE s_id = '{id.story_id(s_id)}'")
         lt = c.fetchall()
 
         if not lt:
-            messagebox.showerror("Index Error", f"ERROR: Story ID Number {story_id_del_entry.get()} Does Not Exist")
+            messagebox.showerror("Index Error", f" Story ID Number {story_id_del_entry.get()} Does Not Exist")
 
         else:
-            c.execute(f"DELETE FROM stories WHERE story_id = {story_id}")
-            messagebox.showinfo("Success", "Record Successfully Deleted")
+            c.execute(f"DELETE FROM stories WHERE s_id = '{id.story_id(s_id)}'")
 
-        conn.commit()
-        conn.close()
-    except sqlite3.OperationalError:
+            # Show Success pop-up
+            messagebox.showinfo("Success", f"Story Number {s_id} has been successfully deleted.")
+
+    except sqlite3.OperationalError as e:
         messagebox.showerror("Operational Error", "You Must Input A Story ID")
+        print(e)
 
     finally:
         old_text.set("")
         story_id_del_entry.delete(0, END)
 
+        conn.commit()
+        conn.close()
+
 
 # Function to insert old text in a label in the delete story window
 def insert_del():
     try:
-        # Delete what's already in the text box
-        old_text.set("")
-
         # Create connection to retrieve data
         conn = sqlite3.connect("EditorDataV3.db")
         c = conn.cursor()
 
-        story_id = story_id_del_entry.get()
-        c.execute(f"SELECT story_text FROM stories WHERE story_id = {story_id}")
+        s_id = story_id_del_entry.get()
+        c.execute(f"SELECT s_text FROM stories WHERE s_id = '{id.story_id(s_id)}'")
         text_raw = c.fetchall()
         original_text_2 = ((text_raw[0])[0])
 
@@ -315,10 +316,11 @@ def insert_del():
 
     except IndexError as error:
         print(error)
-        messagebox.showerror("Index Error", f"ERROR: Story ID Number {story_id_del_entry.get()} Does Not Exist")
+        messagebox.showerror("Index Error", f"Story ID Number {story_id_del_entry.get()} Does Not Exist")
 
-    except sqlite3.OperationalError:
+    except sqlite3.OperationalError as e:
         messagebox.showerror("Operational Error", "You Must Select A Story ID")
+        print(e)
 
     finally:
         story_id_del_entry.delete(0, END)
@@ -361,6 +363,7 @@ def delete_story_window():
     story_id_del_entry = Entry(info_frame, width=48)
     story_id_del_entry.grid(row=0, column=1, padx=height, pady=height)
 
+    # Message Box
     old_text = StringVar()
     story_del_message = Message(info_frame, textvariable=old_text, width=280, anchor=W)
     story_del_message.grid(row=1, column=1, padx=height, pady=height, stick="w")
