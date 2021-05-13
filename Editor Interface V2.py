@@ -39,24 +39,24 @@ main_menu.add_cascade(label="File", menu=file_menu)
 main_menu.add_cascade(label="Options", menu=options_menu)
 
 # Tab Control
-tabControl = ttk.Notebook(editor)
+tabcontrol = ttk.Notebook(editor)
 
 # Creating Tabs
-paragraphs_tab = ttk.Frame(tabControl)
-characters_tab = ttk.Frame(tabControl)
-objects_tab = ttk.Frame(tabControl)
-game_settings_tab = ttk.Frame(tabControl)
-test_tab = ttk.Frame(tabControl)
+paragraphs_tab = ttk.Frame(tabcontrol)
+characters_tab = ttk.Frame(tabcontrol)
+objects_tab = ttk.Frame(tabcontrol)
+game_settings_tab = ttk.Frame(tabcontrol)
+test_tab = ttk.Frame(tabcontrol)
 
 # Adding Tabs
-tabControl.add(paragraphs_tab, text="Paragraphs")
-tabControl.add(characters_tab, text="Characters")
-tabControl.add(objects_tab, text="Objects")
-tabControl.add(game_settings_tab, text="Game Settings")
-tabControl.add(test_tab, text="Test")
+tabcontrol.add(paragraphs_tab, text="Paragraphs")
+tabcontrol.add(characters_tab, text="Characters")
+tabcontrol.add(objects_tab, text="Objects")
+tabcontrol.add(game_settings_tab, text="Game Settings")
+tabcontrol.add(test_tab, text="Test")
 
 # Positioning the Tabs
-tabControl.pack(expand=1, fill="both")
+tabcontrol.pack(expand=1, fill="both")
 
 
 # -------------------------------------------
@@ -134,6 +134,7 @@ def update_paragraph():
     # Create a frame for the labels and entries
     info_frame = Frame(top_2)
     info_frame.grid(row=0, column=0)
+
 
     # Labels
     paragraph_number_id = Label(info_frame, text="Select Paragraph Number:")
@@ -253,7 +254,7 @@ def table_creator():
     top.title("Add New Paragraph")
     screen_x_2 = top.winfo_screenwidth()
     screen_y_2 = top.winfo_screenheight()
-    window_x_2 = 480
+    window_x_2 = 490
     window_y_2 = 230
     top.minsize(window_x_2, window_y_2)
     """top.maxsize(window_x_2, window_y_2)"""
@@ -263,63 +264,64 @@ def table_creator():
 
     # Frame for the paragraph labels and entries
     info_frame_paragraph = LabelFrame(top)
-    info_frame_paragraph.grid(row=0, column=0, stick=W)
-
-    print("frame size before update: ", fr.winfo_width(), fr.winfo_height())
-    info_frame_paragraph.update()
-    print("frame size after update: ", fr.winfo_width(), fr.winfo_height())
+    info_frame_paragraph.pack(fill="both", expand=True)
 
     # Paragraph Labels
-    paragraph_number_label = Label(info_frame_paragraph, text="Paragraph Number (Priority of the Paragraph):")
-    paragraph_number_label.grid(row=0, column=0, pady=10, padx=2, stick=W)
+    paragraph_number_label = Label(info_frame_paragraph, text="Paragraph Number (Priority of the Paragraph):", width=35, anchor=W)
+    paragraph_number_label.grid(row=0, column=0, pady=5, padx=5, stick="w")
 
-    main_paragraph_label = Label(info_frame_paragraph, text="Main Paragraph:")
-    main_paragraph_label.grid(row=1, column=0, pady=(0, 10), padx=2, stick=W)
+    main_paragraph_label = Label(info_frame_paragraph, text="Main Paragraph:", width=35, anchor=W)
+    main_paragraph_label.grid(row=1, column=0, pady=5, padx=5, stick="w")
 
     #  Paragraph Entries
     global paragraph_number_entry, main_paragraph_entry
 
-    paragraph_number_entry = Entry(info_frame_paragraph, width=30)
-    paragraph_number_entry.grid(row=0, column=1, pady=10, padx=10)
+    paragraph_number_entry = Entry(info_frame_paragraph, width=35)
+    paragraph_number_entry.grid(row=0, column=1, pady=5, padx=5)
 
-    main_paragraph_entry = Entry(info_frame_paragraph, width=30)
-    main_paragraph_entry.grid(row=1, column=1, pady=(0, 10), padx=10)
+    main_paragraph_entry = Entry(info_frame_paragraph, width=35)
+    main_paragraph_entry.grid(row=1, column=1, pady=5, padx=5)
 
-    # Frame for the save and cancel buttons
-    button_frame_1 = LabelFrame(top)
-    button_frame_1.grid(row=1, column=0, stick=W)
+    # Get first frame width
+    info_frame_paragraph.update()
+    frame_width = paragraph_number_label.winfo_width()
+    print(frame_width)
+
+    # Frame for the save button
+    button_frame_1 = LabelFrame(top, width=frame_width)
+    button_frame_1.pack(fill="both", expand=True)
 
     # Save Paragraph Button
     save_button = Button(button_frame_1, text="Save Paragraph", command=save_changes)
-    save_button.grid(row=0, column=0, pady=(0, 10), padx=2, ipadx=80, stick="w")
+    save_button.pack(fill="both", expand=True, padx=5)
 
     # Frame for the choices labels and entries
     info_frame_choice = LabelFrame(top)
-    info_frame_choice.grid(row=2, column=0, stick=W)
+    info_frame_choice.pack(fill="both", expand=True)
 
     # Choice Labels
-    select_paragraph_number_label = Label(info_frame_choice, text="Select Paragraph To Add Choices:")
-    select_paragraph_number_label.grid(row=0, column=0, pady=10, padx=2, stick=W)
+    select_paragraph_number_label = Label(info_frame_choice, text="Select Paragraph To Add Choices:", width=35, anchor=W)
+    select_paragraph_number_label.grid(row=0, column=0, pady=5, padx=5, stick="w")
 
-    choice_number_label = Label(info_frame_choice, text="Choice Number:")
-    choice_number_label.grid(row=1, column=0, pady=10, padx=2, stick=W)
+    choice_number_label = Label(info_frame_choice, text="Choice Number:", width=35, anchor=W)
+    choice_number_label.grid(row=1, column=0, pady=5, padx=5, stick="w")
 
-    choice_label = Label(info_frame_choice, text="Choice:")
-    choice_label.grid(row=2, column=0, pady=10, padx=2, stick=W)
+    choice_label = Label(info_frame_choice, text="Choice:", width=35, anchor=W)
+    choice_label.grid(row=2, column=0, pady=5, padx=5, stick="w")
 
     # Choice Entries
-    select_paragraph_number_entry = Entry(info_frame_choice, width=30)
-    select_paragraph_number_entry.grid(row=0, column=1, pady=10, padx=10)
+    select_paragraph_number_entry = Entry(info_frame_choice, width=35)
+    select_paragraph_number_entry.grid(row=0, column=1, pady=5, padx=5)
 
-    choice_number_entry = Entry(info_frame_choice, width=30)
-    choice_number_entry.grid(row=1, column=1, pady=10, padx=10)
+    choice_number_entry = Entry(info_frame_choice, width=35)
+    choice_number_entry.grid(row=1, column=1, pady=5, padx=5)
 
-    choice_entry = Entry(info_frame_choice, width=30)
-    choice_entry.grid(row=2, column=1, pady=10, padx=10)
+    choice_entry = Entry(info_frame_choice, width=35)
+    choice_entry.grid(row=2, column=1, pady=5, padx=5)
 
     # Frame for save choice and cancel button
     button_frame_2 = LabelFrame(top)
-    button_frame_2.grid(row=3, column=0, stick=W)
+    button_frame_2.pack(fill="both", expand=True)
 
     # Save choice Button
     save_button = Button(button_frame_2, text="Save Paragraph", command=None)
