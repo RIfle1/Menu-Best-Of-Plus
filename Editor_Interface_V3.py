@@ -6,9 +6,11 @@ from tkinter import messagebox
 from tkinter import ttk
 import tkinter.font as font
 import sqlite3
-import widget_func
 import story_buttons_func
-import paragraph_buttons_func
+import int_parag_buttons_func
+import parag_buttons_func
+import choice_buttons_func
+import id
 
 
 # Class to set tab number in new_tab function
@@ -59,7 +61,7 @@ def new_tab():
         tab_id_dict["tab_id_" + str(s_id)] = tab_id
 
         # Adding Tab
-        notebook.add(tab_id, text=f"Story {s_id}")
+        notebook.add(tab_id, text=f"Story {id.id_int(s_id)}")
 
         # Position
         notebook.pack(side=TOP)
@@ -177,39 +179,39 @@ delete_story_button = Button(story_buttons_frame, text="Delete Story", bg="#5faf
 delete_story_button.grid(row=2, column=0, stick="w", padx=button_x_space, pady=button_y_space)
 
 # ADD INITIAL PARAGRAPH Button
-new_int_par_button = Button(int_paragraph_buttons_frame, text="New Initial Paragraph", bg="#5fafde", fg="White", padx=buttons_width, pady=buttons_height, font=("Times New Roman", font_size), relief=FLAT, width=button_width, command=paragraph_buttons_func.int_paragraph_window)
+new_int_par_button = Button(int_paragraph_buttons_frame, text="New Initial Paragraph", bg="#5fafde", fg="White", padx=buttons_width, pady=buttons_height, font=("Times New Roman", font_size), relief=FLAT, width=button_width, command=int_parag_buttons_func.int_paragraph_window)
 new_int_par_button.grid(row=0, column=0, stick="w", padx=button_x_space, pady=button_y_space)
 
 # EDIT INITIAL PARAGRAPH  Button
-edit_int_par_button = Button(int_paragraph_buttons_frame, text="Edit Initial Paragraph", bg="#5fafde", fg="White", padx=buttons_width, pady=buttons_height, font=("Times New Roman", font_size), relief=FLAT, width=button_width, command=None)
+edit_int_par_button = Button(int_paragraph_buttons_frame, text="Edit Initial Paragraph", bg="#5fafde", fg="White", padx=buttons_width, pady=buttons_height, font=("Times New Roman", font_size), relief=FLAT, width=button_width, command=int_parag_buttons_func.edit_int_par_window)
 edit_int_par_button.grid(row=1, column=0, stick="w", padx=button_x_space, pady=button_y_space)
 
 # DELETE INITIAL PARAGRAPH Button
-delete_int_par_button = Button(int_paragraph_buttons_frame, text="Delete Initial Paragraph", bg="#5fafde", fg="White", padx=buttons_width, pady=buttons_height, font=("Times New Roman", font_size), relief=FLAT, width=button_width, command=None)
+delete_int_par_button = Button(int_paragraph_buttons_frame, text="Delete Initial Paragraph", bg="#5fafde", fg="White", padx=buttons_width, pady=buttons_height, font=("Times New Roman", font_size), relief=FLAT, width=button_width, command=int_parag_buttons_func.delete_int_pg_window)
 delete_int_par_button.grid(row=2, column=0, stick="w", padx=button_x_space, pady=button_y_space)
 
 # NEW PARAGRAPH Button
-new_paragraph_button = Button(paragraphs_buttons_frame, text="New Paragraph", bg="#5fafde", fg="White", padx=buttons_width, pady=buttons_height, font=("Times New Roman", font_size), relief=FLAT, width=button_width, command=None)
+new_paragraph_button = Button(paragraphs_buttons_frame, text="New Paragraph", bg="#5fafde", fg="White", padx=buttons_width, pady=buttons_height, font=("Times New Roman", font_size), relief=FLAT, width=button_width, command=parag_buttons_func.new_pg_window)
 new_paragraph_button.grid(row=0, column=0, stick="w", padx=button_x_space, pady=button_y_space)
 
 # EDIT PARAGRAPH  Button
-edit_paragraph_button = Button(paragraphs_buttons_frame, text="Edit Paragraph", bg="#5fafde", fg="White", padx=buttons_width, pady=buttons_height, font=("Times New Roman", font_size), relief=FLAT, width=button_width, command=None)
+edit_paragraph_button = Button(paragraphs_buttons_frame, text="Edit Paragraph", bg="#5fafde", fg="White", padx=buttons_width, pady=buttons_height, font=("Times New Roman", font_size), relief=FLAT, width=button_width, command=parag_buttons_func.edit_pg_window)
 edit_paragraph_button.grid(row=1, column=0, stick="w", padx=button_x_space, pady=button_y_space)
 
 # DELETE PARAGRAPH Button
-delete_paragraph_button = Button(paragraphs_buttons_frame, text="Delete Paragraph", bg="#5fafde", fg="White", padx=buttons_width, pady=buttons_height, font=("Times New Roman", font_size), relief=FLAT, width=button_width, command=None)
+delete_paragraph_button = Button(paragraphs_buttons_frame, text="Delete Paragraph", bg="#5fafde", fg="White", padx=buttons_width, pady=buttons_height, font=("Times New Roman", font_size), relief=FLAT, width=button_width, command=parag_buttons_func.delete_pg_window)
 delete_paragraph_button.grid(row=2, column=0, stick="w", padx=button_x_space, pady=button_y_space)
 
 # ADD CHOICE Button
-new_choice_button = Button(choices_buttons_frame, text="New Choice", bg="#5fafde", fg="White", padx=buttons_width, pady=buttons_height, font=("Times New Roman", font_size), relief=FLAT, width=button_width, command=None)
+new_choice_button = Button(choices_buttons_frame, text="New Choice", bg="#5fafde", fg="White", padx=buttons_width, pady=buttons_height, font=("Times New Roman", font_size), relief=FLAT, width=button_width, command=choice_buttons_func.new_choice_window)
 new_choice_button.grid(row=0, column=0, stick="w", padx=button_x_space, pady=button_y_space)
 
 # EDIT CHOICE  Button
-edit_choice_button = Button(choices_buttons_frame, text="Edit Choice", bg="#5fafde", fg="White", padx=buttons_width, pady=buttons_height, font=("Times New Roman", font_size), relief=FLAT, width=button_width, command=None)
+edit_choice_button = Button(choices_buttons_frame, text="Edit Choice", bg="#5fafde", fg="White", padx=buttons_width, pady=buttons_height, font=("Times New Roman", font_size), relief=FLAT, width=button_width, command=choice_buttons_func.edit_choices_window)
 edit_choice_button.grid(row=1, column=0, stick="w", padx=button_x_space, pady=button_y_space)
 
 # DELETE CHOICE Button
-delete_choice_button = Button(choices_buttons_frame, text="Delete Choice", bg="#5fafde", fg="White", padx=buttons_width, pady=buttons_height, font=("Times New Roman", font_size), relief=FLAT, width=button_width, command=None)
+delete_choice_button = Button(choices_buttons_frame, text="Delete Choice", bg="#5fafde", fg="White", padx=buttons_width, pady=buttons_height, font=("Times New Roman", font_size), relief=FLAT, width=button_width, command=choice_buttons_func.delete_choice_window)
 delete_choice_button.grid(row=2, column=0, stick="w", padx=button_x_space, pady=button_y_space)
 
 
