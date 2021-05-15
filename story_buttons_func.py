@@ -21,26 +21,25 @@ def save_story():
     (s_id text, 
     s_text text)""")
 
-    s_id = story_id_entry.get()
-    text_length = len(beginning_story_entry.get("1.0", "end"))
-    c.execute(f"""SELECT s_id FROM stories WHERE s_id = '{id.id_conv('s_id', s_id)}'""")
-    s_id_raw = c.fetchall()
-    print(text_length)
+    s_new_s_id = story_id_entry.get()
+    s_new_text_length = len(beginning_story_entry.get("1.0", "end"))
+    c.execute(f"""SELECT s_id FROM stories WHERE s_id = '{id.id_conv('s_id', s_new_s_id)}'""")
+    s_new_s_id_raw = c.fetchall()
 
-    if text_length != 1:
-        if len(s_id_raw) == 0:
+    if s_new_text_length != 1:
+        if len(s_new_s_id_raw) == 0:
             try:
-                s_id = int(story_id_entry.get())
-                if s_id > 0:
+                s_new_s_id = int(story_id_entry.get())
+                if s_new_s_id > 0:
                     # Insert into table if that id does not exist
                     c.execute(
                         "INSERT INTO stories VALUES (:s_id, :s_text)",
                         {
-                            "s_id": f"{id.s_id(s_id)}",
+                            "s_id": f"{id.s_id(s_new_s_id)}",
                             "s_text": str(beginning_story_entry.get("1.0", "end"))
                         })
                     # Show Success pop-up
-                    messagebox.showinfo("Success", f"Story Number {s_id} has been successfully created.")
+                    messagebox.showinfo("Success", f"Story Number {s_new_s_id} has been successfully created.")
 
                 else:
                     messagebox.showerror("Syntax Error", "Story ID Must Be Positive", icon='warning')
@@ -49,7 +48,7 @@ def save_story():
                 messagebox.showerror("Syntax Error", "Story ID Must Be A Number", icon='warning')
 
         else:
-            messagebox.showerror("Duplication Error", f"Story Number {s_id} Already Exists", icon='warning')
+            messagebox.showerror("Duplication Error", f"Story Number {s_new_s_id} Already Exists", icon='warning')
 
     else:
         messagebox.showerror("Input Error", "Story Text Is Empty", icon='warning')
