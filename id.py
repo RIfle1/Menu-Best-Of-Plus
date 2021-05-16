@@ -7,8 +7,8 @@ def s_id(inp):
     return x_id
 
 
-def fp_id(inp):
-    x_id = f'FP{id_int(inp)}'
+def ip_id(inp):
+    x_id = f'IP{id_int(inp)}'
     return f'{inp}_{x_id}'
 
 
@@ -26,7 +26,7 @@ def p_id(inp):
 def id_conv(new, number):
     x_id_dict = {
         "s_id": 'S',
-        "fp_id": 'FP',
+        "ip_id": 'IP',
         "p_id": 'P',
         "c_id":  'C'
     }
@@ -53,7 +53,7 @@ def decoder_1(inp):
         if id_x[0] == 'S':
             inside_list.append('Story N.')
             inside_list.append(id_x[1])
-        if id_x[0] == 'FP':
+        if id_x[0] == 'IP':
             inside_list.append('Initial Paragraph')
         if id_x[0] == 'C':
             inside_list.append('Choice N.')

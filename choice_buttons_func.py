@@ -10,7 +10,7 @@ import id
 import widget_func
 
 
-def save_choice():
+def c_new_save():
     # Create a connection to the database
     conn = sqlite3.connect("EditorDataV3.db")
     c = conn.cursor()
@@ -18,629 +18,601 @@ def save_choice():
     # Create Table
     c.execute("""CREATE TABLE IF NOT EXISTS choices
     (s_id text,
-    fp_id text,
+    ip_id text,
     p_id text,
     c_id text,
     c_text text)""")
 
     # im not gonna explain this stuff 0_o
-    s_id = s_id_variable.get()
-    fp_id = id.fp_id(s_id)
-    p_id = c_id_variable.get()
-    c_id = get_choice_id_entry.get()
-    text_length = len(choice_text_entry.get("1.0", "end"))
-    c.execute(f"""SELECT c_id FROM choices WHERE c_id = '{p_id}_{id.c_id(c_id)}'""")
-    c_id_raw = c.fetchall()
-    d_p_id = id.decoder_2(p_id)[0]
+    c_new_s_id = c_new_s_id_variable.get()
+    c_new_ip_id = id.ip_id(c_new_s_id)
+    c_new_p_id = c_new_c_id_variable.get()
+    c_new_c_id = c_new_get_choice_id_entry.get()
+    c_new_c_text_length = len(c_new_choice_text_entry.get("1.0", "end"))
+    c.execute(f"""SELECT c_id FROM choices WHERE c_id = '{c_new_p_id}_{id.c_id(c_new_c_id)}'""")
+    c_new_c_id_raw = c.fetchall()
+    c_new_d_p_id = id.decoder_2(c_new_p_id)[0]
 
     # I ran out of brain cells for this
-    if f'{s_id}' == f'{d_p_id}':
+    if f'{c_new_s_id}' == f'{c_new_d_p_id}':
         try:
-            c_id = int(c_id)
-            if text_length != 1:
-                if len(c_id_raw) == 0:
-                    if c_id > 0:
+            c_new_c_id = int(c_new_c_id)
+            if c_new_c_text_length != 1:
+                if len(c_new_c_id_raw) == 0:
+                    if c_new_c_id > 0:
                         # Insert into table if that id does not exist
-                        c.execute("INSERT INTO choices VALUES (:s_id, :fp_id, :p_id, :c_id, :c_text)",
+                        c.execute("INSERT INTO choices VALUES (:s_id, :ip_id, :p_id, :c_id, :c_text)",
                                   {
-                                      "s_id": f"{s_id}",
-                                      "fp_id": f"{fp_id}",
-                                      "p_id": f"{p_id}",
-                                      "c_id": f"{p_id}_{id.id_conv('c_id', c_id)}",
-                                      "c_text": str(choice_text_entry.get("1.0", "end"))
+                                      "s_id": f"{c_new_s_id}",
+                                      "ip_id": f"{c_new_ip_id}",
+                                      "p_id": f"{c_new_p_id}",
+                                      "c_id": f"{c_new_p_id}_{id.id_conv('c_id', c_new_c_id)}",
+                                      "c_text": str(c_new_choice_text_entry.get("1.0", "end"))
                                   })
                         # Show Success pop-up
-                        messagebox.showinfo("Success", f"Choice Number {c_id}\nIn Story Number {id.id_int(s_id)}\nhas been successfully created.")
+                        messagebox.showinfo("Success", f"Choice Number {c_new_c_id}\nIn Story Number {id.id_int(c_new_s_id)}\nhas been successfully created.")
                     else:
                         messagebox.showerror("Syntax Error", "Choice ID Must Be Positive")
                 else:
-                    messagebox.showerror("Duplication Error", f"Choice Number {c_id} Already Exists")
+                    messagebox.showerror("Duplication Error", f"Choice Number {c_new_c_id} Already Exists")
             else:
                 messagebox.showerror("Input Error", "Choice Text Is Empty")
 
         except ValueError:
             messagebox.showerror("Syntax Error", "Story ID Must Be A Number")
     else:
-        messagebox.showerror("ID Error", f"Paragraph's Story ID is {d_p_id} but Story ID is {s_id}")
+        messagebox.showerror("ID Error", f"Choice's Story ID is {c_new_d_p_id} but Story ID is {c_new_s_id}")
 
     # End Connection
     conn.commit()
     conn.close()
 
     # Clear the Text Boxes
-    get_choice_id_entry.delete(0, END)
-    choice_text_entry.delete("1.0", "end")
+    c_new_get_choice_id_entry.delete(0, END)
+    c_new_choice_text_entry.delete("1.0", "end")
 
 
-def insert_paragraph():
+def c_new_insert():
     # Create a connection to the database
     conn = sqlite3.connect("EditorDataV3.db")
     c = conn.cursor()
 
-    p_id = c_id_variable.get()
+    c_new_p_id = c_new_c_id_variable.get()
 
     # Fetch Information
-    c.execute(f"""SELECT fp_text FROM first_paragraphs WHERE fp_id='{p_id}' UNION SELECT p_text FROM paragraphs WHERE p_id='{p_id}'""")
-    text_raw = c.fetchall()
-    text_1 = ((text_raw[0])[0])
+    c.execute(f"""SELECT ip_text FROM initial_paragraphs WHERE ip_id='{c_new_p_id}' UNION SELECT p_text FROM paragraphs WHERE p_id='{c_new_p_id}'""")
+    c_new_text_raw = c.fetchall()
+    c_new_text = ((c_new_text_raw[0])[0])
 
     # Input data into text box
-    old_text.set(str(text_1))
+    c_new_p_message_var.set(str(c_new_text))
 
     # Decode the ID
-    decoded_id_choice.set(id.decoder_3(c_id_variable.get()))
+    c_new_decoded_id.set(id.decoder_3(c_new_c_id_variable.get()))
 
     # End Connection
     conn.commit()
     conn.close()
 
 
-def new_choice_window():
-    global new_choice
+def c_new_window():
+    global c_new_wd
     # Create New Window
-    new_choice = Toplevel()
-    new_choice.title("Create A new Choice")
-    screen_x_2 = new_choice.winfo_screenwidth()
-    screen_y_2 = new_choice.winfo_screenheight()
+    c_new_wd = Toplevel()
+    c_new_wd.title("Create A New Choice")
+    screen_x_2 = c_new_wd.winfo_screenwidth()
+    screen_y_2 = c_new_wd.winfo_screenheight()
     window_x_2 = 505
     window_y_2 = 900
-    new_choice.minsize(window_x_2, window_y_2)
-    new_choice.maxsize(window_x_2, window_y_2)
+    c_new_wd.minsize(window_x_2, window_y_2)
+    c_new_wd.maxsize(window_x_2, window_y_2)
     pos_x_2 = int((screen_x_2 - window_x_2) / 2)
     pos_y_2 = int((screen_y_2 - window_y_2) / 2)
-    new_choice.geometry(f"{window_x_2}x{window_y_2}+{pos_x_2}+{pos_y_2}")
+    c_new_wd.geometry(f"{window_x_2}x{window_y_2}+{pos_x_2}+{pos_y_2}")
 
-    frame_height = 200
-    rest = window_y_2 - frame_height*2
+    c_new_frame_height = 200
+    c_new_rest = window_y_2 - c_new_frame_height*2
     # Info Frame 1
-    info_frame_1 = LabelFrame(new_choice, width=window_x_2, height=frame_height)
-    info_frame_1.pack(fill="both", side=TOP)
+    c_new_info_frame_1 = LabelFrame(c_new_wd, width=window_x_2, height=c_new_frame_height)
+    c_new_info_frame_1.pack(fill="both", side=TOP)
 
     # Info Frame 2
-    info_frame_2 = LabelFrame(new_choice, width=window_x_2, height=frame_height)
-    info_frame_2.pack(fill="both", side=TOP, expand=True)
+    c_new_info_frame_2 = LabelFrame(c_new_wd, width=window_x_2, height=c_new_frame_height)
+    c_new_info_frame_2.pack(fill="both", side=TOP, expand=True)
 
     # Top Button Frame
-    button_frame_1 = LabelFrame(new_choice, height=rest / 2, width=window_x_2)
-    button_frame_1.pack(fill="both")
+    c_new_button_frame_1 = LabelFrame(c_new_wd, height=c_new_rest / 2, width=window_x_2)
+    c_new_button_frame_1.pack(fill="both")
 
     # Choice Frame
-    choice_frame = LabelFrame(new_choice, width=window_x_2, height=frame_height)
-    choice_frame.pack(fill="both")
+    c_new_choice_frame = LabelFrame(c_new_wd, width=window_x_2, height=c_new_frame_height)
+    c_new_choice_frame.pack(fill="both")
 
     # Bottom Buttons Frame
-    button_frame_2 = LabelFrame(new_choice, height=rest / 2, width=window_x_2)
-    button_frame_2.pack(fill="both")
+    c_new_button_frame_2 = LabelFrame(c_new_wd, height=c_new_rest / 2, width=window_x_2)
+    c_new_button_frame_2.pack(fill="both")
 
-    width = 42
-    pad = 10
+    c_new_width = 42
+    c_new_pad = 10
     # Labels
-    get_story_id_label = Label(info_frame_1, text="Select Story ID:", width=int(width / 2), anchor=W)
-    get_story_id_label.grid(row=0, column=0, padx=pad, pady=pad, stick="w")
+    c_new_get_story_id_label = Label(c_new_info_frame_1, text="Select Story ID:", width=int(c_new_width / 2), anchor=W)
+    c_new_get_story_id_label.grid(row=0, column=0, padx=c_new_pad, pady=c_new_pad, stick="w")
 
-    get_pg_id_label = Label(info_frame_1, text="Select Paragraph ID:", width=int(width / 2), anchor=W)
-    get_pg_id_label.grid(row=1, column=0, padx=pad, pady=pad, stick="w")
+    c_new_get_p_id_label = Label(c_new_info_frame_1, text="Select Paragraph ID:", width=int(c_new_width / 2), anchor=W)
+    c_new_get_p_id_label.grid(row=1, column=0, padx=c_new_pad, pady=c_new_pad, stick="w")
 
-    decode_p_id_label = Label(info_frame_1, text="Decoded ID:", width=int(width / 2), anchor=NW)
-    decode_p_id_label.grid(row=2, column=0, padx=pad, pady=(pad, 200), stick="nw")
+    c_new_decode_p_id_label = Label(c_new_info_frame_1, text="Decoded ID:", width=int(c_new_width / 2), anchor=NW)
+    c_new_decode_p_id_label.grid(row=2, column=0, padx=c_new_pad, pady=(c_new_pad, 200), stick="nw")
 
-    paragraph_text_label = Label(info_frame_2, text="Paragraph Text:", width=int(width / 2), anchor=NW)
-    paragraph_text_label.grid(row=2, column=0, padx=pad, pady=pad, stick="nw")
+    c_new_p_text_label = Label(c_new_info_frame_2, text="Paragraph Text:", width=int(c_new_width / 2), anchor=NW)
+    c_new_p_text_label.grid(row=2, column=0, padx=c_new_pad, pady=c_new_pad, stick="nw")
 
-    get_choice_id_label = Label(choice_frame, text="Enter Choice Number:", width=int(width / 2), anchor=NW)
-    get_choice_id_label.grid(row=0, column=0, padx=pad, pady=pad, stick="nw")
+    c_new_get_c_id_label = Label(c_new_choice_frame, text="Enter Choice Number:", width=int(c_new_width / 2), anchor=NW)
+    c_new_get_c_id_label.grid(row=0, column=0, padx=c_new_pad, pady=c_new_pad, stick="nw")
 
-    choice_text_label = Label(choice_frame, text="Choice Text:", width=int(width / 2), anchor=NW)
-    choice_text_label.grid(row=1, column=0, padx=(pad, pad+5), pady=pad, stick="nw")
+    c_new_c_text_label = Label(c_new_choice_frame, text="Choice Text:", width=int(c_new_width / 2), anchor=NW)
+    c_new_c_text_label.grid(row=1, column=0, padx=(c_new_pad, c_new_pad+5), pady=c_new_pad, stick="nw")
 
     # Entries
-    global choice_text_entry, old_text, get_choice_id_entry, decoded_id_choice
-    get_choice_id_entry = Entry(choice_frame, width=49)
-    get_choice_id_entry.grid(row=0, column=1, padx=pad, pady=pad)
+    global c_new_choice_text_entry, c_new_p_message_var, c_new_get_choice_id_entry, c_new_decoded_id
+    c_new_get_choice_id_entry = Entry(c_new_choice_frame, width=49)
+    c_new_get_choice_id_entry.grid(row=0, column=1, padx=c_new_pad, pady=c_new_pad)
 
-    choice_text_entry = Text(choice_frame, width=37, height=10)
-    choice_text_entry.grid(row=1, column=1, padx=pad, pady=pad)
+    c_new_choice_text_entry = Text(c_new_choice_frame, width=37, height=10)
+    c_new_choice_text_entry.grid(row=1, column=1, padx=c_new_pad, pady=c_new_pad)
 
     # Message Box
-    old_text = StringVar()
-    show_paragraph_message = Message(info_frame_2, textvariable=old_text, width=280, anchor=NW)
-    show_paragraph_message.grid(row=2, column=1, padx=pad, pady=pad, stick="nw")
+    c_new_p_message_var = StringVar()
+    show_paragraph_message = Message(c_new_info_frame_2, textvariable=c_new_p_message_var, width=280, anchor=NW)
+    show_paragraph_message.grid(row=2, column=1, padx=c_new_pad, pady=c_new_pad, stick="nw")
 
-    decoded_id_choice = StringVar()
-    show_decoded_pg_id = Message(info_frame_1, textvariable=decoded_id_choice, width=280, anchor=NW)
-    show_decoded_pg_id.grid(row=2, column=1, padx=pad, pady=pad, stick="nw")
+    c_new_decoded_id = StringVar()
+    c_new_decoded_p_id_message = Message(c_new_info_frame_1, textvariable=c_new_decoded_id, width=280, anchor=NW)
+    c_new_decoded_p_id_message.grid(row=2, column=1, padx=c_new_pad, pady=c_new_pad, stick="nw")
 
     # Buttons
-    submit_button = Button(button_frame_1, text="Submit", width=int(width / 2), command=insert_paragraph)
-    submit_button.grid(row=0, column=0, padx=pad, pady=pad, ipadx=160)
+    c_new_submit_button = Button(c_new_button_frame_1, text="Submit", width=int(c_new_width / 2), command=c_new_insert)
+    c_new_submit_button.grid(row=0, column=0, padx=c_new_pad, pady=c_new_pad, ipadx=160)
 
-    save_choice_button = Button(button_frame_2, text="Save Choice", width=int(width / 2), command=save_choice)
-    save_choice_button.grid(row=2, column=0, padx=pad, pady=pad, stick="w")
+    c_new_save_choice_button = Button(c_new_button_frame_2, text="Save Choice", width=int(c_new_width / 2), command=c_new_save)
+    c_new_save_choice_button.grid(row=2, column=0, padx=c_new_pad, pady=c_new_pad, stick="w")
 
-    cancel_button = Button(button_frame_2, text="Cancel", width=width, command=new_choice.destroy)
-    cancel_button.grid(row=2, column=1, padx=pad, pady=pad, stick="w")
+    c_new_cancel_button = Button(c_new_button_frame_2, text="Cancel", width=c_new_width, command=c_new_wd.destroy)
+    c_new_cancel_button.grid(row=2, column=1, padx=c_new_pad, pady=c_new_pad, stick="w")
 
-    def option_s_id_menu():
-        # Options Menu For all existing stories
+    def c_new_s_id_opt_menu():
         conn = sqlite3.connect("EditorDataV3.db")
         c = conn.cursor()
 
-        c.execute("""SELECT s_id FROM paragraphs UNION SELECT s_id FROM first_paragraphs""")
-        s_id_list_paragraphs_raw = c.fetchall()
+        c.execute("""SELECT s_id FROM paragraphs UNION SELECT s_id FROM initial_paragraphs""")
+        c_new_s_id_list_raw = c.fetchall()
+        c_new_s_id_list = []
 
-        s_id_paragraphs_list = []
-        for tp in s_id_list_paragraphs_raw:
+        for tp in c_new_s_id_list_raw:
             for item in tp:
-                s_id_paragraphs_list.append(item)
+                c_new_s_id_list.append(item)
 
-        s_id_list = s_id_paragraphs_list
-
-        if s_id_list:
-            global s_id_variable
-            s_id_variable = StringVar()
-            s_id_variable.set(s_id_list[0])
-            s_id_opmenu = OptionMenu(info_frame_1, s_id_variable, *s_id_list)
-            s_id_opmenu.config(width=width)
-            s_id_opmenu.grid(row=0, column=1, pady=pad, padx=pad, stick="ew")
+        if c_new_s_id_list:
+            global c_new_s_id_variable
+            c_new_s_id_variable = StringVar()
+            c_new_s_id_variable.set(c_new_s_id_list[0])
+            c_new_s_id_opt_menu_var = OptionMenu(c_new_info_frame_1, c_new_s_id_variable, *c_new_s_id_list)
+            c_new_s_id_opt_menu_var.config(width=c_new_width)
+            c_new_s_id_opt_menu_var.grid(row=0, column=1, pady=c_new_pad, padx=c_new_pad, stick="ew")
 
         else:
             messagebox.showerror("Index Error", "No Existing Stories Found")
-            new_choice.destroy()
+            c_new_wd.destroy()
 
         conn.commit()
         conn.close()
 
-    option_s_id_menu()
-
-    def option_p_id_menu():
-        global c_id_variable, p_id_list
-        # Options Menu For all existing paragraphs
+    def c_new_c_id_opt_menu():
         conn = sqlite3.connect("EditorDataV3.db")
         c = conn.cursor()
 
-        c.execute(f"""SELECT fp_id FROM first_paragraphs 
+        c.execute(f"""SELECT ip_id FROM initial_paragraphs 
             UNION SELECT p_id FROM paragraphs
-            UNION SELECT fp_id FROM choices""")
-        p_id_list_choices_raw = c.fetchall()
+            UNION SELECT ip_id FROM choices""")
+        c_new_p_id_list_raw = c.fetchall()
 
-        p_id_paragraphs_list = []
-        for tp in p_id_list_choices_raw:
+        c_new_p_id_list = []
+        for tp in c_new_p_id_list_raw:
             for item in tp:
-                p_id_paragraphs_list.append(item)
+                c_new_p_id_list.append(item)
 
-        p_id_list = p_id_paragraphs_list
-
-        if p_id_list:
-            c_id_variable = StringVar()
-            c_id_variable.set(p_id_list[0])
-            p_id_opmenu = OptionMenu(info_frame_1, c_id_variable, *p_id_list)
-            p_id_opmenu.config(width=width)
-            p_id_opmenu.grid(row=1, column=1, pady=pad, padx=pad, stick="ew")
+        if c_new_p_id_list:
+            global c_new_c_id_variable
+            c_new_c_id_variable = StringVar()
+            c_new_c_id_variable.set(c_new_p_id_list[0])
+            c_new_c_id_opt_menu_var = OptionMenu(c_new_info_frame_1, c_new_c_id_variable, *c_new_p_id_list)
+            c_new_c_id_opt_menu_var.config(width=c_new_width)
+            c_new_c_id_opt_menu_var.grid(row=1, column=1, pady=c_new_pad, padx=c_new_pad, stick="ew")
 
         else:
             messagebox.showerror("Index Error", "No Existing Stories Found")
-            new_choice.destroy()
+            c_new_wd.destroy()
 
         conn.commit()
         conn.close()
 
-    option_p_id_menu()
+    c_new_s_id_opt_menu()
+    c_new_c_id_opt_menu()
 
-    new_choice.mainloop()
+    c_new_wd.mainloop()
 
 
-# Function to edit choices
-def edit_choice():
-    # Create a connection to the database
+def c_edt_edit():
     conn = sqlite3.connect("EditorDataV3.db")
     c = conn.cursor()
 
-    # Update Table
-    s_id = s_id_variable.get()
-    c_id = c_id_variable.get()
-    if len(edit_choice_entry.get("1.0", "end")) != 1:
+    c_edt_s_id = c_edt_s_id_variable.get()
+    c_edt_c_id = c_edt_c_id_variable.get()
+    if len(c_edt_edit_c_text_entry.get("1.0", "end")) != 1:
         c.execute("""UPDATE choices SET c_text = :c_text WHERE c_id = :c_id""",
                   {
-                      "c_text": edit_choice_entry.get("1.0", "end"),
-                      "c_id": f'{c_id}'
+                      "c_text": c_edt_edit_c_text_entry.get("1.0", "end"),
+                      "c_id": f'{c_edt_c_id}'
                   })
 
         # Show Success pop-up
-        messagebox.showinfo("Success", f"Choice Number {id.id_int(c_id)} in Story Number {id.id_int(s_id)} has been successfully modified.")
+        messagebox.showinfo("Success", f"Choice Number {id.id_int(c_edt_c_id)} in Story Number {id.id_int(c_edt_s_id)} has been successfully modified.")
     else:
         messagebox.showerror("Input Error", f'Choice Text is Empty', icon='warning')
 
     # Clear the Text Boxes
-    edit_choice_entry.delete("1.0", "end")
+    c_edt_edit_c_text_entry.delete("1.0", "end")
 
     conn.commit()
     conn.close()
 
 
 # Function to insert already written choice
-def insert_choice():
+def c_edt_insert():
     # Delete Previous Input
-    edit_choice_entry.delete("1.0", "end")
+    c_edt_edit_c_text_entry.delete("1.0", "end")
 
     conn = sqlite3.connect("EditorDataV3.db")
     c = conn.cursor()
 
-    c_id = c_id_variable.get()
+    c_id = c_edt_c_id_variable.get()
 
     c.execute(f"""SELECT c_text FROM choices WHERE c_id = '{c_id}'""")
-    text_raw = c.fetchall()
-    original_text_2 = ((text_raw[0])[0])
+    c_edt_text_raw = c.fetchall()
+    c_edt_text = ((c_edt_text_raw[0])[0])
 
     # Input data into text box
-    edit_choice_entry.insert(END, f'{original_text_2}')
+    c_edt_edit_c_text_entry.insert(END, f'{c_edt_text}')
 
     conn.commit()
     conn.close()
 
 
 # Function to insert decoded id
-def decode_id_edit():
-    decode_id_text.set(id.decoder_3(c_id_variable.get()))
+def c_edt_decode_id():
+    c_edt_decode_id_variable.set(id.decoder_3(c_edt_c_id_variable.get()))
 
 
 # Function to open edit window
-def edit_choices_window():
-    global edit_choices
+def c_edt__window():
+    global c_edt_wd
     # Create New Window
-    edit_choices = Toplevel()
-    edit_choices.title("Edit Choices")
-    screen_x_2 = edit_choices.winfo_screenwidth()
-    screen_y_2 = edit_choices.winfo_screenheight()
+    c_edt_wd = Toplevel()
+    c_edt_wd.title("Edit Choices")
+    screen_x_2 = c_edt_wd.winfo_screenwidth()
+    screen_y_2 = c_edt_wd.winfo_screenheight()
     window_x_2 = 500
     window_y_2 = 620
-    edit_choices.minsize(window_x_2, window_y_2)
-    edit_choices.maxsize(window_x_2, window_y_2)
+    c_edt_wd.minsize(window_x_2, window_y_2)
+    c_edt_wd.maxsize(window_x_2, window_y_2)
     pos_x_2 = int((screen_x_2 - window_x_2) / 2)
     pos_y_2 = int((screen_y_2 - window_y_2) / 2)
-    edit_choices.geometry(f"{window_x_2}x{window_y_2}+{pos_x_2}+{pos_y_2}")
+    c_edt_wd.geometry(f"{window_x_2}x{window_y_2}+{pos_x_2}+{pos_y_2}")
 
-    frame_height = 400
-    info_frame_height = 57
+    c_edt_frame_height = 400
+    c_edt_info_frame_height = 57
 
     # Info Frame 1
-    info_frame_1 = LabelFrame(edit_choices, height=info_frame_height, width=window_x_2)
-    info_frame_1.pack(fill="both", side=TOP)
+    c_edt_info_frame_1 = LabelFrame(c_edt_wd, height=c_edt_info_frame_height, width=window_x_2)
+    c_edt_info_frame_1.pack(fill="both", side=TOP)
 
     # Info Frame 2
-    info_frame_2 = LabelFrame(edit_choices, height=info_frame_height, width=window_x_2)
-    info_frame_2.pack(fill="both", side=TOP)
+    c_edt_info_frame_2 = LabelFrame(c_edt_wd, height=c_edt_info_frame_height, width=window_x_2)
+    c_edt_info_frame_2.pack(fill="both", side=TOP)
 
     # Info Frame 3
-    info_frame_3 = LabelFrame(edit_choices, height=info_frame_height, width=window_x_2)
-    info_frame_3.pack(fill="both", side=TOP)
+    c_edt_info_frame_3 = LabelFrame(c_edt_wd, height=c_edt_info_frame_height, width=window_x_2)
+    c_edt_info_frame_3.pack(fill="both", side=TOP)
 
     # Info Frame 4
-    info_frame_4 = LabelFrame(edit_choices, height=frame_height, width=window_x_2)
-    info_frame_4.pack(fill="both", side=TOP, expand=True)
+    c_edt_info_frame_4 = LabelFrame(c_edt_wd, height=c_edt_frame_height, width=window_x_2)
+    c_edt_info_frame_4.pack(fill="both", side=TOP, expand=True)
 
     # Buttons Frame
-    button_frame = LabelFrame(edit_choices, height=window_y_2 - frame_height, width=window_x_2)
-    button_frame.pack(fill="both", side=BOTTOM)
+    c_edt_button_frame = LabelFrame(c_edt_wd, height=window_y_2 - c_edt_frame_height, width=window_x_2)
+    c_edt_button_frame.pack(fill="both", side=BOTTOM)
 
-    entry_width = 37
-    width = 42
-    pad = 10
+    c_edt_entry_width = 37
+    c_edt_width = 42
+    c_edt_pad = 10
 
     # Labels
-    story_id_label = Label(info_frame_1, text="Select Choice ID:", width=int(width / 2), anchor=W)
-    story_id_label.grid(row=0, column=0, padx=pad, pady=pad, stick="w")
+    c_edt_story_id_label = Label(c_edt_info_frame_1, text="Select Choice ID:", width=int(c_edt_width / 2), anchor=W)
+    c_edt_story_id_label.grid(row=0, column=0, padx=c_edt_pad, pady=c_edt_pad, stick="w")
 
-    decode_id_label_text = Label(info_frame_2, text="Decoded ID:", width=int(width / 2), anchor=NW)
-    decode_id_label_text.grid(row=0, column=0, padx=pad, pady=(pad, 180), stick="nw")
+    c_edt_decode_id_label = Label(c_edt_info_frame_2, text="Decoded ID:", width=int(c_edt_width / 2), anchor=NW)
+    c_edt_decode_id_label.grid(row=0, column=0, padx=c_edt_pad, pady=(c_edt_pad, 180), stick="nw")
 
-    edit_int_par_label = Label(info_frame_4, text="Edit Choice:", width=int(width / 2) - 1, anchor=NW)
-    edit_int_par_label.grid(row=0, column=0, padx=pad, pady=pad, stick="nw")
+    c_edt_edit_c_text_label = Label(c_edt_info_frame_4, text="Edit Choice:", width=int(c_edt_width / 2) - 1, anchor=NW)
+    c_edt_edit_c_text_label.grid(row=0, column=0, padx=c_edt_pad, pady=c_edt_pad, stick="nw")
 
-    global decode_id_text
-    decode_id_text = StringVar()
-    decode_id_label = Message(info_frame_2, textvariable=decode_id_text, width=280, anchor=NW)
-    decode_id_label.grid(row=0, column=1, padx=pad, pady=pad, stick="nw")
+    global c_edt_decode_id_variable
+    c_edt_decode_id_variable = StringVar()
+    c_edt_decode_id_label_message = Message(c_edt_info_frame_2, textvariable=c_edt_decode_id_variable, width=280, anchor=NW)
+    c_edt_decode_id_label_message.grid(row=0, column=1, padx=c_edt_pad, pady=c_edt_pad, stick="nw")
 
     # Text
-    global edit_choice_entry
-    edit_choice_entry = Text(info_frame_4, width=entry_width, height=10)
-    edit_choice_entry.grid(row=0, column=1, padx=pad, pady=pad, stick="w")
+    global c_edt_edit_c_text_entry
+    c_edt_edit_c_text_entry = Text(c_edt_info_frame_4, width=c_edt_entry_width, height=10)
+    c_edt_edit_c_text_entry.grid(row=0, column=1, padx=c_edt_pad, pady=c_edt_pad, stick="w")
 
     # Buttons
-    submit_id_button = Button(info_frame_3, text="Decode ID", width=int(width / 2), command=decode_id_edit)
-    submit_id_button.grid(row=0, column=0, padx=pad, pady=pad, stick="w", ipadx=157)
+    c_edt_submit_id_button = Button(c_edt_info_frame_3, text="Decode ID", width=int(c_edt_width / 2), command=c_edt_decode_id)
+    c_edt_submit_id_button.grid(row=0, column=0, padx=c_edt_pad, pady=c_edt_pad, stick="w", ipadx=157)
 
-    width_buttons = 19
-    save_choice_button = Button(button_frame, text="Save Changes", width=width_buttons, command=edit_choice)
-    save_choice_button.grid(row=0, column=0, padx=pad, pady=pad, stick="w")
+    c_edt_width_buttons = 19
+    c_edt_save_choice_button = Button(c_edt_button_frame, text="Save Changes", width=c_edt_width_buttons, command=c_edt_edit)
+    c_edt_save_choice_button.grid(row=0, column=0, padx=c_edt_pad, pady=c_edt_pad, stick="w")
 
-    load_choice_button = Button(button_frame, text="Load Choice", width=width_buttons, command=insert_choice)
-    load_choice_button.grid(row=0, column=1, padx=pad, pady=pad, stick="w")
+    c_edt_load_choice_button = Button(c_edt_button_frame, text="Load Choice", width=c_edt_width_buttons, command=c_edt_insert)
+    c_edt_load_choice_button.grid(row=0, column=1, padx=c_edt_pad, pady=c_edt_pad, stick="w")
 
-    cancel_button = Button(button_frame, text="Cancel", width=width_buttons, command=edit_choices.destroy)
-    cancel_button.grid(row=0, column=2, padx=pad, pady=pad, stick="w")
+    c_edt_cancel_button = Button(c_edt_button_frame, text="Cancel", width=c_edt_width_buttons, command=c_edt_wd.destroy)
+    c_edt_cancel_button.grid(row=0, column=2, padx=c_edt_pad, pady=c_edt_pad, stick="w")
 
-    def option_s_id_menu():
-        # Options Menu For all existing stories
+    def c_edt_s_id_opt_menu():
         conn = sqlite3.connect("EditorDataV3.db")
         c = conn.cursor()
 
         c.execute("""SELECT s_id FROM choices UNION SELECT s_id FROM choices""")
-        s_id_list_raw = c.fetchall()
+        c_edt_s_id_list_raw = c.fetchall()
+        c_edt_s_id_list = []
 
-        s_id_list = []
-        for tp in s_id_list_raw:
+        for tp in c_edt_s_id_list_raw:
             for item in tp:
-                s_id_list.append(item)
+                c_edt_s_id_list.append(item)
 
-        if s_id_list:
-            global s_id_variable
-            s_id_variable = StringVar()
-            s_id_variable.set(s_id_list[0])
-            s_id_opmenu = OptionMenu(info_frame_1, s_id_variable, *s_id_list)
-            s_id_opmenu.config(width=width)
-            s_id_opmenu.grid(row=0, column=1, pady=pad, padx=pad, stick="ew")
+        if c_edt_s_id_list:
+            global c_edt_s_id_variable
+            c_edt_s_id_variable = StringVar()
+            c_edt_s_id_variable.set(c_edt_s_id_list[0])
+            c_edt_s_id_opt_menu_var = OptionMenu(c_edt_info_frame_1, c_edt_s_id_variable, *c_edt_s_id_list)
+            c_edt_s_id_opt_menu_var.config(width=c_edt_width)
+            c_edt_s_id_opt_menu_var.grid(row=0, column=1, pady=c_edt_pad, padx=c_edt_pad, stick="ew")
 
         else:
             messagebox.showerror("Index Error", "No Existing Stories Found")
-            new_choice.destroy()
+            c_edt_wd.destroy()
 
         conn.commit()
         conn.close()
 
-    option_s_id_menu()
-
-    def option_c_id_menu():
-        global c_id_variable
-        # Options Menu For all existing paragraphs
+    def c_edt_c_id_opt_menu():
         conn = sqlite3.connect("EditorDataV3.db")
         c = conn.cursor()
 
         c.execute(f"""SELECT c_id FROM choices """)
-        c_id_list_paragraphs_raw = c.fetchall()
+        c_edt_c_id_list_raw = c.fetchall()
+        c_edt_c_id_list = []
 
-        c_id_paragraphs_list = []
-        for tp in c_id_list_paragraphs_raw:
+        for tp in c_edt_c_id_list_raw:
             for item in tp:
-                c_id_paragraphs_list.append(item)
+                c_edt_c_id_list.append(item)
 
-        c_id_list = c_id_paragraphs_list
-
-        if c_id_list:
-            c_id_variable = StringVar()
-            c_id_variable.set(c_id_list[0])
-            p_id_opmenu = OptionMenu(info_frame_1, c_id_variable, *c_id_list)
-            p_id_opmenu.config(width=width)
-            p_id_opmenu.grid(row=1, column=1, pady=pad, padx=pad, stick="ew")
+        if c_edt_c_id_list:
+            global c_edt_c_id_variable
+            c_edt_c_id_variable = StringVar()
+            c_edt_c_id_variable.set(c_edt_c_id_list[0])
+            c_edt_c_id_opt_menu_var = OptionMenu(c_edt_info_frame_1, c_edt_c_id_variable, *c_edt_c_id_list)
+            c_edt_c_id_opt_menu_var.config(width=c_edt_width)
+            c_edt_c_id_opt_menu_var.grid(row=1, column=1, pady=c_edt_pad, padx=c_edt_pad, stick="ew")
 
         else:
             messagebox.showerror("Index Error", "No Existing Choices Found")
-            new_choice.destroy()
+            c_new_wd.destroy()
 
         conn.commit()
         conn.close()
 
-    option_c_id_menu()
+    c_edt_s_id_opt_menu()
+    c_edt_c_id_opt_menu()
 
-    edit_choices.mainloop()
+    c_edt_wd.mainloop()
 
 
-# Function to delete a story from the delete window
-def delete_choice():
-    # Create connection to retrieve data
+def c_del_delete():
     conn = sqlite3.connect("EditorDataV3.db")
     c = conn.cursor()
-    s_id = s_id_variable.get()
-    c_id = c_id_variable.get()
+    c_del_s_id = c_del_s_id_variable.get()
+    c_del_c_id = c_del_c_id_variable.get()
 
-    warning = messagebox.askquestion('Confirm Deletion', f'Are you sure you want to delete Choice Number {id.id_int(c_id)}?', icon='warning')
+    warning = messagebox.askquestion('Confirm Deletion', f'Are you sure you want to delete Choice Number {id.id_int(c_del_c_id)}?', icon='warning')
 
     if warning == 'yes':
-        c.execute(f"""DELETE FROM paragraphs WHERE c_id LIKE '{c_id}%'""")
-        c.execute(f"""DELETE FROM choices WHERE c_id LIKE '{c_id}%'""")
+        c.execute(f"""DELETE FROM paragraphs WHERE c_id LIKE '{c_del_c_id}%'""")
+        c.execute(f"""DELETE FROM choices WHERE c_id LIKE '{c_del_c_id}%'""")
 
         # Show Success pop-up
-        messagebox.showinfo("Success", f"Choice Number {id.id_int(c_id)} In Story Number {id.id_int(s_id)}\nhas been successfully deleted."
-                                       f"\nAll Choices and Paragraphs connected to Choice Number {id.id_int(c_id)} were also Deleted.")
-        del_text.set("")
-        decode_id_text.set("")
+        messagebox.showinfo("Success", f"Choice Number {id.id_int(c_del_c_id)} In Story Number {id.id_int(c_del_s_id)}\nhas been successfully deleted."
+                                       f"\nAll Choices and Paragraphs connected to Choice Number {id.id_int(c_del_c_id)} were also Deleted.")
+        c_del_c_text_variable.set("")
+        c_del_decode_id_variable.set("")
 
     conn.commit()
     conn.close()
 
-    option_s_id_menu()
-    option_c_id_menu()
+    c_del_s_id_opt_menu()
+    c_del_c_id_opt_menu()
 
 
-# Function to insert old text in a label in the delete story window
-def insert_del():
+def c_del_insert():
     conn = sqlite3.connect("EditorDataV3.db")
     c = conn.cursor()
 
-    c_id = c_id_variable.get()
+    c_del_c_id = c_del_c_id_variable.get()
 
-    c.execute(f"""SELECT c_text FROM choices WHERE c_id = '{c_id}'""")
-    text_raw = c.fetchall()
-    original_text_2 = ((text_raw[0])[0])
+    c.execute(f"""SELECT c_text FROM choices WHERE c_id = '{c_del_c_id}'""")
+    c_del_c_text_raw = c.fetchall()
+    c_del_c_text = ((c_del_c_text_raw[0])[0])
 
-    # Input data into text box
-    del_text.set(str(original_text_2))
+    c_del_c_text_variable.set(str(c_del_c_text))
 
     conn.commit()
     conn.close()
 
 
-# Function to decode id in delete choice window
-def decode_id_del():
-    decode_id_text.set(id.decoder_3(c_id_variable.get()))
+def c_del_decode_id():
+    c_del_decode_id_variable.set(id.decoder_3(c_del_c_id_variable.get()))
 
 
-# Function to open delete window
-def delete_choice_window():
-    global del_choices
-    del_choices = Toplevel()
-    del_choices.title("Delete A Choice")
-    screen_x_2 = del_choices.winfo_screenwidth()
-    screen_y_2 = del_choices.winfo_screenheight()
+def c_del_window():
+    global c_del_wd
+    c_del_wd = Toplevel()
+    c_del_wd.title("Delete A Choice")
+    screen_x_2 = c_del_wd.winfo_screenwidth()
+    screen_y_2 = c_del_wd.winfo_screenheight()
     window_x_2 = 500
     window_y_2 = 650
-    del_choices.minsize(window_x_2, window_y_2)
-    del_choices.maxsize(window_x_2, window_y_2)
+    c_del_wd.minsize(window_x_2, window_y_2)
+    c_del_wd.maxsize(window_x_2, window_y_2)
     pos_x_2 = int((screen_x_2 - window_x_2) / 2)
     pos_y_2 = int((screen_y_2 - window_y_2) / 2)
-    del_choices.geometry(f"{window_x_2}x{window_y_2}+{pos_x_2}+{pos_y_2}")
+    c_del_wd.geometry(f"{window_x_2}x{window_y_2}+{pos_x_2}+{pos_y_2}")
 
-    frame_height = 400
-    info_frame_height = 100
+    c_del_frame_height = 400
+    c_del_info_frame_height = 100
 
     # Info Frame 1
-    info_frame_1 = LabelFrame(del_choices, height=info_frame_height, width=window_x_2)
-    info_frame_1.pack(fill="both", side=TOP)
+    c_del_info_frame_1 = LabelFrame(c_del_wd, height=c_del_info_frame_height, width=window_x_2)
+    c_del_info_frame_1.pack(fill="both", side=TOP)
 
     # Info Frame 2
-    info_frame_2 = LabelFrame(del_choices, height=info_frame_height, width=window_x_2)
-    info_frame_2.pack(fill="both", side=TOP)
+    c_del_info_frame_2 = LabelFrame(c_del_wd, height=c_del_info_frame_height, width=window_x_2)
+    c_del_info_frame_2.pack(fill="both", side=TOP)
 
     # Info Frame 3
-    info_frame_3 = LabelFrame(del_choices, height=info_frame_height, width=window_x_2)
-    info_frame_3.pack(fill="both", side=TOP)
+    c_del_info_frame_3 = LabelFrame(c_del_wd, height=c_del_info_frame_height, width=window_x_2)
+    c_del_info_frame_3.pack(fill="both", side=TOP)
 
     # Info Frame
-    info_frame_4 = LabelFrame(del_choices, height=frame_height, width=window_x_2)
-    info_frame_4.pack(fill="both", side=TOP, expand=True)
+    c_del_info_frame_4 = LabelFrame(c_del_wd, height=c_del_frame_height, width=window_x_2)
+    c_del_info_frame_4.pack(fill="both", side=TOP, expand=True)
 
     # Bottom Frame
-    button_frame = LabelFrame(del_choices, height=window_y_2 - frame_height, width=window_x_2)
-    button_frame.pack(fill="both", side=BOTTOM)
+    c_del_button_frame = LabelFrame(c_del_wd, height=window_y_2 - c_del_frame_height, width=window_x_2)
+    c_del_button_frame.pack(fill="both", side=BOTTOM)
 
-    width = 42
-    pad = 10
+    c_del_width = 42
+    c_del_pad = 10
 
     # Labels
-    story_id_label = Label(info_frame_1, text="Select Story ID:", width=int(width / 2), anchor=W)
-    story_id_label.grid(row=0, column=0, padx=pad, pady=pad, stick="w")
+    c_del_story_id_label = Label(c_del_info_frame_1, text="Select Story ID:", width=int(c_del_width / 2), anchor=W)
+    c_del_story_id_label.grid(row=0, column=0, padx=c_del_pad, pady=c_del_pad, stick="w")
 
-    c_id_label = Label(info_frame_1, text="Select Choice ID:", width=int(width/2), anchor=W)
-    c_id_label.grid(row=1, column=0, padx=pad, pady=pad, stick="w")
+    c_del_c_id_label = Label(c_del_info_frame_1, text="Select Choice ID:", width=int(c_del_width/2), anchor=W)
+    c_del_c_id_label.grid(row=1, column=0, padx=c_del_pad, pady=c_del_pad, stick="w")
 
-    text_label = Label(info_frame_4, text="Choice Text:", width=int(width/2), anchor=NW)
-    text_label.grid(row=1, column=0, padx=pad, pady=pad, stick="nw")
+    c_del_c_text_label = Label(c_del_info_frame_4, text="Choice Text:", width=int(c_del_width/2), anchor=NW)
+    c_del_c_text_label.grid(row=1, column=0, padx=c_del_pad, pady=c_del_pad, stick="nw")
 
-    decode_id_label_text = Label(info_frame_2, text="Decoded ID:", width=int(width / 2), anchor=NW)
-    decode_id_label_text.grid(row=0, column=0, padx=pad, pady=(pad, 180), stick="nw")
+    c_del_decode_id_label = Label(c_del_info_frame_2, text="Decoded ID:", width=int(c_del_width / 2), anchor=NW)
+    c_del_decode_id_label.grid(row=0, column=0, padx=c_del_pad, pady=(c_del_pad, 180), stick="nw")
 
     # Message Box
-    global del_text
-    del_text = StringVar()
-    story_del_message = Message(info_frame_4, textvariable=del_text, width=280, anchor=W)
-    story_del_message.grid(row=1, column=1, padx=pad, pady=pad, stick="w")
+    global c_del_c_text_variable
+    c_del_c_text_variable = StringVar()
+    c_del_c_text_del_message = Message(c_del_info_frame_4, textvariable=c_del_c_text_variable, width=280, anchor=W)
+    c_del_c_text_del_message.grid(row=1, column=1, padx=c_del_pad, pady=c_del_pad, stick="w")
 
-    global decode_id_text
-    decode_id_text = StringVar()
-    decode_id_label = Message(info_frame_2, textvariable=decode_id_text, width=280, anchor=NW)
-    decode_id_label.grid(row=0, column=1, padx=pad, pady=pad, stick="nw")
+    global c_del_decode_id_variable
+    c_del_decode_id_variable = StringVar()
+    c_del_decode_id_message = Message(c_del_info_frame_2, textvariable=c_del_decode_id_variable, width=280, anchor=NW)
+    c_del_decode_id_message.grid(row=0, column=1, padx=c_del_pad, pady=c_del_pad, stick="nw")
 
     # Buttons
-    submit_id_button = Button(info_frame_3, text="Decode ID", width=int(width / 2), command=decode_id_del)
-    submit_id_button.grid(row=0, column=0, padx=pad, pady=pad, stick="w", ipadx=157)
+    c_del_submit_id_button = Button(c_del_info_frame_3, text="Decode ID", width=int(c_del_width / 2), command=c_del_decode_id)
+    c_del_submit_id_button.grid(row=0, column=0, padx=c_del_pad, pady=c_del_pad, stick="w", ipadx=157)
 
-    width_buttons = 19
-    delete_text_button = Button(button_frame, text="Delete Choice", width=width_buttons, command=delete_choice)
-    delete_text_button.grid(row=0, column=0, padx=pad, pady=pad, stick="w")
+    c_del_width_buttons = 19
+    c_del_delete_c_text_button = Button(c_del_button_frame, text="Delete Choice", width=c_del_width_buttons, command=c_del_delete)
+    c_del_delete_c_text_button.grid(row=0, column=0, padx=c_del_pad, pady=c_del_pad, stick="w")
 
-    check_text_button = Button(button_frame, text="Check Choice Text", width=width_buttons, command=insert_del)
-    check_text_button.grid(row=0, column=1, padx=pad, pady=pad, stick="w")
+    c_del_check_c_text_button = Button(c_del_button_frame, text="Check Choice Text", width=c_del_width_buttons, command=c_del_insert)
+    c_del_check_c_text_button.grid(row=0, column=1, padx=c_del_pad, pady=c_del_pad, stick="w")
 
-    cancel_button = Button(button_frame, text="Cancel", width=width_buttons, command=del_choices.destroy)
-    cancel_button.grid(row=0, column=2, padx=pad, pady=pad, stick="w")
+    c_del_cancel_button = Button(c_del_button_frame, text="Cancel", width=c_del_width_buttons, command=c_del_wd.destroy)
+    c_del_cancel_button.grid(row=0, column=2, padx=c_del_pad, pady=c_del_pad, stick="w")
 
-    global option_s_id_menu, option_c_id_menu
+    global c_del_s_id_opt_menu, c_del_c_id_opt_menu
 
-    def option_s_id_menu():
-        # Options Menu For all existing stories
+    def c_del_s_id_opt_menu():
         conn = sqlite3.connect("EditorDataV3.db")
         c = conn.cursor()
 
         c.execute("""SELECT s_id FROM choices UNION SELECT s_id FROM choices""")
-        s_id_list_paragraphs_raw = c.fetchall()
+        c_del_s_id_list_raw = c.fetchall()
+        c_del_s_id_list = []
 
-        s_id_paragraphs_list = []
-        for tp in s_id_list_paragraphs_raw:
+        for tp in c_del_s_id_list_raw:
             for item in tp:
-                s_id_paragraphs_list.append(item)
+                c_del_s_id_list.append(item)
 
-        s_id_list = s_id_paragraphs_list
-
-        if s_id_list:
-            global s_id_variable
-            s_id_variable = StringVar()
-            s_id_variable.set(s_id_list[0])
-            s_id_opmenu = OptionMenu(info_frame_1, s_id_variable, *s_id_list)
-            s_id_opmenu.config(width=width)
-            s_id_opmenu.grid(row=0, column=1, pady=pad, padx=pad, stick="ew")
+        if c_del_s_id_list:
+            global c_del_s_id_variable
+            c_del_s_id_variable = StringVar()
+            c_del_s_id_variable.set(c_del_s_id_list[0])
+            c_del_s_id_opt_menu_var = OptionMenu(c_del_info_frame_1, c_del_s_id_variable, *c_del_s_id_list)
+            c_del_s_id_opt_menu_var.config(width=c_del_width)
+            c_del_s_id_opt_menu_var.grid(row=0, column=1, pady=c_del_pad, padx=c_del_pad, stick="ew")
 
         else:
             messagebox.showerror("Index Error", "No Existing Stories Found")
-            new_choice.destroy()
+            c_del_wd.destroy()
 
         conn.commit()
         conn.close()
 
-    option_s_id_menu()
-
-    def option_c_id_menu():
-        global c_id_variable
-        # Options Menu For all existing paragraphs
+    def c_del_c_id_opt_menu():
         conn = sqlite3.connect("EditorDataV3.db")
         c = conn.cursor()
 
         c.execute(f"""SELECT c_id FROM choices """)
-        c_id_list_paragraphs_raw = c.fetchall()
+        c_del_c_id_list_raw = c.fetchall()
 
-        c_id_paragraphs_list = []
-        for tp in c_id_list_paragraphs_raw:
+        c_del_c_id_list = []
+        for tp in c_del_c_id_list_raw:
             for item in tp:
-                c_id_paragraphs_list.append(item)
+                c_del_c_id_list.append(item)
 
-        c_id_list = c_id_paragraphs_list
-
-        if c_id_list:
-            c_id_variable = StringVar()
-            c_id_variable.set(c_id_list[0])
-            c_id_opmenu = OptionMenu(info_frame_1, c_id_variable, *c_id_list)
-            c_id_opmenu.config(width=width)
-            c_id_opmenu.grid(row=1, column=1, pady=pad, padx=pad, stick="ew")
+        if c_del_c_id_list:
+            global c_del_c_id_variable
+            c_del_c_id_variable = StringVar()
+            c_del_c_id_variable.set(c_del_c_id_list[0])
+            c_del_c_id_opt_menu_var = OptionMenu(c_del_info_frame_1, c_del_c_id_variable, *c_del_c_id_list)
+            c_del_c_id_opt_menu_var.config(width=c_del_width)
+            c_del_c_id_opt_menu_var.grid(row=1, column=1, pady=c_del_pad, padx=c_del_pad, stick="ew")
 
         else:
             messagebox.showerror("Index Error", "No Existing Choices Found")
-            new_choice.destroy()
+            c_del_wd.destroy()
 
         conn.commit()
         conn.close()
 
-    option_c_id_menu()
+    c_del_s_id_opt_menu()
+    c_del_c_id_opt_menu()
 
-    del_choices.mainloop()
+    c_del_wd.mainloop()
 
 
 

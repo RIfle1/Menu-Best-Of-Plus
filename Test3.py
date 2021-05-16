@@ -169,7 +169,7 @@ class ChoiceWindow:
 
         # im not gonna explain this stuff 0_o
         self.s_id = self.s_id_variable.get()
-        self.fp_id = self.id.fp_id(self.s_id)
+        self.fp_id = self.id.ip_id(self.s_id)
         self.p_id = self.p_id_variable.get()
         self.c_id = self.get_choice_id_entry.get()
         self.text_length = len(self.choice_text_entry.get("1.0", "end"))
