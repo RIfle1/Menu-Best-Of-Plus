@@ -38,25 +38,23 @@ def ip_new_save():
     conn.close()
 
     ip_new_paragraph_text_entry.delete("1.0", "end")
+    ip_new_show_story_message.delete("1.0", "end")
     ip_new_s_id_opt_menu()
 
 
 def ip_new_insert():
-    # Create a connection to the database
     conn = sqlite3.connect("EditorDataV3.db")
     c = conn.cursor()
 
     ip_new_s_id = ip_new_ip_id_variable.get()
 
-    # Fetch Information
     c.execute(f"""SELECT s_text FROM stories WHERE s_id='{ip_new_s_id}'""")
     ip_new_text_raw = c.fetchall()
     ip_new_text = ((ip_new_text_raw[0])[0])
 
-    # Input data into text box
-    ip_new_s_mes_var.set(str(ip_new_text))
+    ip_new_show_story_message.delete("1.0", "end")
+    ip_new_show_story_message.insert(END, str(ip_new_text))
 
-    # End Connection
     conn.commit()
     conn.close()
 
@@ -69,7 +67,7 @@ def ip_new_window():
     screen_x_2 = ip_new_wd.winfo_screenwidth()
     screen_y_2 = ip_new_wd.winfo_screenheight()
     window_x_2 = 505
-    window_y_2 = 800
+    window_y_2 = 850
     ip_new_wd.minsize(window_x_2, window_y_2)
     ip_new_wd.maxsize(window_x_2, window_y_2)
     pos_x_2 = int((screen_x_2 - window_x_2) / 2)
@@ -103,22 +101,23 @@ def ip_new_window():
 
     # Labels
     ip_new_get_story_id_label = Label(ip_new_info_frame_1, text="Story Number ID:", width=int(ip_new_width / 2), anchor=W)
-    ip_new_get_story_id_label.grid(row=0, column=0, padx=(10, 13), pady=ip_new_pad, stick="w")
+    ip_new_get_story_id_label.grid(row=0, column=0, padx=(ip_new_pad, 11), pady=ip_new_pad, stick="w")
 
     ip_new_story_text_label = Label(ip_new_info_frame_2, text="Story Text:", width=int(ip_new_width / 2), anchor=NW)
-    ip_new_story_text_label.grid(row=1, column=0, padx=ip_new_pad, pady=ip_new_pad, stick="nw")
+    ip_new_story_text_label.grid(row=1, column=0, padx=(ip_new_pad, 13), pady=ip_new_pad, stick="nw")
 
     ip_new_paragraph_text_label = Label(ip_new_entry_frame, text="Initial Paragraph Text:", width=int(ip_new_width / 2), anchor=NW)
-    ip_new_paragraph_text_label.grid(row=0, column=0, padx=(10, 13), pady=ip_new_pad, stick="nw")
+    ip_new_paragraph_text_label.grid(row=0, column=0, padx=(ip_new_pad, 13), pady=ip_new_pad, stick="nw")
 
     # Entries
-    global ip_new_paragraph_text_entry, ip_new_s_mes_var
+    global ip_new_paragraph_text_entry, ip_new_show_story_message
     ip_new_paragraph_text_entry = Text(ip_new_entry_frame, width=37, height=20)
     ip_new_paragraph_text_entry.grid(row=0, column=1, padx=ip_new_pad, pady=ip_new_pad)
 
     # Message Box
-    ip_new_s_mes_var = StringVar()
-    ip_new_show_story_message = Message(ip_new_info_frame_2, textvariable=ip_new_s_mes_var, width=280, anchor=W)
+    global ip_new_show_story_message
+    ip_new_show_story_message = Text(ip_new_info_frame_2, width=37, height=20)
+    ip_new_show_story_message.bind("<Key>", lambda a: "break")
     ip_new_show_story_message.grid(row=1, column=1, padx=ip_new_pad, pady=ip_new_pad, stick="w")
 
     # Buttons
@@ -161,7 +160,7 @@ def ip_new_window():
             ip_new_ip_id_variable = StringVar()
             ip_new_ip_id_variable.set(s_id_list[0])
             ip_new_s_id_opt_menu_var = OptionMenu(ip_new_info_frame_1, ip_new_ip_id_variable, *s_id_list)
-            ip_new_s_id_opt_menu_var.config(width=ip_new_width)
+            ip_new_s_id_opt_menu_var.config(width=ip_new_width+1)
             ip_new_s_id_opt_menu_var.grid(row=0, column=1, pady=ip_new_pad, padx=ip_new_pad, stick="ew")
 
         else:
@@ -183,16 +182,16 @@ def ip_edt_edit():
     c = conn.cursor()
 
     # Get id's
-    ip_edt_ip_id = ip_edt_text_var.get()
+    ip_edt_ip_id = ip_edt_ip_id_variable.get()
     ip_edt_s_id = id.id_int(id.decoder_2(ip_edt_ip_id)[-2])
 
-    ip_edt_text_length = len(ip_edt_text_entry.get("1.0", "end"))
+    ip_edt_text_length = len(ip_edt_ip_text_entry.get("1.0", "end"))
 
     # Update Table
     if ip_edt_text_length != 1:
         c.execute("""UPDATE initial_paragraphs SET ip_text = :ip_text WHERE ip_id = :ip_id""",
                   {
-                      "ip_text": ip_edt_text_entry.get("1.0", "end"),
+                      "ip_text": ip_edt_ip_text_entry.get("1.0", "end"),
                       "ip_id": f'{ip_edt_ip_id}'
                   })
 
@@ -202,7 +201,7 @@ def ip_edt_edit():
         messagebox.showerror("Input Error", f'Initial Paragraph Text is Empty', icon='warning')
 
     # Clear the Text Boxes
-    ip_edt_text_entry.delete("1.0", "end")
+    ip_edt_ip_text_entry.delete("1.0", "end")
 
     conn.commit()
     conn.close()
@@ -213,19 +212,20 @@ def ip_edt_edit():
 # Function to insert already written text
 def ip_edt_insert():
     # Delete Previous Input
-    ip_edt_text_entry.delete("1.0", "end")
+    ip_edt_ip_text_entry.delete("1.0", "end")
+
 
     conn = sqlite3.connect("EditorDataV3.db")
     c = conn.cursor()
 
-    ip_edt_ip_id = ip_edt_text_var.get()
+    ip_edt_ip_id = ip_edt_ip_id_variable.get()
 
     c.execute(f"""SELECT ip_text FROM initial_paragraphs WHERE ip_id = '{ip_edt_ip_id}'""")
     ip_edt_text_raw = c.fetchall()
     ip_edt_text = ((ip_edt_text_raw[0])[0])
 
     # Input data into text box
-    ip_edt_text_entry.insert(END, f'{ip_edt_text}')
+    ip_edt_ip_text_entry.insert(END, f'{ip_edt_text}')
 
     conn.commit()
     conn.close()
@@ -233,7 +233,35 @@ def ip_edt_insert():
 
 # Function to insert decoded id
 def ip_edt_decode_id():
-    ip_del_decode_id_text.set(id.decoder_3(ip_edt_text_var.get()))
+    ip_edt_decode_id_text.delete("1.0", "end")
+    ip_edt_decode_id_text.insert(END, id.decoder_3(ip_edt_ip_id_variable.get()))
+
+
+# Function to delete a story from the delete window
+def ip_del_delete():
+    # Create connection to retrieve data
+    conn = sqlite3.connect("EditorDataV3.db")
+    c = conn.cursor()
+    ip_del_ip_id = ip_edt_ip_id_variable.get()
+    ip_del_s_id = id.id_int(id.decoder_2(ip_del_ip_id)[-2])
+
+    ip_del_warning = messagebox.askquestion('Confirm Deletion', f'Are you sure you want to delete the Initial Paragraph In Story Number {ip_del_s_id}?', icon='warning')
+
+    if ip_del_warning == 'yes':
+        c.execute(f"""DELETE FROM initial_paragraphs WHERE ip_id = '{ip_del_ip_id}'""")
+        c.execute(f"""DELETE FROM paragraphs WHERE s_id = '{id.id_conv('s_id', id.id_int(ip_del_ip_id))}'""")
+        c.execute(f"""DELETE FROM choices WHERE s_id = '{id.id_conv('s_id', id.id_int(ip_del_ip_id))}'""")
+
+        # Show Success pop-up
+        messagebox.showinfo("Success", f"The Initial Paragraph Number In Story Number {ip_del_s_id}\nhas been successfully deleted."
+                                       f"\nAll Paragraphs And Choices Were Also Deleted From Story Number {ip_del_s_id}.")
+        ip_edt_ip_text_entry.delete("1.0", "end")
+        ip_edt_decode_id_text.delete("1.0", "end")
+
+    conn.commit()
+    conn.close()
+
+    ip_edt_ip_id_opt_menu()
 
 
 # Function to open edit window
@@ -245,7 +273,7 @@ def ip_edt_window():
     screen_x_2 = ip_edt_wd.winfo_screenwidth()
     screen_y_2 = ip_edt_wd.winfo_screenheight()
     window_x_2 = 500
-    window_y_2 = 560
+    window_y_2 = 612
     ip_edt_wd.minsize(window_x_2, window_y_2)
     ip_edt_wd.maxsize(window_x_2, window_y_2)
     pos_x_2 = int((screen_x_2 - window_x_2) / 2)
@@ -269,11 +297,11 @@ def ip_edt_window():
 
     # Info Frame 4
     ip_edt_info_frame_4 = LabelFrame(ip_edt_wd, height=ip_edt_frame_height, width=window_x_2)
-    ip_edt_info_frame_4.pack(fill="both", side=TOP, expand=True)
+    ip_edt_info_frame_4.pack(fill="both", side=TOP)
 
     # Buttons Frame
     ip_edt_button_frame = LabelFrame(ip_edt_wd, height=window_y_2 - ip_edt_frame_height, width=window_x_2)
-    ip_edt_button_frame.pack(fill="both", side=BOTTOM)
+    ip_edt_button_frame.pack(fill="both", side=BOTTOM, expand=True)
 
     ip_edt_entry_width = 37
     ip_edt_width = 42
@@ -281,37 +309,45 @@ def ip_edt_window():
 
     # Labels
     ip_edt_ip_id_label = Label(ip_edt_info_frame_1, text="Select Initial Paragraph ID:", width=int(ip_edt_width / 2), anchor=W)
-    ip_edt_ip_id_label.grid(row=0, column=0, padx=ip_edt_pad, pady=ip_edt_pad, stick="w")
+    ip_edt_ip_id_label.grid(row=0, column=0, padx=(ip_edt_pad, ip_edt_pad+1), pady=ip_edt_pad, stick="w")
 
     ip_edt_decode_id_label_text = Label(ip_edt_info_frame_2, text="Decoded ID:", width=int(ip_edt_width / 2), anchor=NW)
-    ip_edt_decode_id_label_text.grid(row=0, column=0, padx=ip_edt_pad, pady=(ip_edt_pad, 40), stick="nw")
+    ip_edt_decode_id_label_text.grid(row=0, column=0, padx=(ip_edt_pad, ip_edt_pad-5), pady=ip_edt_pad, stick="nw")
 
     ip_edt_edit_ip_label = Label(ip_edt_info_frame_4, text="Edit Initial Paragraph:", width=int(ip_edt_width / 2) - 1, anchor=NW)
     ip_edt_edit_ip_label.grid(row=0, column=0, padx=ip_edt_pad, pady=ip_edt_pad, stick="nw")
 
-    global ip_del_decode_id_text
-    ip_del_decode_id_text = StringVar()
-    ip_edt_decode_id_label = Message(ip_edt_info_frame_2, textvariable=ip_del_decode_id_text, width=280, anchor=NW)
-    ip_edt_decode_id_label.grid(row=0, column=1, padx=ip_edt_pad, pady=ip_edt_pad, stick="nw")
+    # Decode ID Message
+    global ip_edt_decode_id_text
+    ip_edt_decode_id_text = Text(ip_edt_info_frame_2, width=ip_edt_entry_width, height=5)
+    ip_edt_decode_id_text.bind("<Key>", lambda a: "break")
+    ip_edt_decode_id_text.grid(row=0, column=1, padx=ip_edt_pad, pady=ip_edt_pad, stick="w")
 
-    # Text
-    global ip_edt_text_entry
-    ip_edt_text_entry = Text(ip_edt_info_frame_4, width=ip_edt_entry_width, height=19)
-    ip_edt_text_entry.grid(row=0, column=1, padx=ip_edt_pad, pady=ip_edt_pad, stick="w")
+    # Text Entry
+    global ip_edt_ip_text_entry
+    ip_edt_ip_text_entry = Text(ip_edt_info_frame_4, width=ip_edt_entry_width, height=20)
+    ip_edt_ip_text_entry.grid(row=0, column=1, padx=ip_edt_pad, pady=ip_edt_pad, stick="w")
 
     # Buttons
     ip_edt_submit_id_button = Button(ip_edt_info_frame_3, text="Decode ID", width=int(ip_edt_width / 2), command=ip_edt_decode_id)
     ip_edt_submit_id_button.grid(row=0, column=0, padx=ip_edt_pad, pady=ip_edt_pad, stick="w", ipadx=157)
 
-    width_buttons = 19
-    ip_edt_save_ip_button = Button(ip_edt_button_frame, text="Save Changes", width=width_buttons, command=ip_edt_edit)
-    ip_edt_save_ip_button.grid(row=0, column=0, padx=ip_edt_pad, pady=ip_edt_pad, stick="w")
+    ip_edt_width_buttons = 13
+    ip_edt_save_story_button = Button(ip_edt_button_frame, text="Save Changes", width=ip_edt_width_buttons,
+                                     command=ip_edt_edit)
+    ip_edt_save_story_button.grid(row=0, column=0, padx=(ip_edt_pad + 3, ip_edt_pad), pady=ip_edt_pad, stick="w")
 
-    ip_edt_load_text_button = Button(ip_edt_button_frame, text="Load Initial Paragraph", width=width_buttons, command=ip_edt_insert)
+    ip_edt_load_text_button = Button(ip_edt_button_frame, text="Load Paragraph", width=ip_edt_width_buttons,
+                                    command=ip_edt_insert)
     ip_edt_load_text_button.grid(row=0, column=1, padx=ip_edt_pad, pady=ip_edt_pad, stick="w")
 
-    ip_edt_cancel_button = Button(ip_edt_button_frame, text="Cancel", width=width_buttons, command=ip_edt_wd.destroy)
-    ip_edt_cancel_button.grid(row=0, column=2, padx=ip_edt_pad, pady=ip_edt_pad, stick="w")
+    ip_edt_delete_text_button = Button(ip_edt_button_frame, text="Delete Paragraph", width=ip_edt_width_buttons,
+                                      command=ip_del_delete)
+    ip_edt_delete_text_button.grid(row=0, column=2, padx=ip_edt_pad, pady=ip_edt_pad, stick="w")
+
+    ip_edt_cancel_button = Button(ip_edt_button_frame, text="Cancel", width=ip_edt_width_buttons,
+                                 command=ip_edt_wd.destroy)
+    ip_edt_cancel_button.grid(row=0, column=3, padx=ip_edt_pad, pady=ip_edt_pad, stick="w")
 
     global ip_edt_ip_id_opt_menu
 
@@ -328,11 +364,11 @@ def ip_edt_window():
                 ip_new_ip_id_list.append(item)
 
         if ip_new_ip_id_list:
-            global ip_edt_text_var
-            ip_edt_text_var = StringVar()
-            ip_edt_text_var.set(ip_new_ip_id_list[0])
-            ip_edt_ip_id_opt_menu_var = OptionMenu(ip_edt_info_frame_1, ip_edt_text_var, *ip_new_ip_id_list)
-            ip_edt_ip_id_opt_menu_var.config(width=ip_edt_width - 1)
+            global ip_edt_ip_id_variable
+            ip_edt_ip_id_variable = StringVar()
+            ip_edt_ip_id_variable.set(ip_new_ip_id_list[0])
+            ip_edt_ip_id_opt_menu_var = OptionMenu(ip_edt_info_frame_1, ip_edt_ip_id_variable, *ip_new_ip_id_list)
+            ip_edt_ip_id_opt_menu_var.config(width=ip_edt_width-2)
             ip_edt_ip_id_opt_menu_var.grid(row=0, column=1, ipadx=ip_edt_pad, pady=ip_edt_pad, stick="w")
 
         else:
@@ -347,165 +383,9 @@ def ip_edt_window():
     ip_edt_wd.mainloop()
 
 
-# Function to delete a story from the delete window
-def ip_del_delete():
-    # Create connection to retrieve data
-    conn = sqlite3.connect("EditorDataV3.db")
-    c = conn.cursor()
-    ip_del_ip_id = ip_del_ip_id_variable.get()
-    ip_del_s_id = id.id_int(id.decoder_2(ip_del_ip_id)[-2])
-
-    ip_del_warning = messagebox.askquestion('Confirm Deletion', f'Are you sure you want to delete the Initial Paragraph In Story Number {ip_del_s_id}?', icon='warning')
-
-    if ip_del_warning == 'yes':
-        c.execute(f"""DELETE FROM initial_paragraphs WHERE ip_id = '{ip_del_ip_id}'""")
-        c.execute(f"""DELETE FROM paragraphs WHERE s_id = '{id.id_conv('s_id', id.id_int(ip_del_ip_id))}'""")
-        c.execute(f"""DELETE FROM choices WHERE s_id = '{id.id_conv('s_id', id.id_int(ip_del_ip_id))}'""")
-
-        # Show Success pop-up
-        messagebox.showinfo("Success", f"The Initial Paragraph Number In Story Number {ip_del_s_id}\nhas been successfully deleted."
-                                       f"\nAll Paragraphs And Choices Were Also Deleted From Story Number {ip_del_s_id}.")
-        ip_del_mes_var.set("")
-        ip_del_decode_id_text.set("")
-
-    conn.commit()
-    conn.close()
-
-    ip_del_ip_id_opt_menu()
 
 
-# Function to insert old text in a label in the delete story window
-def ip_del_insert():
-    conn = sqlite3.connect("EditorDataV3.db")
-    c = conn.cursor()
 
-    ip_del_ip_id = ip_del_ip_id_variable.get()
-
-    c.execute(f"""SELECT ip_text FROM initial_paragraphs WHERE ip_id = '{ip_del_ip_id}'""")
-    ip_del_text_raw = c.fetchall()
-    ip_del_text = ((ip_del_text_raw[0])[0])
-
-    # Input data into text box
-    ip_del_mes_var.set(str(ip_del_text))
-
-    conn.commit()
-    conn.close()
-
-
-# Decode id Function for the delete window
-def ip_del_decode_id():
-    ip_del_decode_id_text.set(id.decoder_3(ip_del_ip_id_variable.get()))
-
-
-# Function to open delete window
-def ip_del_window():
-    global ip_del_wd
-    # Create New Window
-    ip_del_wd = Toplevel()
-    ip_del_wd.title("Delete An Initial Paragraph")
-    screen_x_2 = ip_del_wd.winfo_screenwidth()
-    screen_y_2 = ip_del_wd.winfo_screenheight()
-    window_x_2 = 500
-    window_y_2 = 500
-    ip_del_wd.minsize(window_x_2, window_y_2)
-    ip_del_wd.maxsize(window_x_2, window_y_2)
-    pos_x_2 = int((screen_x_2 - window_x_2) / 2)
-    pos_y_2 = int((screen_y_2 - window_y_2) / 2)
-    ip_del_wd.geometry(f"{window_x_2}x{window_y_2}+{pos_x_2}+{pos_y_2}")
-
-    ip_del_frame_height = 400
-    ip_del_info_frame_height = 100
-
-    # Info Frame 1
-    ip_del_info_frame_1 = LabelFrame(ip_del_wd, height=ip_del_info_frame_height, width=window_x_2)
-    ip_del_info_frame_1.pack(fill="both", side=TOP)
-
-    # Info Frame 2
-    ip_del_info_frame_2 = LabelFrame(ip_del_wd, height=ip_del_info_frame_height, width=window_x_2)
-    ip_del_info_frame_2.pack(fill="both", side=TOP)
-
-    # Info Frame 3
-    ip_del_info_frame_3 = LabelFrame(ip_del_wd, height=ip_del_info_frame_height, width=window_x_2)
-    ip_del_info_frame_3.pack(fill="both", side=TOP)
-
-    # Info Frame
-    ip_del_info_frame_4 = LabelFrame(ip_del_wd, height=ip_del_frame_height, width=window_x_2)
-    ip_del_info_frame_4.pack(fill="both", side=TOP, expand=True)
-
-    # Bottom Frame
-    ip_del_button_frame = LabelFrame(ip_del_wd, height=window_y_2 - ip_del_frame_height, width=window_x_2)
-    ip_del_button_frame.pack(fill="both", side=BOTTOM)
-
-    ip_del_width = 42
-    ip_del_pad = 10
-
-    # Labels
-    ip_del_ip_id_label = Label(ip_del_info_frame_1, text="Select Initial Paragraph ID:", width=int(ip_del_width/2), anchor=W)
-    ip_del_ip_id_label.grid(row=0, column=0, padx=ip_del_pad, pady=ip_del_pad, stick="w")
-
-    ip_del_text_label = Label(ip_del_info_frame_4, text="Initial Paragraph Text:", width=int(ip_del_width/2), anchor=NW)
-    ip_del_text_label.grid(row=1, column=0, padx=ip_del_pad, pady=ip_del_pad, stick="nw")
-
-    ip_del_decode_id_label_text = Label(ip_del_info_frame_2, text="Decoded ID:", width=int(ip_del_width / 2), anchor=NW)
-    ip_del_decode_id_label_text.grid(row=0, column=0, padx=ip_del_pad, pady=(ip_del_pad, 40), stick="nw")
-
-    # Message Box
-    global ip_del_mes_var
-    ip_del_mes_var = StringVar()
-    ip_del_ip_message = Message(ip_del_info_frame_4, textvariable=ip_del_mes_var, width=280, anchor=W)
-    ip_del_ip_message.grid(row=1, column=1, padx=ip_del_pad, pady=ip_del_pad, stick="w")
-
-    global ip_del_decode_id_text
-    ip_del_decode_id_text = StringVar()
-    ip_del_decode_id_label = Message(ip_del_info_frame_2, textvariable=ip_del_decode_id_text, width=280, anchor=NW)
-    ip_del_decode_id_label.grid(row=0, column=1, padx=ip_del_pad, pady=ip_del_pad, stick="nw")
-
-    # Buttons
-    ip_del_submit_id_button = Button(ip_del_info_frame_3, text="Decode ID", width=int(ip_del_width / 2), command=ip_del_decode_id)
-    ip_del_submit_id_button.grid(row=0, column=0, padx=ip_del_pad, pady=ip_del_pad, stick="w", ipadx=157)
-
-    ip_del_width_buttons = 19
-    ip_del_delete_ip_button = Button(ip_del_button_frame, text="Delete Initial Paragraph", width=ip_del_width_buttons, command=ip_del_delete)
-    ip_del_delete_ip_button.grid(row=0, column=0, padx=ip_del_pad, pady=ip_del_pad, stick="w")
-
-    ip_del_check_ip_text_button = Button(ip_del_button_frame, text="Check Initial Paragraph", width=ip_del_width_buttons, command=ip_del_insert)
-    ip_del_check_ip_text_button.grid(row=0, column=1, padx=ip_del_pad, pady=ip_del_pad, stick="w")
-
-    ip_del_cancel_button = Button(ip_del_button_frame, text="Cancel", width=ip_del_width_buttons, command=ip_del_wd.destroy)
-    ip_del_cancel_button.grid(row=0, column=2, padx=ip_del_pad, pady=ip_del_pad, stick="w")
-
-    global ip_del_ip_id_opt_menu
-
-    def ip_del_ip_id_opt_menu():
-        # Options Menu For all existing stories
-        conn = sqlite3.connect("EditorDataV3.db")
-        c = conn.cursor()
-
-        c.execute("""SELECT ip_id FROM initial_paragraphs""")
-        ip_del_ip_id_list_raw = c.fetchall()
-        ip_del_ip_id_list = []
-        for tp in ip_del_ip_id_list_raw:
-            for item in tp:
-                ip_del_ip_id_list.append(item)
-
-        if ip_del_ip_id_list:
-            global ip_del_ip_id_variable
-            ip_del_ip_id_variable = StringVar()
-            ip_del_ip_id_variable.set(ip_del_ip_id_list[0])
-            ip_del_ip_id_opt_menu_var = OptionMenu(ip_del_info_frame_1, ip_del_ip_id_variable, *ip_del_ip_id_list)
-            ip_del_ip_id_opt_menu_var.config(width=ip_del_width)
-            ip_del_ip_id_opt_menu_var.grid(row=0, column=1, ipadx=ip_del_pad, pady=ip_del_pad, stick="w")
-
-        else:
-            messagebox.showerror("Index Error", "No Existing Initial Paragraphs were Found")
-            ip_del_wd.destroy()
-
-        conn.commit()
-        conn.close()
-
-    ip_del_ip_id_opt_menu()
-
-    ip_del_wd.mainloop()
 
 
 

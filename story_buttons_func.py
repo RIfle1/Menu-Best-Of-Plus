@@ -11,7 +11,7 @@ import widget_func
 
 
 # Function to save new stories
-def s_id_save():
+def s_new_save():
     # Create a connection to the database
     conn = sqlite3.connect("EditorDataV3.db")
     c = conn.cursor()
@@ -40,6 +40,7 @@ def s_id_save():
                         })
                     # Show Success pop-up
                     messagebox.showinfo("Success", f"Story Number {s_new_s_id} has been successfully created.")
+                    s_new_beginning_story_entry.delete("1.0", "end")
 
                 else:
                     messagebox.showerror("Syntax Error", "Story ID Must Be Positive", icon='warning')
@@ -59,7 +60,6 @@ def s_id_save():
 
     # Clear the Text Boxes
     s_new_story_id_entry.delete(0, END)
-    s_new_beginning_story_entry.delete("1.0", "end")
 
 
 # Function for new story window
@@ -100,13 +100,34 @@ def s_new_window():
     s_new_beginning_story_entry.grid(row=1, column=1, padx=height, pady=height)
 
     # Buttons
-    s_new_save_story_button = Button(s_new_main_frame, text="Save Story", width=int(width/2), command=s_id_save)
+    s_new_save_story_button = Button(s_new_main_frame, text="Save Story", width=int(width/2), command=s_new_save)
     s_new_save_story_button.grid(row=2, column=0, padx=height, pady=height, stick="w")
 
     s_new_cancel_button = Button(s_new_main_frame, text="Cancel", width=width, command=s_new_wd.destroy)
     s_new_cancel_button.grid(row=2, column=1, padx=height, pady=height, stick="w")
 
     s_new_wd.mainloop()
+
+
+# Function to insert already written text
+def s_edt_insert():
+    # Delete Previous Input
+    s_edt_edit_text_entry.delete("1.0", "end")
+
+    conn = sqlite3.connect("EditorDataV3.db")
+    c = conn.cursor()
+
+    s_edt_s_id = s_edt_s_id_variable.get()
+
+    c.execute(f"""SELECT s_text FROM stories WHERE s_id = '{s_edt_s_id}'""")
+    s_edt_text_raw = c.fetchall()
+    s_edt_text = ((s_edt_text_raw[0])[0])
+
+    # Input data into text box
+    s_edt_edit_text_entry.insert(END, f'{s_edt_text}')
+
+    conn.commit()
+    conn.close()
 
 
 # Function to edit stories
@@ -116,7 +137,7 @@ def s_edt_edit():
     c = conn.cursor()
 
     # Update Table
-    s_edt_s_id = s_del_s_id_variable.get()
+    s_edt_s_id = s_edt_s_id_variable.get()
     if len(s_edt_edit_text_entry.get("1.0", "end")) != 1:
         c.execute("""UPDATE stories SET s_text = :s_text WHERE s_id = :s_id""",
                   {
@@ -136,25 +157,30 @@ def s_edt_edit():
     conn.close()
 
 
-# Function to insert already written text
-def s_edt_insert():
-    # Delete Previous Input
-    s_edt_edit_text_entry.delete("1.0", "end")
-
+# Function to delete a story from the delete window
+def s_del_delete():
+    # Create connection to retrieve data
     conn = sqlite3.connect("EditorDataV3.db")
     c = conn.cursor()
+    s_del_s_id = s_edt_s_id_variable.get()
 
-    s_edt_s_id = s_del_s_id_variable.get()
+    s_del_warning = messagebox.askquestion('Confirm Deletion', f'Are you sure you want to delete story Number {id.id_int(s_del_s_id)}?', icon='warning')
 
-    c.execute(f"""SELECT s_text FROM stories WHERE s_id = '{s_edt_s_id}'""")
-    s_edt_text_raw = c.fetchall()
-    s_edt_text = ((s_edt_text_raw[0])[0])
+    if s_del_warning == 'yes':
+        c.execute(f"""DELETE FROM stories WHERE s_id = '{s_del_s_id}'""")
+        c.execute(f"""DELETE FROM initial_paragraphs WHERE s_id = '{s_del_s_id}'""")
+        c.execute(f"""DELETE FROM paragraphs WHERE s_id = '{s_del_s_id}'""")
+        c.execute(f"""DELETE FROM choices WHERE s_id = '{s_del_s_id}'""")
 
-    # Input data into text box
-    s_edt_edit_text_entry.insert(END, f'{s_edt_text}')
+        # Show Success pop-up
+        messagebox.showinfo("Success", f"Story Number {id.id_int(s_del_s_id)} has been successfully deleted\nAll Paragraphs And Choices From Story Number {id.id_int(s_del_s_id)} Have Also Been Deleted.")
 
     conn.commit()
     conn.close()
+
+    s_edt_edit_text_entry.delete("1.0", "end")
+
+    s_edt_s_id_opt_menu()
 
 
 # Function to open edit window
@@ -166,7 +192,7 @@ def s_edt_window():
     screen_x_2 = s_edt_wd.winfo_screenwidth()
     screen_y_2 = s_edt_wd.winfo_screenheight()
     window_x_2 = 500
-    window_y_2 = 500
+    window_y_2 = 450
     s_edt_wd.minsize(window_x_2, window_y_2)
     s_edt_wd.maxsize(window_x_2, window_y_2)
     pos_x_2 = int((screen_x_2 - window_x_2) / 2)
@@ -204,15 +230,18 @@ def s_edt_window():
     s_edt_edit_text_entry.grid(row=0, column=1, padx=s_edt_pad, pady=s_edt_pad, stick="w")
 
     # Buttons
-    width_buttons = 19
-    s_edt_save_story_button = Button(s_edt_button_frame, text="Save Changes", width=width_buttons, command=s_edt_edit)
-    s_edt_save_story_button.grid(row=0, column=0, padx=s_edt_pad, pady=s_edt_pad, stick="w")
+    s_edt_width_buttons = 13
+    s_edt_save_story_button = Button(s_edt_button_frame, text="Save Changes", width=s_edt_width_buttons, command=s_edt_edit)
+    s_edt_save_story_button.grid(row=0, column=0, padx=(s_edt_pad+3, s_edt_pad), pady=s_edt_pad, stick="w")
 
-    s_edt_load_text_button = Button(s_edt_button_frame, text="Load Text", width=width_buttons, command=s_edt_insert)
+    s_edt_load_text_button = Button(s_edt_button_frame, text="Load Story", width=s_edt_width_buttons, command=s_edt_insert)
     s_edt_load_text_button.grid(row=0, column=1, padx=s_edt_pad, pady=s_edt_pad, stick="w")
 
-    s_edt_cancel_button = Button(s_edt_button_frame, text="Cancel", width=width_buttons, command=s_edt_wd.destroy)
-    s_edt_cancel_button.grid(row=0, column=2, padx=s_edt_pad, pady=s_edt_pad, stick="w")
+    s_edt_delete_text_button = Button(s_edt_button_frame, text="Delete Story", width=s_edt_width_buttons, command=s_del_delete)
+    s_edt_delete_text_button.grid(row=0, column=2, padx=s_edt_pad, pady=s_edt_pad, stick="w")
+
+    s_edt_cancel_button = Button(s_edt_button_frame, text="Cancel", width=s_edt_width_buttons, command=s_edt_wd.destroy)
+    s_edt_cancel_button.grid(row=0, column=3, padx=s_edt_pad, pady=s_edt_pad, stick="w")
 
     global s_edt_s_id_opt_menu
 
@@ -229,11 +258,11 @@ def s_edt_window():
                 s_edt_s_id_list.append(item)
 
         if s_edt_s_id_list:
-            global s_del_s_id_variable
-            s_del_s_id_variable = StringVar()
-            s_del_s_id_variable.set(s_edt_s_id_list[0])
-            s_edt_s_id_opt_menu_var = OptionMenu(s_edt_info_frame_1, s_del_s_id_variable, *s_edt_s_id_list)
-            s_edt_s_id_opt_menu_var.config(width=s_edt_width)
+            global s_edt_s_id_variable
+            s_edt_s_id_variable = StringVar()
+            s_edt_s_id_variable.set(s_edt_s_id_list[0])
+            s_edt_s_id_opt_menu_var = OptionMenu(s_edt_info_frame_1, s_edt_s_id_variable, *s_edt_s_id_list)
+            s_edt_s_id_opt_menu_var.config(width=s_edt_width-2)
             s_edt_s_id_opt_menu_var.grid(row=0, column=1, ipadx=s_edt_pad, pady=s_edt_pad, stick="w")
 
         else:
@@ -246,138 +275,3 @@ def s_edt_window():
     s_edt_s_id_opt_menu()
 
     s_edt_wd.mainloop()
-
-
-# Function to delete a story from the delete window
-def s_del_delete():
-    # Create connection to retrieve data
-    conn = sqlite3.connect("EditorDataV3.db")
-    c = conn.cursor()
-    s_del_s_id = s_del_s_id_variable.get()
-
-    s_del_warning = messagebox.askquestion('Confirm Deletion', f'Are you sure you want to delete story Number {id.id_int(s_del_s_id)}?', icon='warning')
-
-    if s_del_warning == 'yes':
-        c.execute(f"""DELETE FROM stories WHERE s_id = '{s_del_s_id}'""")
-        c.execute(f"""DELETE FROM initial_paragraphs WHERE s_id = '{s_del_s_id}'""")
-        c.execute(f"""DELETE FROM paragraphs WHERE s_id = '{s_del_s_id}'""")
-        c.execute(f"""DELETE FROM choices WHERE s_id = '{s_del_s_id}'""")
-
-        # Show Success pop-up
-        messagebox.showinfo("Success", f"Story Number {id.id_int(s_del_s_id)} has been successfully deleted.")
-        s_del_text_var.set("")
-
-    conn.commit()
-    conn.close()
-
-    s_del_s_id_opt_menu()
-
-
-# Function to insert old text in a label in the delete story window
-def s_del_insert():
-    conn = sqlite3.connect("EditorDataV3.db")
-    c = conn.cursor()
-
-    s_del_s_id = s_del_s_id_variable.get()
-
-    c.execute(f"""SELECT s_text FROM stories WHERE s_id = '{s_del_s_id}'""")
-    s_del_text_raw = c.fetchall()
-    s_del__text = ((s_del_text_raw[0])[0])
-
-    # Input data into text box
-    s_del_text_var.set(str(s_del__text))
-
-    conn.commit()
-    conn.close()
-
-
-# Function to open delete window
-def s_del_window():
-    global s_del_wd
-    # Create New Window
-    s_del_wd = Toplevel()
-    s_del_wd.title("Delete A Story")
-    screen_x_2 = s_del_wd.winfo_screenwidth()
-    screen_y_2 = s_del_wd.winfo_screenheight()
-    window_x_2 = 500
-    window_y_2 = 500
-    s_del_wd.minsize(window_x_2, window_y_2)
-    s_del_wd.maxsize(window_x_2, window_y_2)
-    pos_x_2 = int((screen_x_2 - window_x_2) / 2)
-    pos_y_2 = int((screen_y_2 - window_y_2) / 2)
-    s_del_wd.geometry(f"{window_x_2}x{window_y_2}+{pos_x_2}+{pos_y_2}")
-
-    frame_height = 400
-    info_frame_height = 100
-
-    # Info Frame
-    s_del_info_frame_1 = LabelFrame(s_del_wd, height=info_frame_height, width=window_x_2)
-    s_del_info_frame_1.pack(fill="both", side=TOP)
-
-    # Info Frame
-    s_del_info_frame_2 = LabelFrame(s_del_wd, height=frame_height, width=window_x_2)
-    s_del_info_frame_2.pack(fill="both", side=TOP, expand=True)
-
-    # Buttons Frame
-    s_del_button_frame = LabelFrame(s_del_wd, height=window_y_2 - frame_height, width=window_x_2)
-    s_del_button_frame.pack(fill="both", side=BOTTOM)
-
-    s_del_width = 42
-    s_del_pad = 10
-
-    # Labels
-    s_del_story_id_label = Label(s_del_info_frame_1, text="Select Story ID:", width=int(s_del_width/2), anchor=W)
-    s_del_story_id_label.grid(row=0, column=0, padx=s_del_pad, pady=s_del_pad, stick="w")
-
-    s_del_text_label = Label(s_del_info_frame_2, text="Output:", width=int(s_del_width/2), anchor=NW)
-    s_del_text_label.grid(row=1, column=0, padx=s_del_pad, pady=s_del_pad, stick="nw")
-
-    # Message Box
-    global s_del_text_var
-    s_del_text_var = StringVar()
-    s_del_story_del_message = Message(s_del_info_frame_2, textvariable=s_del_text_var, width=280, anchor=W)
-    s_del_story_del_message.grid(row=1, column=1, padx=s_del_pad, pady=s_del_pad, stick="w")
-
-    # Buttons
-    s_del_width_buttons = 19
-    s_del_delete_text_button = Button(s_del_button_frame, text="Delete Story", width=s_del_width_buttons, command=s_del_delete)
-    s_del_delete_text_button.grid(row=0, column=0, padx=s_del_pad, pady=s_del_pad, stick="w")
-
-    s_del_check_text_button = Button(s_del_button_frame, text="Check Text", width=s_del_width_buttons, command=s_del_insert)
-    s_del_check_text_button.grid(row=0, column=1, padx=s_del_pad, pady=s_del_pad, stick="w")
-
-    s_del_cancel_button = Button(s_del_button_frame, text="Cancel", width=s_del_width_buttons, command=s_del_wd.destroy)
-    s_del_cancel_button.grid(row=0, column=2, padx=s_del_pad, pady=s_del_pad, stick="w")
-
-    global s_del_s_id_opt_menu
-
-    def s_del_s_id_opt_menu():
-        # Options Menu For all existing stories
-        conn = sqlite3.connect("EditorDataV3.db")
-        c = conn.cursor()
-
-        c.execute("""SELECT s_id FROM stories""")
-        s_del_s_id_list_raw = c.fetchall()
-        s_del_s_id_list = []
-        for tp in s_del_s_id_list_raw:
-            for item in tp:
-                s_del_s_id_list.append(item)
-
-        if s_del_s_id_list:
-            global s_del_s_id_variable
-            s_del_s_id_variable = StringVar()
-            s_del_s_id_variable.set(s_del_s_id_list[0])
-            s_del_story_id_opt_menu_var = OptionMenu(s_del_info_frame_1, s_del_s_id_variable, *s_del_s_id_list)
-            s_del_story_id_opt_menu_var.config(width=s_del_width)
-            s_del_story_id_opt_menu_var.grid(row=0, column=1, ipadx=s_del_pad, pady=s_del_pad, stick="w")
-
-        else:
-            messagebox.showerror("Index Error", "No Existing Stories Found")
-            s_del_wd.destroy()
-
-        conn.commit()
-        conn.close()
-
-    s_del_s_id_opt_menu()
-
-    s_del_wd.mainloop()

@@ -84,10 +84,12 @@ def p_new_insert():
     p_new_text = ((p_new_text_raw[0])[0])
 
     # Input data into text box
-    p_new_choice_message_var.set(str(p_new_text))
+    p_new_choice_message_var.delete("1.0", "end")
+    p_new_choice_message_var.insert(END, str(p_new_text))
 
     # Decode the ID
-    p_new_decoded_id_variable.set(id.decoder_3(p_new_p_id_variable.get()))
+    p_new_decoded_id_variable.delete("1.0", "end")
+    p_new_decoded_id_variable.insert(END, id.decoder_3(p_new_p_id_variable.get()))
 
     # End Connection
     conn.commit()
@@ -102,7 +104,7 @@ def p_new_window():
     screen_x_2 = p_new_wd.winfo_screenwidth()
     screen_y_2 = p_new_wd.winfo_screenheight()
     window_x_2 = 505
-    window_y_2 = 820
+    window_y_2 = 848
     p_new_wd.minsize(window_x_2, window_y_2)
     p_new_wd.maxsize(window_x_2, window_y_2)
     pos_x_2 = int((screen_x_2 - window_x_2) / 2)
@@ -125,44 +127,44 @@ def p_new_window():
 
     # Choice Frame
     p_new_paragraph_frame = LabelFrame(p_new_wd, width=window_x_2, height=p_new_frame_height)
-    p_new_paragraph_frame.pack(fill="both", expand=True)
+    p_new_paragraph_frame.pack(fill="both")
 
     # Bottom Buttons Frame
     p_new_button_frame_2 = LabelFrame(p_new_wd, height=p_new_rest / 2, width=window_x_2)
-    p_new_button_frame_2.pack(fill="both")
+    p_new_button_frame_2.pack(fill="both", expand=True)
 
     p_new_width = 42
     p_new_pad = 10
+    p_new_entry_width = 37
     # Labels
     p_new_get_story_id_label = Label(p_new_info_frame_1, text="Select Story ID:", width=int(p_new_width / 2), anchor=W)
-    p_new_get_story_id_label.grid(row=0, column=0, padx=p_new_pad, pady=p_new_pad, stick="w")
+    p_new_get_story_id_label.grid(row=0, column=0, padx=(p_new_pad, p_new_pad+1), pady=p_new_pad, stick="w")
 
     p_new_get_choice_id_label = Label(p_new_info_frame_1, text="Select Choice ID:", width=int(p_new_width / 2), anchor=W)
-    p_new_get_choice_id_label.grid(row=1, column=0, padx=p_new_pad, pady=p_new_pad, stick="w")
+    p_new_get_choice_id_label.grid(row=1, column=0, padx=(p_new_pad, p_new_pad+1), pady=p_new_pad, stick="w")
 
     p_new_decode_c_id_label = Label(p_new_info_frame_1, text="Decoded ID:", width=int(p_new_width / 2), anchor=NW)
-    p_new_decode_c_id_label.grid(row=2, column=0, padx=p_new_pad, pady=(p_new_pad, 100), stick="nw")
+    p_new_decode_c_id_label.grid(row=2, column=0, padx=(p_new_pad, p_new_pad+5), pady=p_new_pad, stick="nw")
 
     p_new_choice_message_label = Label(p_new_info_frame_2, text="Choice Text:", width=int(p_new_width / 2), anchor=NW)
-    p_new_choice_message_label.grid(row=2, column=0, padx=p_new_pad, pady=(p_new_pad, 100), stick="nw")
+    p_new_choice_message_label.grid(row=2, column=0, padx=(p_new_pad, p_new_pad+5), pady=p_new_pad, stick="nw")
 
     p_new_paragraph_text_label = Label(p_new_paragraph_frame, text="Paragraph Text:", width=int(p_new_width / 2), anchor=NW)
     p_new_paragraph_text_label.grid(row=1, column=0, padx=(p_new_pad, p_new_pad+5), pady=p_new_pad, stick="nw")
 
-    # Entries
     global p_new_paragraph_text_entry, p_new_choice_message_var, p_new_decoded_id_variable
-
+    # Entries
     p_new_paragraph_text_entry = Text(p_new_paragraph_frame, width=37, height=20)
     p_new_paragraph_text_entry.grid(row=1, column=1, padx=p_new_pad, pady=p_new_pad)
 
     # Message Box
-    p_new_choice_message_var = StringVar()
-    p_new_choice_message = Message(p_new_info_frame_2, textvariable=p_new_choice_message_var, width=280, anchor=NW)
-    p_new_choice_message.grid(row=2, column=1, padx=p_new_pad, pady=p_new_pad, stick="nw")
+    p_new_choice_message_var = Text(p_new_info_frame_2, width=p_new_entry_width, height=10)
+    p_new_choice_message_var.bind("<Key>", lambda a: "break")
+    p_new_choice_message_var.grid(row=2, column=1, padx=p_new_pad, pady=p_new_pad, stick="w")
 
-    p_new_decoded_id_variable = StringVar()
-    p_new_decoded_p_id_message = Message(p_new_info_frame_1, textvariable=p_new_decoded_id_variable, width=280, anchor=NW)
-    p_new_decoded_p_id_message.grid(row=2, column=1, padx=p_new_pad, pady=p_new_pad, stick="nw")
+    p_new_decoded_id_variable = Text(p_new_info_frame_1, width=p_new_entry_width, height=5)
+    p_new_decoded_id_variable.bind("<Key>", lambda a: "break")
+    p_new_decoded_id_variable.grid(row=2, column=1, padx=p_new_pad, pady=p_new_pad, stick="w")
 
     # Buttons
     p_new_submit_button = Button(p_new_button_frame_1, text="Submit", width=int(p_new_width / 2), command=p_new_insert)
@@ -194,7 +196,7 @@ def p_new_window():
             p_new_s_id_variable = StringVar()
             p_new_s_id_variable.set(p_new_s_id_list[0])
             p_new_s_id_opt_menu_var = OptionMenu(p_new_info_frame_1, p_new_s_id_variable, *p_new_s_id_list)
-            p_new_s_id_opt_menu_var.config(width=p_new_width)
+            p_new_s_id_opt_menu_var.config(width=p_new_width+1)
             p_new_s_id_opt_menu_var.grid(row=0, column=1, pady=p_new_pad, padx=p_new_pad, stick="ew")
 
         else:
@@ -235,7 +237,7 @@ def p_new_window():
             p_new_p_id_variable = StringVar()
             p_new_p_id_variable.set(p_new_c_id_list[0])
             p_new_c_id_opt_menu_var = OptionMenu(p_new_info_frame_1, p_new_p_id_variable, *p_new_c_id_list)
-            p_new_c_id_opt_menu_var.config(width=p_new_width)
+            p_new_c_id_opt_menu_var.config(width=p_new_width+1)
             p_new_c_id_opt_menu_var.grid(row=1, column=1, pady=p_new_pad, padx=p_new_pad, stick="ew")
 
         else:
@@ -284,7 +286,7 @@ def p_edt_insert():
     conn = sqlite3.connect("EditorDataV3.db")
     c = conn.cursor()
 
-    p_edt_p_id = p_new_p_id_variable.get()
+    p_edt_p_id = p_edt_p_id_variable.get()
 
     c.execute(f"""SELECT p_text FROM paragraphs WHERE p_id = '{p_edt_p_id}'""")
     p_edt_text_raw = c.fetchall()
@@ -297,7 +299,33 @@ def p_edt_insert():
 
 
 def p_edt_decode_id():
-    p_edt_decode_id_variable.set(id.decoder_3(p_new_p_id_variable.get()))
+    p_edt_decode_id_variable.delete("1.0", "end")
+    p_edt_decode_id_variable.insert(END, id.decoder_3(p_edt_p_id_variable.get()))
+
+
+def p_del_delete():
+    conn = sqlite3.connect("EditorDataV3.db")
+    c = conn.cursor()
+    p_del_s_id = p_edt_s_id_variable.get()
+    p_del_p_id = p_edt_p_id_variable.get()
+
+    p_del_warning = messagebox.askquestion('Confirm Deletion', f'Are you sure you want to delete Paragraph Number {id.id_int(p_del_p_id)}?', icon='warning')
+
+    if p_del_warning == 'yes':
+        c.execute(f"""DELETE FROM paragraphs WHERE p_id LIKE '{p_del_p_id}%'""")
+        c.execute(f"""DELETE FROM choices WHERE p_id LIKE '{p_del_p_id}%'""")
+
+        # Show Success pop-up
+        messagebox.showinfo("Success", f"Paragraph Number {id.id_int(p_del_p_id)} In Story Number {id.id_int(p_del_s_id)}\nhas been successfully deleted."
+                                       f"\nAll Paragraphs and Choices connected to Paragraph Number {id.id_int(p_del_p_id)} were also Deleted.")
+        p_edt_paragraph_text_entry.delete("1.0", "end")
+        p_edt_decode_id_variable.delete("1.0", "end")
+
+    conn.commit()
+    conn.close()
+
+    p_edt_p_id_opt_menu()
+    p_edt_s_id_opt_menu()
 
 
 def p_edt_window():
@@ -307,7 +335,7 @@ def p_edt_window():
     screen_x_2 = p_edt_wd.winfo_screenwidth()
     screen_y_2 = p_edt_wd.winfo_screenheight()
     window_x_2 = 500
-    window_y_2 = 620
+    window_y_2 = 663
     p_edt_wd.minsize(window_x_2, window_y_2)
     p_edt_wd.maxsize(window_x_2, window_y_2)
     pos_x_2 = int((screen_x_2 - window_x_2) / 2)
@@ -331,11 +359,11 @@ def p_edt_window():
 
     # Info Frame 4
     p_edt_info_frame_4 = LabelFrame(p_edt_wd, height=p_edt_frame_height, width=window_x_2)
-    p_edt_info_frame_4.pack(fill="both", side=TOP, expand=True)
+    p_edt_info_frame_4.pack(fill="both", side=TOP)
 
     # Buttons Frame
     p_edt_button_frame = LabelFrame(p_edt_wd, height=window_y_2 - p_edt_frame_height, width=window_x_2)
-    p_edt_button_frame.pack(fill="both", side=BOTTOM)
+    p_edt_button_frame.pack(fill="both", side=BOTTOM, expand=True)
 
     p_edt_entry_width = 37
     p_edt_width = 42
@@ -343,37 +371,45 @@ def p_edt_window():
 
     # Labels
     p_edt_story_id_label = Label(p_edt_info_frame_1, text="Select Choice ID:", width=int(p_edt_width / 2), anchor=W)
-    p_edt_story_id_label.grid(row=0, column=0, padx=p_edt_pad, pady=p_edt_pad, stick="w")
+    p_edt_story_id_label.grid(row=0, column=0, padx=(p_edt_pad, p_edt_pad-6), pady=p_edt_pad, stick="w")
 
     p_edt_decode_id_label_text = Label(p_edt_info_frame_2, text="Decoded ID:", width=int(p_edt_width / 2), anchor=NW)
-    p_edt_decode_id_label_text.grid(row=0, column=0, padx=p_edt_pad, pady=(p_edt_pad, 180), stick="nw")
+    p_edt_decode_id_label_text.grid(row=0, column=0, padx=(p_edt_pad, p_edt_pad-5), pady=p_edt_pad, stick="nw")
 
     p_edt_paragraph_text_label = Label(p_edt_info_frame_4, text="Edit Paragraph:", width=int(p_edt_width / 2) - 1, anchor=NW)
     p_edt_paragraph_text_label.grid(row=0, column=0, padx=p_edt_pad, pady=p_edt_pad, stick="nw")
 
+    # Message Box
     global p_edt_decode_id_variable
-    p_edt_decode_id_variable = StringVar()
-    decode_id_label_message = Message(p_edt_info_frame_2, textvariable=p_edt_decode_id_variable, width=280, anchor=NW)
-    decode_id_label_message.grid(row=0, column=1, padx=p_edt_pad, pady=p_edt_pad, stick="nw")
+    p_edt_decode_id_variable = Text(p_edt_info_frame_2, width=p_edt_entry_width, height=5)
+    p_edt_decode_id_variable.bind("<Key>", lambda a: "break")
+    p_edt_decode_id_variable.grid(row=0, column=1, padx=p_edt_pad, pady=p_edt_pad, stick="w")
 
     # Text
     global p_edt_paragraph_text_entry
-    p_edt_paragraph_text_entry = Text(p_edt_info_frame_4, width=p_edt_entry_width, height=10)
+    p_edt_paragraph_text_entry = Text(p_edt_info_frame_4, width=p_edt_entry_width, height=20)
     p_edt_paragraph_text_entry.grid(row=0, column=1, padx=p_edt_pad, pady=p_edt_pad, stick="w")
 
     # Buttons
     p_edt_submit_id_button = Button(p_edt_info_frame_3, text="Decode ID", width=int(p_edt_width / 2), command=p_edt_decode_id)
     p_edt_submit_id_button.grid(row=0, column=0, padx=p_edt_pad, pady=p_edt_pad, stick="w", ipadx=157)
 
-    p_edt_width_buttons = 19
-    p_edt_save_paragraph_button = Button(p_edt_button_frame, text="Save Changes", width=p_edt_width_buttons, command=p_edt_edit)
-    p_edt_save_paragraph_button.grid(row=0, column=0, padx=p_edt_pad, pady=p_edt_pad, stick="w")
+    p_edt_width_buttons = 13
+    p_edt_save_story_button = Button(p_edt_button_frame, text="Save Changes", width=p_edt_width_buttons,
+                                     command=p_edt_edit)
+    p_edt_save_story_button.grid(row=0, column=0, padx=(p_edt_pad + 3, p_edt_pad), pady=p_edt_pad, stick="w")
 
-    p_edt_load_paragraphs_button = Button(p_edt_button_frame, text="Load Choice", width=p_edt_width_buttons, command=p_edt_insert)
-    p_edt_load_paragraphs_button.grid(row=0, column=1, padx=p_edt_pad, pady=p_edt_pad, stick="w")
+    p_edt_load_text_button = Button(p_edt_button_frame, text="Load Paragraph", width=p_edt_width_buttons,
+                                    command=p_edt_insert)
+    p_edt_load_text_button.grid(row=0, column=1, padx=p_edt_pad, pady=p_edt_pad, stick="w")
 
-    p_edt_cancel_button = Button(p_edt_button_frame, text="Cancel", width=p_edt_width_buttons, command=p_edt_wd.destroy)
-    p_edt_cancel_button.grid(row=0, column=2, padx=p_edt_pad, pady=p_edt_pad, stick="w")
+    p_edt_delete_text_button = Button(p_edt_button_frame, text="Delete Paragraph", width=p_edt_width_buttons,
+                                      command=p_del_delete)
+    p_edt_delete_text_button.grid(row=0, column=2, padx=p_edt_pad, pady=p_edt_pad, stick="w")
+
+    p_edt_cancel_button = Button(p_edt_button_frame, text="Cancel", width=p_edt_width_buttons,
+                                 command=p_edt_wd.destroy)
+    p_edt_cancel_button.grid(row=0, column=3, padx=p_edt_pad, pady=p_edt_pad, stick="w")
 
     global p_edt_s_id_opt_menu, p_edt_p_id_opt_menu
 
@@ -394,7 +430,7 @@ def p_edt_window():
             p_edt_s_id_variable = StringVar()
             p_edt_s_id_variable.set(p_edt_s_id_list[0])
             p_edt_s_id_opt_menu_var = OptionMenu(p_edt_info_frame_1, p_edt_s_id_variable, *p_edt_s_id_list)
-            p_edt_s_id_opt_menu_var.config(width=p_edt_width)
+            p_edt_s_id_opt_menu_var.config(width=p_edt_width+1)
             p_edt_s_id_opt_menu_var.grid(row=0, column=1, pady=p_edt_pad, padx=p_edt_pad, stick="ew")
 
         else:
@@ -421,12 +457,12 @@ def p_edt_window():
             p_edt_p_id_variable = StringVar()
             p_edt_p_id_variable.set(p_edt_p_id_list[0])
             p_edt_p_id_opt_menu_var = OptionMenu(p_edt_info_frame_1, p_edt_p_id_variable, *p_edt_p_id_list)
-            p_edt_p_id_opt_menu_var.config(width=p_edt_width)
+            p_edt_p_id_opt_menu_var.config(width=p_edt_width+1)
             p_edt_p_id_opt_menu_var.grid(row=1, column=1, pady=p_edt_pad, padx=p_edt_pad, stick="ew")
 
         else:
             messagebox.showerror("Index Error", "No Existing Paragraphs Found")
-            p_new_wd.destroy()
+            p_edt_wd.destroy()
 
         conn.commit()
         conn.close()
@@ -435,197 +471,3 @@ def p_edt_window():
     p_edt_p_id_opt_menu()
 
     p_edt_wd.mainloop()
-
-
-def p_del_delete():
-    conn = sqlite3.connect("EditorDataV3.db")
-    c = conn.cursor()
-    p_del_s_id = p_del_s_id_variable.get()
-    p_del_p_id = p_del_p_id_variable.get()
-
-    p_del_warning = messagebox.askquestion('Confirm Deletion', f'Are you sure you want to delete Paragraph Number {id.id_int(p_del_p_id)}?', icon='warning')
-
-    if p_del_warning == 'yes':
-        c.execute(f"""DELETE FROM paragraphs WHERE p_id LIKE '{p_del_p_id}%'""")
-        c.execute(f"""DELETE FROM choices WHERE p_id LIKE '{p_del_p_id}%'""")
-
-        # Show Success pop-up
-        messagebox.showinfo("Success", f"Paragraph Number {id.id_int(p_del_p_id)} In Story Number {id.id_int(p_del_s_id)}\nhas been successfully deleted."
-                                       f"\nAll Paragraphs and Choices connected to Paragraph Number {id.id_int(p_del_p_id)} were also Deleted.")
-        p_del_text_message.set("")
-        p_edt_decode_id_variable.set("")
-
-    conn.commit()
-    conn.close()
-
-    p_del_p_id_opt_menu()
-    p_del_s_id_opt_menu()
-
-
-def p_del_insert():
-    conn = sqlite3.connect("EditorDataV3.db")
-    c = conn.cursor()
-
-    p_del_p_id = p_new_p_id_variable.get()
-
-    c.execute(f"""SELECT p_text FROM paragraphs WHERE p_id = '{p_del_p_id}'""")
-    p_del_text_raw = c.fetchall()
-    p_del_text = ((p_del_text_raw[0])[0])
-
-    p_del_text_message.set(str(p_del_text))
-
-    conn.commit()
-    conn.close()
-
-
-def p_del_decode_id():
-    p_del_decode_id_variable.set(id.decoder_3(p_del_p_id_variable.get()))
-
-
-def p_del_window():
-    global p_del_wd
-    p_del_wd = Toplevel()
-    p_del_wd.title("Delete A Paragraph")
-    screen_x_2 = p_del_wd.winfo_screenwidth()
-    screen_y_2 = p_del_wd.winfo_screenheight()
-    window_x_2 = 500
-    window_y_2 = 650
-    p_del_wd.minsize(window_x_2, window_y_2)
-    p_del_wd.maxsize(window_x_2, window_y_2)
-    pos_x_2 = int((screen_x_2 - window_x_2) / 2)
-    pos_y_2 = int((screen_y_2 - window_y_2) / 2)
-    p_del_wd.geometry(f"{window_x_2}x{window_y_2}+{pos_x_2}+{pos_y_2}")
-
-    p_del_frame_height = 400
-    p_del_info_frame_height = 100
-
-    # Info Frame 1
-    p_del_info_frame_1 = LabelFrame(p_del_wd, height=p_del_info_frame_height, width=window_x_2)
-    p_del_info_frame_1.pack(fill="both", side=TOP)
-
-    # Info Frame 2
-    p_del_info_frame_2 = LabelFrame(p_del_wd, height=p_del_info_frame_height, width=window_x_2)
-    p_del_info_frame_2.pack(fill="both", side=TOP)
-
-    # Info Frame 3
-    p_del_info_frame_3 = LabelFrame(p_del_wd, height=p_del_info_frame_height, width=window_x_2)
-    p_del_info_frame_3.pack(fill="both", side=TOP)
-
-    # Info Frame
-    p_del_info_frame_4 = LabelFrame(p_del_wd, height=p_del_frame_height, width=window_x_2)
-    p_del_info_frame_4.pack(fill="both", side=TOP, expand=True)
-
-    # Bottom Frame
-    p_del_button_frame = LabelFrame(p_del_wd, height=window_y_2 - p_del_frame_height, width=window_x_2)
-    p_del_button_frame.pack(fill="both", side=BOTTOM)
-
-    p_del_width = 42
-    p_del_pad = 10
-
-    # Labels
-    p_del_story_id_label = Label(p_del_info_frame_1, text="Select Story ID:", width=int(p_del_width / 2), anchor=W)
-    p_del_story_id_label.grid(row=0, column=0, padx=p_del_pad, pady=p_del_pad, stick="w")
-
-    p_del_p_id_label = Label(p_del_info_frame_1, text="Select Paragraph ID:", width=int(p_del_width/2), anchor=W)
-    p_del_p_id_label.grid(row=1, column=0, padx=p_del_pad, pady=p_del_pad, stick="w")
-
-    p_del_text_label = Label(p_del_info_frame_4, text="Paragraph Text:", width=int(p_del_width/2), anchor=NW)
-    p_del_text_label.grid(row=1, column=0, padx=p_del_pad, pady=p_del_pad, stick="nw")
-
-    p_del_decode_id_label = Label(p_del_info_frame_2, text="Decoded ID:", width=int(p_del_width / 2), anchor=NW)
-    p_del_decode_id_label.grid(row=0, column=0, padx=p_del_pad, pady=(p_del_pad, 180), stick="nw")
-
-    # Message Box
-    global p_del_text_message
-    p_del_text_message = StringVar()
-    story_del_message = Message(p_del_info_frame_4, textvariable=p_del_text_message, width=280, anchor=W)
-    story_del_message.grid(row=1, column=1, padx=p_del_pad, pady=p_del_pad, stick="w")
-
-    global p_del_decode_id_variable
-    p_del_decode_id_variable = StringVar()
-    p_del_decode_id_label = Message(p_del_info_frame_2, textvariable=p_del_decode_id_variable, width=280, anchor=NW)
-    p_del_decode_id_label.grid(row=0, column=1, padx=p_del_pad, pady=p_del_pad, stick="nw")
-
-    # Buttons
-    p_del_submit_id_button = Button(p_del_info_frame_3, text="Decode ID", width=int(p_del_width / 2), command=p_del_decode_id)
-    p_del_submit_id_button.grid(row=0, column=0, padx=p_del_pad, pady=p_del_pad, stick="w", ipadx=157)
-
-    p_del_width_buttons = 19
-    p_del_delete_text_button = Button(p_del_button_frame, text="Delete Paragraph", width=p_del_width_buttons, command=p_del_delete)
-    p_del_delete_text_button.grid(row=0, column=0, padx=p_del_pad, pady=p_del_pad, stick="w")
-
-    p_del_check_text_button = Button(p_del_button_frame, text="Check Paragraph Text", width=p_del_width_buttons, command=p_del_insert)
-    p_del_check_text_button.grid(row=0, column=1, padx=p_del_pad, pady=p_del_pad, stick="w")
-
-    p_del_cancel_button = Button(p_del_button_frame, text="Cancel", width=p_del_width_buttons, command=p_del_wd.destroy)
-    p_del_cancel_button.grid(row=0, column=2, padx=p_del_pad, pady=p_del_pad, stick="w")
-
-    global p_del_s_id_opt_menu, p_del_p_id_opt_menu
-
-    def p_del_s_id_opt_menu():
-        conn = sqlite3.connect("EditorDataV3.db")
-        c = conn.cursor()
-
-        c.execute("""SELECT s_id FROM paragraphs UNION SELECT s_id FROM paragraphs""")
-        p_del_s_id_list_raw = c.fetchall()
-
-        p_del_s_id_list = []
-        for tp in p_del_s_id_list_raw:
-            for item in tp:
-                p_del_s_id_list.append(item)
-
-        if p_del_s_id_list:
-            global p_del_s_id_variable
-            p_del_s_id_variable = StringVar()
-            p_del_s_id_variable.set(p_del_s_id_list[0])
-            p_del_s_id_opt_menu_var = OptionMenu(p_del_info_frame_1, p_del_s_id_variable, *p_del_s_id_list)
-            p_del_s_id_opt_menu_var.config(width=p_del_width)
-            p_del_s_id_opt_menu_var.grid(row=0, column=1, pady=p_del_pad, padx=p_del_pad, stick="ew")
-
-        else:
-            messagebox.showerror("Index Error", "No Existing Stories Found")
-            p_del_wd.destroy()
-
-        conn.commit()
-        conn.close()
-
-    p_del_s_id_opt_menu()
-
-    def p_del_p_id_opt_menu():
-        conn = sqlite3.connect("EditorDataV3.db")
-        c = conn.cursor()
-
-        c.execute(f"""SELECT p_id FROM paragraphs""")
-        p_del_p_id_list_raw = c.fetchall()
-
-        p_del_p_id_list = []
-        for tp in p_del_p_id_list_raw:
-            for item in tp:
-                p_del_p_id_list.append(item)
-
-        if p_del_p_id_list:
-            global p_del_p_id_variable
-            p_del_p_id_variable = StringVar()
-            p_del_p_id_variable.set(p_del_p_id_list[0])
-            p_del_p_id_opt_menu_var = OptionMenu(p_del_info_frame_1, p_del_p_id_variable, *p_del_p_id_list)
-            p_del_p_id_opt_menu_var.config(width=p_del_width)
-            p_del_p_id_opt_menu_var.grid(row=1, column=1, pady=p_del_pad, padx=p_del_pad, stick="ew")
-
-        else:
-            messagebox.showerror("Index Error", "No Existing Paragraphs were Found")
-            p_new_wd.destroy()
-
-        conn.commit()
-        conn.close()
-
-    p_del_p_id_opt_menu()
-
-    p_del_wd.mainloop()
-
-
-
-
-
-
-
-

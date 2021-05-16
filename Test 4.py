@@ -1,41 +1,35 @@
-import tkinter as tk
+from tkinter import *
+import tkinter
 
-class App():
-    def __init__(self, parent):
-        self.parent = parent
-        self.options = ['one', 'two', 'three']
+top = tkinter.Tk()
 
-        self.om_variable = tk.StringVar(self.parent)
-        self.om_variable.set(self.options[0])
+B1 = tkinter.Button(top, text="arrow", relief=RAISED,cursor="arrow").pack()
+B2 = tkinter.Button(top, text="circle", relief=RAISED,cursor="circle").pack()
+B3 = tkinter.Button(top, text="clock", relief=RAISED,cursor="clock").pack()
+B4 = tkinter.Button(top, text="cross", relief=RAISED,cursor="cross").pack()
+B5 = tkinter.Button(top, text="dotbox", relief=RAISED,cursor="dotbox").pack()
+B6 = tkinter.Button(top, text="exchange", relief=RAISED,cursor="exchange").pack()
+B7 = tkinter.Button(top, text="fleur", relief=RAISED,cursor="fleur").pack()
+B8 = tkinter.Button(top, text="heart", relief=RAISED,cursor="heart").pack()
+B9 = tkinter.Button(top, text="man", relief=RAISED,cursor="man").pack()
+B10 = tkinter.Button(top, text="mouse", relief=RAISED,cursor="mouse").pack()
+B11 = tkinter.Button(top, text="pirate", relief=RAISED,cursor="pirate").pack()
+B12 = tkinter.Button(top, text="plus", relief=RAISED,cursor="plus").pack()
+B13 = tkinter.Button(top, text="shuttle", relief=RAISED,cursor="shuttle").pack()
+B14 = tkinter.Button(top, text="sizing", relief=RAISED,cursor="sizing").pack()
+B15 = tkinter.Button(top, text="spider", relief=RAISED,cursor="spider").pack()
+B16 = tkinter.Button(top, text="spraycan", relief=RAISED,cursor="spraycan").pack()
+B17 = tkinter.Button(top, text="star", relief=RAISED,cursor="star").pack()
+B18 = tkinter.Button(top, text="target", relief=RAISED,cursor="target").pack()
+B19 = tkinter.Button(top, text="tcross", relief=RAISED,cursor="tcross").pack()
+B20 = tkinter.Button(top, text="trek", relief=RAISED,cursor="trek").pack()
+B21 = tkinter.Button(top, text="watch", relief=RAISED,cursor="watch").pack()
 
-        self.om = tk.OptionMenu(self.parent, self.om_variable, *self.options)
-        self.om.grid(column=0, row=0)
+m = Message(top)
+m.pack()
+txt = Text(top, background=m.cget("background"), relief="flat",
+    borderwidth=0, font=m.cget("font"), state="disabled")
+txt.pack()
+m.destroy()
 
-        self.label = tk.Label(self.parent, text='Enter new option')
-        self.entry = tk.Entry(self.parent)
-        self.button = tk.Button(self.parent, text='Add option to list', command=self.add_option)
-
-        self.label.grid(column=1, row=0)
-        self.entry.grid(column=1, row=1)
-        self.button.grid(column=1, row=2)
-
-        self.update_button = tk.Button(self.parent, text='Update option menu', command=self.update_option_menu)
-        self.update_button.grid(column=0, row=2)
-
-    def update_option_menu(self):
-        menu = self.om["menu"]
-        menu.delete(0, "end")
-        for string in self.options:
-            menu.add_command(label=string,
-                             command=lambda value=string: self.om_variable.set(value))
-
-    def add_option(self):
-         self.options.append(self.entry.get())
-         self.entry.delete(0, 'end')
-         print(self.options)
-
-
-
-root = tk.Tk()
-App(root)
-root.mainloop()
+top.mainloop()
