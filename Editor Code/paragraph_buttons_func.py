@@ -7,59 +7,56 @@ from tkinter import ttk
 import tkinter.font as font
 import sqlite3
 import id
-import widget_func
+
+database = "EditorDataV3.db"
 
 
 def p_new_save():
-    conn = sqlite3.connect("EditorDataV3.db")
+    conn = sqlite3.connect(database)
     c = conn.cursor()
 
     c.execute("""CREATE TABLE IF NOT EXISTS paragraphs
     (s_id text,
-    c_id text,
-    p_id text,
-    p_text text)""")
+    p_id text)""")
 
-    # im not gonna explain this stuff 0_o
+    c.execute("""CREATE TABLE IF NOT EXISTS paragraphs_list
+        (s_id text,
+        pl_id text,
+        p_text text,
+        npc_id text,
+        mst_id text)""")
+
+    # Get all needed id's
     p_new_s_id = p_new_s_id_variable.get()
     p_new_c_id = p_new_p_id_variable.get()
+
+    # Get entry text length for error checking
     p_new_text_length = len(p_new_paragraph_text_entry.get("1.0", "end"))
 
-    p_new_p_id_raw = id.id_int(id.decoder_2(p_new_c_id)[-2])
-    p_new_p_id = None
-    if type(p_new_p_id_raw) == str:
-        p_new_p_id = 1
+    c.execute("""SELECT pl_id FROM paragraphs_list ORDER BY pl_id""")
+    p_new_p_id_list_raw = c.fetchall()
+    p_new_p_id = id.raw_conv(p_new_p_id_list_raw)
+    p_new_p_id_num_max = id.max_num(id.int_list(p_new_p_id))
+
+    if p_new_p_id_num_max == '':
+        p_new_new_p_id = 0
     else:
-        int(id.id_int(id.decoder_2(p_new_c_id)[-2])) + 1
+        p_new_new_p_id = p_new_p_id_num_max + 1
     
-    c.execute(f"""SELECT p_id FROM paragraphs WHERE p_id = '{p_new_c_id}_{id.p_id(p_new_p_id)}'""")
-    p_new_p_id_list = c.fetchall()
     p_new_c_p_id = id.decoder_2(p_new_c_id)[0]
 
-    # I ran out of brain cells for this
     if f'{p_new_s_id}' == f'{p_new_c_p_id}':
-        try:
-            p_new_p_id = int(p_new_p_id)
-            if p_new_text_length != 1:
-                if len(p_new_p_id_list) == 0:
-                    # Insert into table if that id does not exist
-                    c.execute("INSERT INTO paragraphs VALUES (:s_id, :c_id, :p_id, :p_text)",
-                              {
-                                  "s_id": f"{p_new_s_id}",
-                                  "c_id": f"{p_new_c_id}",
-                                  "p_id": f"{p_new_c_id}_{id.id_conv('p_id', p_new_p_id)}",
-                                  "p_text": str(p_new_paragraph_text_entry.get("1.0", "end"))
-                              })
-                    # Show Success pop-up
-                    messagebox.showinfo("Success",
-                                        f"Paragraph Number {p_new_p_id}\nIn Story Number {id.id_int(p_new_s_id)}\nhas been successfully created.")
-                else:
-                    messagebox.showerror("Duplication Error", f"Paragraph Number {p_new_p_id} Already Exists")
-            else:
-                messagebox.showerror("Input Error", "Paragraph Text Is Empty")
+        if p_new_text_length != 1:
+            c.execute("INSERT INTO paragraphs_list VALUES (:s_id, :lp_id, :p_text)",
+                      {
+                          "s_id": f"{p_new_s_id}",
+                          "lp_id": f"{p_new_s_id}_{id.conv('p_id', p_new_new_p_id)}",
+                          "p_text": str(p_new_paragraph_text_entry.get("1.0", "end"))
+                      })
 
-        except ValueError:
-            messagebox.showerror("Syntax Error", "Paragraph ID Must Be A Number")
+            messagebox.showinfo("Success", f"Paragraph Number {p_new_new_p_id}\nIn Story Number {id.id_int(p_new_s_id)}\nhas been successfully created.")
+        else:
+            messagebox.showerror("Input Error", "Paragraph Text Is Empty")
     else:
         messagebox.showerror("ID Error", f"Choice's Story ID is {p_new_c_p_id} but Story ID is {p_new_s_id}")
 
@@ -74,7 +71,7 @@ def p_new_save():
 
 
 def p_new_insert():
-    conn = sqlite3.connect("EditorDataV3.db")
+    conn = sqlite3.connect(database)
     c = conn.cursor()
 
     p_new_c_id = p_new_p_id_variable.get()
@@ -180,7 +177,7 @@ def p_new_window():
 
     def p_new_s_id_opt_menu():
         # Options Menu For all existing stories
-        conn = sqlite3.connect("EditorDataV3.db")
+        conn = sqlite3.connect(database)
         c = conn.cursor()
 
         c.execute("""SELECT s_id FROM choices UNION SELECT s_id FROM choices""")
@@ -210,27 +207,12 @@ def p_new_window():
 
     def p_new_c_id_opt_menu():
         # Options Menu For all existing paragraphs
-        conn = sqlite3.connect("EditorDataV3.db")
+        conn = sqlite3.connect(database)
         c = conn.cursor()
 
-        c.execute(f"""SELECT c_id FROM choices""")
-        p_new_c_id_choices_list_raw = c.fetchall()
-        p_new_c_id_choices_list = []
-        for tp in p_new_c_id_choices_list_raw:
-            for item in tp:
-                p_new_c_id_choices_list.append(item)
-
-        c.execute(f"""SELECT c_id FROM paragraphs""")
-        p_new_c_id_paragraphs_list_raw = c.fetchall()
-        p_new_c_id_paragraphs_list = []
-        for tp in p_new_c_id_paragraphs_list_raw:
-            for item in tp:
-                p_new_c_id_paragraphs_list.append(item)
-
-        for item in p_new_c_id_paragraphs_list:
-            p_new_c_id_choices_list.remove(item)
-
-        p_new_c_id_list = p_new_c_id_choices_list
+        c.execute(f"""SELECT c_id FROM choices ORDER BY c_id""")
+        p_new_c_id_ist_raw = c.fetchall()
+        p_new_c_id_list = id.c_id_sorter(id.raw_conv(p_new_c_id_ist_raw))
 
         if p_new_c_id_list:
             global p_new_p_id_variable
@@ -253,16 +235,16 @@ def p_new_window():
 
 
 def p_edt_edit():
-    conn = sqlite3.connect("EditorDataV3.db")
+    conn = sqlite3.connect(database)
     c = conn.cursor()
 
     p_edt_s_id = p_edt_s_id_variable.get()
     p_edt_p_id = p_edt_p_id_variable.get()
     if len(p_edt_paragraph_text_entry.get("1.0", "end")) != 1:
-        c.execute("""UPDATE paragraphs SET p_text = :p_text WHERE p_id = :p_id""",
+        c.execute("""UPDATE paragraphs_list SET p_text = :p_text WHERE pl_id = :pl_id""",
                   {
                       "p_text": p_edt_paragraph_text_entry.get("1.0", "end"),
-                      "p_id": f'{p_edt_p_id}'
+                      "pl_id": f'{p_edt_p_id}'
                   })
 
         # Show Success pop-up
@@ -276,19 +258,19 @@ def p_edt_edit():
     conn.commit()
     conn.close()
 
-    p_new_s_id_opt_menu()
-    p_new_c_id_opt_menu()
+    p_edt_s_id_opt_menu()
+    p_edt_p_id_opt_menu()
 
 
 def p_edt_insert():
     p_edt_paragraph_text_entry.delete("1.0", "end")
 
-    conn = sqlite3.connect("EditorDataV3.db")
+    conn = sqlite3.connect(database)
     c = conn.cursor()
 
     p_edt_p_id = p_edt_p_id_variable.get()
 
-    c.execute(f"""SELECT p_text FROM paragraphs WHERE p_id = '{p_edt_p_id}'""")
+    c.execute(f"""SELECT p_text FROM paragraphs_list WHERE pl_id = '{p_edt_p_id}'""")
     p_edt_text_raw = c.fetchall()
     p_edt_text = ((p_edt_text_raw[0])[0])
 
@@ -304,7 +286,7 @@ def p_edt_decode_id():
 
 
 def p_del_delete():
-    conn = sqlite3.connect("EditorDataV3.db")
+    conn = sqlite3.connect(database)
     c = conn.cursor()
     p_del_s_id = p_edt_s_id_variable.get()
     p_del_p_id = p_edt_p_id_variable.get()
@@ -312,8 +294,8 @@ def p_del_delete():
     p_del_warning = messagebox.askquestion('Confirm Deletion', f'Are you sure you want to delete Paragraph Number {id.id_int(p_del_p_id)}?', icon='warning')
 
     if p_del_warning == 'yes':
-        c.execute(f"""DELETE FROM paragraphs WHERE p_id LIKE '{p_del_p_id}%'""")
-        c.execute(f"""DELETE FROM choices WHERE p_id LIKE '{p_del_p_id}%'""")
+        c.execute(f"""DELETE FROM paragraphs_list WHERE pl_id LIKE '{p_del_p_id}%'""")
+        c.execute(f"""DELETE FROM choices WHERE c_id LIKE '{p_del_p_id}%'""")
 
         # Show Success pop-up
         messagebox.showinfo("Success", f"Paragraph Number {id.id_int(p_del_p_id)} In Story Number {id.id_int(p_del_s_id)}\nhas been successfully deleted."
@@ -414,10 +396,10 @@ def p_edt_window():
     global p_edt_s_id_opt_menu, p_edt_p_id_opt_menu
 
     def p_edt_s_id_opt_menu():
-        conn = sqlite3.connect("EditorDataV3.db")
+        conn = sqlite3.connect(database)
         c = conn.cursor()
 
-        c.execute("""SELECT s_id FROM paragraphs UNION SELECT s_id FROM paragraphs""")
+        c.execute("""SELECT s_id FROM paragraphs_list UNION SELECT s_id FROM paragraphs_list""")
         p_edt_s_id_list_raw = c.fetchall()
         p_edt_s_id_list = []
 
@@ -441,10 +423,10 @@ def p_edt_window():
         conn.close()
 
     def p_edt_p_id_opt_menu():
-        conn = sqlite3.connect("EditorDataV3.db")
+        conn = sqlite3.connect(database)
         c = conn.cursor()
 
-        c.execute(f"""SELECT p_id FROM paragraphs""")
+        c.execute(f"""SELECT pl_id FROM paragraphs_list""")
         p_edt_p_id_list_raw = c.fetchall()
         p_edt_p_id_list = []
 

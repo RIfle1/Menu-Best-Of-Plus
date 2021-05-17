@@ -12,25 +12,33 @@ import paragraph_buttons_func
 import choice_buttons_func
 import id
 
+database = "EditorDataV3.db"
+
 
 # Function to create ALL necessary tables in the database
 def tables():
-    conn = sqlite3.connect("EditorDataV3.db")
+    conn = sqlite3.connect(database)
     c = conn.cursor()
-    c.execute("""CREATE TABLE IF NOT EXISTS stories (s_id text, s_text text)""")
+    c.execute("""CREATE TABLE IF NOT EXISTS stories 
+    (s_id text, 
+    s_text text,
+    ch_id text)""")
     c.execute("""CREATE TABLE IF NOT EXISTS initial_paragraphs
         (s_id text, 
         ip_id text,
         ip_text text)""")
     c.execute("""CREATE TABLE IF NOT EXISTS paragraphs
         (s_id text,
-        c_id text,
-        p_id text,
-        p_text text)""")
+        p_id text)""")
+    c.execute("""CREATE TABLE IF NOT EXISTS paragraphs_list
+            (s_id text,
+            pl_id text,
+            p_text text,
+            npc_id text,
+            mst_id text)""")
     c.execute("""CREATE TABLE IF NOT EXISTS choices
         (s_id text,
         ip_id text,
-        p_id text,
         c_id text,
         c_text text)""")
     conn.commit()
@@ -55,7 +63,7 @@ def new_tab():
     for widgets in main_story_frame.winfo_children():
         widgets.destroy()
 
-    conn = sqlite3.connect("EditorDataV3.db")
+    conn = sqlite3.connect(database)
     c = conn.cursor()
 
     c.execute(f"SELECT s_id FROM stories")
@@ -215,8 +223,12 @@ new_choice_button = Button(choices_buttons_frame, text="New Choice", bg="#5fafde
 new_choice_button.grid(row=0, column=0, stick="w", padx=button_x_space, pady=button_y_space)
 
 # EDIT CHOICE  Button
-edit_choice_button = Button(choices_buttons_frame, text="Edit Choice", bg="#5fafde", fg="White", padx=buttons_width, pady=buttons_height, font=("Times New Roman", font_size), relief=FLAT, width=button_width, command=choice_buttons_func.c_edt__window)
+edit_choice_button = Button(choices_buttons_frame, text="Edit Choice", bg="#5fafde", fg="White", padx=buttons_width, pady=buttons_height, font=("Times New Roman", font_size), relief=FLAT, width=button_width, command=choice_buttons_func.c_edt_window)
 edit_choice_button.grid(row=1, column=0, stick="w", padx=button_x_space, pady=button_y_space)
+
+# -------------------------------------------
+# THIS IS THE END OF THE "PARAGRAPH" TAB CODE
+# -------------------------------------------
 
 # -------------------------------------------
 # LOOP END

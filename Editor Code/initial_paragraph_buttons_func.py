@@ -7,11 +7,13 @@ from tkinter import ttk
 import tkinter.font as font
 import sqlite3
 import id
-import widget_func
+
+
+database = "EditorDataV3.db"
 
 
 def ip_new_save():
-    conn = sqlite3.connect("EditorDataV3.db")
+    conn = sqlite3.connect(database)
     c = conn.cursor()
 
     c.execute("""CREATE TABLE IF NOT EXISTS initial_paragraphs
@@ -43,7 +45,7 @@ def ip_new_save():
 
 
 def ip_new_insert():
-    conn = sqlite3.connect("EditorDataV3.db")
+    conn = sqlite3.connect(database)
     c = conn.cursor()
 
     ip_new_s_id = ip_new_ip_id_variable.get()
@@ -133,7 +135,7 @@ def ip_new_window():
 
     def ip_new_s_id_opt_menu():
         # Options Menu For all existing stories
-        conn = sqlite3.connect("EditorDataV3.db")
+        conn = sqlite3.connect(database)
         c = conn.cursor()
 
         c.execute("""SELECT s_id FROM stories""")
@@ -178,7 +180,7 @@ def ip_new_window():
 # Function to edit stories
 def ip_edt_edit():
     # Create a connection to the database
-    conn = sqlite3.connect("EditorDataV3.db")
+    conn = sqlite3.connect(database)
     c = conn.cursor()
 
     # Get id's
@@ -214,8 +216,7 @@ def ip_edt_insert():
     # Delete Previous Input
     ip_edt_ip_text_entry.delete("1.0", "end")
 
-
-    conn = sqlite3.connect("EditorDataV3.db")
+    conn = sqlite3.connect(database)
     c = conn.cursor()
 
     ip_edt_ip_id = ip_edt_ip_id_variable.get()
@@ -240,7 +241,7 @@ def ip_edt_decode_id():
 # Function to delete a story from the delete window
 def ip_del_delete():
     # Create connection to retrieve data
-    conn = sqlite3.connect("EditorDataV3.db")
+    conn = sqlite3.connect(database)
     c = conn.cursor()
     ip_del_ip_id = ip_edt_ip_id_variable.get()
     ip_del_s_id = id.id_int(id.decoder_2(ip_del_ip_id)[-2])
@@ -249,8 +250,8 @@ def ip_del_delete():
 
     if ip_del_warning == 'yes':
         c.execute(f"""DELETE FROM initial_paragraphs WHERE ip_id = '{ip_del_ip_id}'""")
-        c.execute(f"""DELETE FROM paragraphs WHERE s_id = '{id.id_conv('s_id', id.id_int(ip_del_ip_id))}'""")
-        c.execute(f"""DELETE FROM choices WHERE s_id = '{id.id_conv('s_id', id.id_int(ip_del_ip_id))}'""")
+        c.execute(f"""DELETE FROM paragraphs WHERE s_id = '{id.conv('s_id', id.id_int(ip_del_ip_id))}'""")
+        c.execute(f"""DELETE FROM choices WHERE s_id = '{id.conv('s_id', id.id_int(ip_del_ip_id))}'""")
 
         # Show Success pop-up
         messagebox.showinfo("Success", f"The Initial Paragraph Number In Story Number {ip_del_s_id}\nhas been successfully deleted."
@@ -353,7 +354,7 @@ def ip_edt_window():
 
     def ip_edt_ip_id_opt_menu():
         # Options Menu For all existing stories
-        conn = sqlite3.connect("EditorDataV3.db")
+        conn = sqlite3.connect(database)
         c = conn.cursor()
 
         c.execute("""SELECT ip_id FROM initial_paragraphs""")
@@ -381,12 +382,3 @@ def ip_edt_window():
     ip_edt_ip_id_opt_menu()
 
     ip_edt_wd.mainloop()
-
-
-
-
-
-
-
-
-

@@ -7,13 +7,14 @@ from tkinter import ttk
 import tkinter.font as font
 import sqlite3
 import id
-import widget_func
+
+database = "EditorDataV3.db"
 
 
 # Function to save new stories
 def s_new_save():
     # Create a connection to the database
-    conn = sqlite3.connect("EditorDataV3.db")
+    conn = sqlite3.connect(database)
     c = conn.cursor()
 
     # Create Table
@@ -21,46 +22,46 @@ def s_new_save():
     (s_id text, 
     s_text text)""")
 
-    s_new_s_id = s_new_story_id_entry.get()
+    # Create a new s_id
+    c.execute(f"""SELECT s_id from stories""")
+    s_new_s_id_list_raw = c.fetchall()
+    s_new_s_id_list = id.raw_conv(s_new_s_id_list_raw)
+
+    if not s_new_s_id_list:
+        s_new_s_id = 1
+    else:
+        s_new_s_id = int(id.max_num(id.int_list(s_new_s_id_list))) + 1
+
+    # Get c_id from character_name
+    s_new_character_name = s_new_ch_name_variable.get()
+    c.execute(f"""SELECT ch_id FROM characters WHERE character_name = '{s_new_character_name}'""")
+    s_new_ch_id_raw = c.fetchall()
+    s_new_ch_id = id.raw_conv(s_new_ch_id_raw)[0]
+
+    # Check text length for error
     s_new_text_length = len(s_new_beginning_story_entry.get("1.0", "end"))
-    c.execute(f"""SELECT s_id FROM stories WHERE s_id = '{id.id_conv('s_id', s_new_s_id)}'""")
-    s_new_s_id_raw = c.fetchall()
 
     if s_new_text_length != 1:
-        if len(s_new_s_id_raw) == 0:
-            try:
-                s_new_s_id = int(s_new_story_id_entry.get())
-                if s_new_s_id > 0:
-                    # Insert into table if that id does not exist
-                    c.execute(
-                        "INSERT INTO stories VALUES (:s_id, :s_text)",
-                        {
-                            "s_id": f"{id.s_id(s_new_s_id)}",
-                            "s_text": str(s_new_beginning_story_entry.get("1.0", "end"))
-                        })
-                    # Show Success pop-up
-                    messagebox.showinfo("Success", f"Story Number {s_new_s_id} has been successfully created.")
-                    s_new_beginning_story_entry.delete("1.0", "end")
-
-                else:
-                    messagebox.showerror("Syntax Error", "Story ID Must Be Positive", icon='warning')
-
-            except ValueError:
-                messagebox.showerror("Syntax Error", "Story ID Must Be A Number", icon='warning')
-
-        else:
-            messagebox.showerror("Duplication Error", f"Story Number {s_new_s_id} Already Exists", icon='warning')
-
+        c.execute(
+            "INSERT INTO stories VALUES (:s_id, :s_text, :ch_id)",
+            {
+                "s_id": f"{id.s_id(s_new_s_id)}",
+                "s_text": str(s_new_beginning_story_entry.get("1.0", "end")),
+                "ch_id": f"{s_new_ch_id}"
+            })
+        # Show Success pop-up
+        messagebox.showinfo("Success",
+                            f"Story Number {s_new_s_id} has been created and Character Called '{s_new_character_name}' has been assigned to it.")
+        s_new_beginning_story_entry.delete("1.0", "end")
     else:
         messagebox.showerror("Input Error", "Story Text Is Empty", icon='warning')
 
-    # End Connection
     conn.commit()
     conn.close()
 
-    # Clear the Text Boxes
-    s_new_story_id_entry.delete(0, END)
+    s_new_beginning_story_entry.delete("1.0", "end")
 
+    s_new_ch_id_opt_menu()
 
 # Function for new story window
 def s_new_window():
@@ -71,40 +72,82 @@ def s_new_window():
     screen_x_2 = s_new_wd.winfo_screenwidth()
     screen_y_2 = s_new_wd.winfo_screenheight()
     window_x_2 = 505
-    window_y_2 = 500
+    window_y_2 = 550
     s_new_wd.minsize(window_x_2, window_y_2)
     s_new_wd.maxsize(window_x_2, window_y_2)
     pos_x_2 = int((screen_x_2 - window_x_2) / 2)
     pos_y_2 = int((screen_y_2 - window_y_2) / 2)
     s_new_wd.geometry(f"{window_x_2}x{window_y_2}+{pos_x_2}+{pos_y_2}")
 
-    # Main Frame
-    s_new_main_frame = LabelFrame(s_new_wd, height=window_y_2, width=window_x_2)
-    s_new_main_frame.pack(fill="both", expand=True)
+    # Info Frame 1
+    s_new_info_frame_1 = LabelFrame(s_new_wd, height=window_y_2, width=window_x_2)
+    s_new_info_frame_1.pack(fill="both", expand=True)
 
-    width = 42
-    height = 10
+    # Info Frame 2
+    s_new_info_frame_2 = LabelFrame(s_new_wd, height=window_y_2, width=window_x_2)
+    s_new_info_frame_2.pack(fill="both", expand=True)
+
+    s_new_button_frame = LabelFrame(s_new_wd, height=window_y_2, width=window_x_2)
+    s_new_button_frame.pack(fill="both")
+
+    s_new_width = 21
+    s_new_pad = 10
     # Labels
-    s_new_story_id_label = Label(s_new_main_frame, text="Story Number:", width=int(width/2), anchor=W)
-    s_new_story_id_label.grid(row=0, column=0, padx=height, pady=height, stick="w")
+    s_new_story_id_label = Label(s_new_info_frame_1, text="Select Character Who\n Will Play This Story:", width=s_new_width, anchor=W)
+    s_new_story_id_label.grid(row=0, column=0, padx=(s_new_pad, s_new_pad+9), pady=s_new_pad, stick="w")
 
-    s_new_beginning_label = Label(s_new_main_frame, text="Beginning Text:", width=int(width/2), anchor=NW)
-    s_new_beginning_label.grid(row=1, column=0, padx=height, pady=height, stick="nw")
+    s_new_beginning_label = Label(s_new_info_frame_2, text="Beginning Text:", width=s_new_width, anchor=NW)
+    s_new_beginning_label.grid(row=1, column=0, padx=(s_new_pad, s_new_pad+3), pady=s_new_pad, stick="nw")
 
     # Entries
-    global s_new_story_id_entry, s_new_beginning_story_entry
-    s_new_story_id_entry = Entry(s_new_main_frame, width=48)
-    s_new_story_id_entry.grid(row=0, column=1, padx=height, pady=height)
+    global s_new_beginning_story_entry
 
-    s_new_beginning_story_entry = Text(s_new_main_frame, width=36)
-    s_new_beginning_story_entry.grid(row=1, column=1, padx=height, pady=height)
+    s_new_beginning_story_entry = Text(s_new_info_frame_2, width=36)
+    s_new_beginning_story_entry.grid(row=1, column=1, padx=s_new_pad, pady=s_new_pad)
 
     # Buttons
-    s_new_save_story_button = Button(s_new_main_frame, text="Save Story", width=int(width/2), command=s_new_save)
-    s_new_save_story_button.grid(row=2, column=0, padx=height, pady=height, stick="w")
+    s_new_button_width = 21
+    s_new_save_story_button = Button(s_new_button_frame, text="Save Story", width=s_new_button_width, command=s_new_save)
+    s_new_save_story_button.grid(row=0, column=0, padx=s_new_pad, pady=s_new_pad, stick="w")
 
-    s_new_cancel_button = Button(s_new_main_frame, text="Cancel", width=width, command=s_new_wd.destroy)
-    s_new_cancel_button.grid(row=2, column=1, padx=height, pady=height, stick="w")
+    s_new_cancel_button = Button(s_new_button_frame, text="Cancel", width=s_new_button_width, command=s_new_wd.destroy)
+    s_new_cancel_button.grid(row=0, column=1, padx=s_new_pad, pady=s_new_pad, ipadx=70, stick="w")
+
+    global s_new_ch_id_opt_menu
+
+    def s_new_ch_id_opt_menu():
+        conn = sqlite3.connect(database)
+        c = conn.cursor()
+
+        c.execute("""SELECT ch_id FROM characters EXCEPT SELECT ch_id FROM stories""")
+        s_new_ch_id_list_raw = c.fetchall()
+        s_new_ch_id_list = id.raw_conv(s_new_ch_id_list_raw)
+
+        s_new_ch_name_list = []
+        for ch_id in s_new_ch_id_list:
+            c.execute(f"""SELECT character_name FROM characters WHERE ch_id = '{ch_id}'""")
+            s_new_ch_name_list_raw = c.fetchall()
+            s_new_ch_name_list_1 = id.raw_conv(s_new_ch_name_list_raw)
+            s_new_ch_name_list.append(s_new_ch_name_list_1[0])
+        print(s_new_ch_name_list)
+
+
+        if s_new_ch_name_list:
+            global s_new_ch_name_variable
+            s_new_ch_name_variable = StringVar()
+            s_new_ch_name_variable.set(s_new_ch_name_list[0])
+            s_new_ch_id_opt_menu_var = OptionMenu(s_new_info_frame_1, s_new_ch_name_variable, *s_new_ch_name_list)
+            s_new_ch_id_opt_menu_var.config(width=s_new_width+18)
+            s_new_ch_id_opt_menu_var.grid(row=0, column=1, ipadx=s_new_pad, pady=s_new_pad, stick="w")
+
+        else:
+            messagebox.showerror("Index Error", "No Available Characters Found")
+            s_new_wd.destroy()
+
+        conn.commit()
+        conn.close()
+
+    s_new_ch_id_opt_menu()
 
     s_new_wd.mainloop()
 
@@ -114,7 +157,7 @@ def s_edt_insert():
     # Delete Previous Input
     s_edt_edit_text_entry.delete("1.0", "end")
 
-    conn = sqlite3.connect("EditorDataV3.db")
+    conn = sqlite3.connect(database)
     c = conn.cursor()
 
     s_edt_s_id = s_edt_s_id_variable.get()
@@ -133,7 +176,7 @@ def s_edt_insert():
 # Function to edit stories
 def s_edt_edit():
     # Create a connection to the database
-    conn = sqlite3.connect("EditorDataV3.db")
+    conn = sqlite3.connect(database)
     c = conn.cursor()
 
     # Update Table
@@ -160,7 +203,7 @@ def s_edt_edit():
 # Function to delete a story from the delete window
 def s_del_delete():
     # Create connection to retrieve data
-    conn = sqlite3.connect("EditorDataV3.db")
+    conn = sqlite3.connect(database)
     c = conn.cursor()
     s_del_s_id = s_edt_s_id_variable.get()
 
@@ -247,10 +290,37 @@ def s_edt_window():
 
     def s_edt_s_id_opt_menu():
         # Options Menu For all existing stories
-        conn = sqlite3.connect("EditorDataV3.db")
+        conn = sqlite3.connect(database)
         c = conn.cursor()
 
         c.execute("""SELECT s_id FROM stories""")
+        s_edt_s_id_list_raw = c.fetchall()
+        s_edt_s_id_list = []
+        for tp in s_edt_s_id_list_raw:
+            for item in tp:
+                s_edt_s_id_list.append(item)
+
+        if s_edt_s_id_list:
+            global s_edt_s_id_variable
+            s_edt_s_id_variable = StringVar()
+            s_edt_s_id_variable.set(s_edt_s_id_list[0])
+            s_edt_s_id_opt_menu_var = OptionMenu(s_edt_info_frame_1, s_edt_s_id_variable, *s_edt_s_id_list)
+            s_edt_s_id_opt_menu_var.config(width=s_edt_width-2)
+            s_edt_s_id_opt_menu_var.grid(row=0, column=1, ipadx=s_edt_pad, pady=s_edt_pad, stick="w")
+
+        else:
+            messagebox.showerror("Index Error", "No Existing Stories Found")
+            s_edt_wd.destroy()
+
+        conn.commit()
+        conn.close()
+
+    def s_edt_ch_id_opt_menu():
+        # Options Menu For all existing stories
+        conn = sqlite3.connect(database)
+        c = conn.cursor()
+
+        c.execute("""SELECT character_name FROM characters""")
         s_edt_s_id_list_raw = c.fetchall()
         s_edt_s_id_list = []
         for tp in s_edt_s_id_list_raw:
