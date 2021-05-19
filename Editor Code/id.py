@@ -22,6 +22,26 @@ def p_id(inp):
     return x_id
 
 
+def ch_id(inp):
+    x_id = f'CH{inp}'
+    return x_id
+
+
+def npc_id(inp):
+    x_id = f'NPC{inp}'
+    return x_id
+
+
+def ob_id(inp):
+    x_id = f'OB{inp}'
+    return x_id
+
+
+def con_id(inp):
+    x_id = f'CON{inp}'
+    return x_id
+
+
 # Functions to convert one id to another
 def conv(new, number):
     x_id_dict = {

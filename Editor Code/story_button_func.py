@@ -33,8 +33,8 @@ def s_new_save():
         s_new_s_id = int(id.max_num(id.int_list(s_new_s_id_list))) + 1
 
     # Get c_id from character_name
-    s_new_character_name = s_new_ch_name_variable.get()
-    c.execute(f"""SELECT ch_id FROM characters WHERE character_name = '{s_new_character_name}'""")
+    s_new_ch_name = s_new_ch_name_variable.get()
+    c.execute(f"""SELECT ch_id FROM characters WHERE ch_name = '{s_new_ch_name}'""")
     s_new_ch_id_raw = c.fetchall()
     s_new_ch_id = id.raw_conv(s_new_ch_id_raw)[0]
 
@@ -51,7 +51,7 @@ def s_new_save():
             })
         # Show Success pop-up
         messagebox.showinfo("Success",
-                            f"Story Number {s_new_s_id} has been created and Character Called '{s_new_character_name}' has been assigned to it.")
+                            f"Story Number {s_new_s_id} has been created and Character Called '{s_new_ch_name}' has been assigned to it.")
         s_new_beginning_story_entry.delete("1.0", "end")
     else:
         messagebox.showerror("Input Error", "Story Text Is Empty", icon='warning')
@@ -125,12 +125,10 @@ def s_new_window():
 
         s_new_ch_name_list = []
         for ch_id in s_new_ch_id_list:
-            c.execute(f"""SELECT character_name FROM characters WHERE ch_id = '{ch_id}'""")
+            c.execute(f"""SELECT ch_name FROM characters WHERE ch_id = '{ch_id}'""")
             s_new_ch_name_list_raw = c.fetchall()
             s_new_ch_name_list_1 = id.raw_conv(s_new_ch_name_list_raw)
             s_new_ch_name_list.append(s_new_ch_name_list_1[0])
-        print(s_new_ch_name_list)
-
 
         if s_new_ch_name_list:
             global s_new_ch_name_variable

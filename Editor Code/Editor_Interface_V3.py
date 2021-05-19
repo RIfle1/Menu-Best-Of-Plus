@@ -6,11 +6,13 @@ from tkinter import messagebox
 from tkinter import ttk
 import tkinter.font as font
 import sqlite3
-import story_buttons_func
+import story_button_func
 import initial_paragraph_buttons_func
 import paragraph_buttons_func
 import choice_buttons_func
+import character_buttons_func
 import id
+
 
 database = "EditorDataV3.db"
 
@@ -41,6 +43,15 @@ def tables():
         ip_id text,
         c_id text,
         c_text text)""")
+    c.execute("""CREATE TABLE IF NOT EXISTS characters
+                 (ch_id text,
+                 ch_name text, 
+                 ch_breed text,
+                 ch_life integer,
+                 ch_speed integer,
+                 ch_defense integer,
+                 ch_attack integer,
+                 ch_background text)""")
     conn.commit()
     conn.close()
 
@@ -60,7 +71,7 @@ class NewTab(Frame):
 # Function to print all created stories as tabs
 def new_tab():
     # Delete previous paragraphs in the frame
-    for widgets in main_story_frame.winfo_children():
+    for widgets in pg_main_story_frame.winfo_children():
         widgets.destroy()
 
     conn = sqlite3.connect(database)
@@ -73,7 +84,7 @@ def new_tab():
         for item in tp:
             story_id_list.append(item)
 
-    notebook = ttk.Notebook(main_story_frame, width=left_frame_width, height=window_y - main_frame_height)
+    notebook = ttk.Notebook(pg_main_story_frame, width=pg_left_frame_width, height=window_y - pg_main_frame_height)
 
     tab_id_dict = {}
     tab_id_list = []
@@ -131,6 +142,8 @@ tabControl = ttk.Notebook(editor)
 # Creating Tabs
 paragraphs_tab = ttk.Frame(tabControl)
 characters_tab = ttk.Frame(tabControl)
+npc_tab = ttk.Frame(tabControl)
+monsters_tab = ttk.Frame(tabControl)
 objects_tab = ttk.Frame(tabControl)
 game_settings_tab = ttk.Frame(tabControl)
 test_tab = ttk.Frame(tabControl)
@@ -138,6 +151,8 @@ test_tab = ttk.Frame(tabControl)
 # Adding Tabs
 tabControl.add(paragraphs_tab, text="Paragraphs")
 tabControl.add(characters_tab, text="Characters")
+tabControl.add(npc_tab, text="Npc's")
+tabControl.add(monsters_tab, text="Monsters / Enemies")
 tabControl.add(objects_tab, text="Objects")
 tabControl.add(game_settings_tab, text="Game Settings")
 tabControl.add(test_tab, text="Test")
@@ -151,84 +166,135 @@ tabControl.pack(expand=1, fill="both")
 # ALL MAIN FRAMES
 
 # Left Frame
-left_frame_width = int(0.75*window_x)
-left_frame = LabelFrame(paragraphs_tab, width=left_frame_width, height=window_y)
-left_frame.pack(fill="both", expand=True, side=LEFT)
+pg_left_frame_width = int(0.75 * window_x)
+pg_left_frame = LabelFrame(paragraphs_tab, width=pg_left_frame_width, height=window_y)
+pg_left_frame.pack(fill="both", expand=True, side=LEFT)
 
 # List Frame
-right_frame = LabelFrame(paragraphs_tab, width=window_x - left_frame_width, height=window_y)
-right_frame.pack(fill="both", side=RIGHT)
+pg_right_frame = LabelFrame(paragraphs_tab, width=window_x - pg_left_frame_width, height=window_y)
+pg_right_frame.pack(fill="both", side=RIGHT)
 
 # Main Buttons Frame
-main_frame_height = int(window_y/4.8)
-main_buttons_frame = LabelFrame(left_frame, height=main_frame_height, width=left_frame_width)
-main_buttons_frame.pack(fill="both")
+pg_main_frame_height = int(window_y / 4.8)
+pg_main_buttons_frame = LabelFrame(pg_left_frame, height=pg_main_frame_height, width=pg_left_frame_width)
+pg_main_buttons_frame.pack(fill="both")
 
 # Story Buttons Frame
-sub_frame_width = int(left_frame_width/4)
-story_buttons_frame = LabelFrame(main_buttons_frame, height=main_frame_height, width=sub_frame_width)
-story_buttons_frame.pack(fill="both", side=LEFT)
+pg_sub_frame_width = int(pg_left_frame_width / 4)
+pg_story_buttons_frame = LabelFrame(pg_main_buttons_frame, height=pg_main_frame_height, width=pg_sub_frame_width)
+pg_story_buttons_frame.pack(fill="both", side=LEFT)
 
 # Initial Paragraphs Buttons Frame
-int_paragraph_buttons_frame = LabelFrame(main_buttons_frame, height=main_frame_height, width=sub_frame_width)
-int_paragraph_buttons_frame.pack(fill="both", side=LEFT)
+pg_int_paragraph_buttons_frame = LabelFrame(pg_main_buttons_frame, height=pg_main_frame_height, width=pg_sub_frame_width)
+pg_int_paragraph_buttons_frame.pack(fill="both", side=LEFT)
 
 # Paragraphs Buttons Frame
-paragraphs_buttons_frame = LabelFrame(main_buttons_frame, height=main_frame_height, width=sub_frame_width)
-paragraphs_buttons_frame.pack(fill="both", side=LEFT)
+pg_paragraphs_buttons_frame = LabelFrame(pg_main_buttons_frame, height=pg_main_frame_height, width=pg_sub_frame_width)
+pg_paragraphs_buttons_frame.pack(fill="both", side=LEFT)
 
 # Choices Buttons Frame
-choices_buttons_frame = LabelFrame(main_buttons_frame, height=main_frame_height, width=sub_frame_width)
-choices_buttons_frame.pack(fill="both", side=LEFT)
+pg_choices_buttons_frame = LabelFrame(pg_main_buttons_frame, height=pg_main_frame_height, width=pg_sub_frame_width)
+pg_choices_buttons_frame.pack(fill="both", side=LEFT)
 
 # Story Frame
-main_story_frame = LabelFrame(left_frame, height=window_x - main_frame_height)
-main_story_frame.pack(fill="both", expand=True)
+pg_main_story_frame = LabelFrame(pg_left_frame, height=window_x - pg_main_frame_height)
+pg_main_story_frame.pack(fill="both", expand=True)
 
 # Update Tabs Automatically
 new_tab()
 
-button_width = 22
-buttons_width = 30
-buttons_height = 1
-button_x_space = 2
-button_y_space = 4
-font_size = 18
+pg_button_width = 22
+pg_buttons_width = 30
+pg_buttons_height = 1
+pg_button_x_space = 2
+pg_button_y_space = 4
+pg_font_size = 18
 # NEW STORY Button
-new_story_button = Button(story_buttons_frame, text="New Story", bg="#5fafde", fg="White", padx=buttons_width, pady=buttons_height, font=("Times New Roman", font_size), relief=FLAT, width=button_width, command=story_buttons_func.s_new_window)
-new_story_button.grid(row=0, column=0, stick="w", padx=button_x_space, pady=button_y_space)
+pg_new_story_button = Button(pg_story_buttons_frame, text="New Story", bg="#5fafde", fg="White", padx=pg_buttons_width,
+                             pady=pg_buttons_height, font=("Times New Roman", pg_font_size), relief=FLAT, width=pg_button_width,
+                             command=story_button_func.s_new_window)
+pg_new_story_button.grid(row=0, column=0, stick="w", padx=pg_button_x_space, pady=pg_button_y_space)
 
 # EDIT STORY  Button
-edit_story_button = Button(story_buttons_frame, text="Edit Story", bg="#5fafde", fg="White", padx=buttons_width, pady=buttons_height, font=("Times New Roman", font_size), relief=FLAT, width=button_width, command=story_buttons_func.s_edt_window)
-edit_story_button.grid(row=1, column=0, stick="w", padx=button_x_space, pady=button_y_space)
+pg_edit_story_button = Button(pg_story_buttons_frame, text="Edit Story", bg="#5fafde", fg="White", padx=pg_buttons_width,
+                              pady=pg_buttons_height, font=("Times New Roman", pg_font_size), relief=FLAT, width=pg_button_width,
+                              command=story_button_func.s_edt_window)
+pg_edit_story_button.grid(row=1, column=0, stick="w", padx=pg_button_x_space, pady=pg_button_y_space)
 
 # ADD INITIAL PARAGRAPH Button
-new_int_par_button = Button(int_paragraph_buttons_frame, text="New Initial Paragraph", bg="#5fafde", fg="White", padx=buttons_width, pady=buttons_height, font=("Times New Roman", font_size), relief=FLAT, width=button_width, command=initial_paragraph_buttons_func.ip_new_window)
-new_int_par_button.grid(row=0, column=0, stick="w", padx=button_x_space, pady=button_y_space)
+pg_new_int_par_button = Button(pg_int_paragraph_buttons_frame, text="New Initial Paragraph", bg="#5fafde", fg="White",
+                               padx=pg_buttons_width, pady=pg_buttons_height, font=("Times New Roman", pg_font_size), relief=FLAT,
+                               width=pg_button_width, command=initial_paragraph_buttons_func.ip_new_window)
+pg_new_int_par_button.grid(row=0, column=0, stick="w", padx=pg_button_x_space, pady=pg_button_y_space)
 
 # EDIT INITIAL PARAGRAPH  Button
-edit_int_par_button = Button(int_paragraph_buttons_frame, text="Edit Initial Paragraph", bg="#5fafde", fg="White", padx=buttons_width, pady=buttons_height, font=("Times New Roman", font_size), relief=FLAT, width=button_width, command=initial_paragraph_buttons_func.ip_edt_window)
-edit_int_par_button.grid(row=1, column=0, stick="w", padx=button_x_space, pady=button_y_space)
+pg_edit_int_par_button = Button(pg_int_paragraph_buttons_frame, text="Edit Initial Paragraph", bg="#5fafde", fg="White",
+                                padx=pg_buttons_width, pady=pg_buttons_height, font=("Times New Roman", pg_font_size), relief=FLAT,
+                                width=pg_button_width, command=initial_paragraph_buttons_func.ip_edt_window)
+pg_edit_int_par_button.grid(row=1, column=0, stick="w", padx=pg_button_x_space, pady=pg_button_y_space)
 
 # NEW PARAGRAPH Button
-new_paragraph_button = Button(paragraphs_buttons_frame, text="New Paragraph", bg="#5fafde", fg="White", padx=buttons_width, pady=buttons_height, font=("Times New Roman", font_size), relief=FLAT, width=button_width, command=paragraph_buttons_func.p_new_window)
-new_paragraph_button.grid(row=0, column=0, stick="w", padx=button_x_space, pady=button_y_space)
+pg_new_paragraph_button = Button(pg_paragraphs_buttons_frame, text="New Paragraph", bg="#5fafde", fg="White",
+                                 padx=pg_buttons_width, pady=pg_buttons_height, font=("Times New Roman", pg_font_size), relief=FLAT,
+                                 width=pg_button_width, command=paragraph_buttons_func.p_new_window)
+pg_new_paragraph_button.grid(row=0, column=0, stick="w", padx=pg_button_x_space, pady=pg_button_y_space)
 
 # EDIT PARAGRAPH  Button
-edit_paragraph_button = Button(paragraphs_buttons_frame, text="Edit Paragraph", bg="#5fafde", fg="White", padx=buttons_width, pady=buttons_height, font=("Times New Roman", font_size), relief=FLAT, width=button_width, command=paragraph_buttons_func.p_edt_window)
-edit_paragraph_button.grid(row=1, column=0, stick="w", padx=button_x_space, pady=button_y_space)
+edit_paragraph_button = Button(pg_paragraphs_buttons_frame, text="Edit Paragraph", bg="#5fafde", fg="White", padx=pg_buttons_width,
+                               pady=pg_buttons_height, font=("Times New Roman", pg_font_size), relief=FLAT, width=pg_button_width,
+                               command=paragraph_buttons_func.p_edt_window)
+edit_paragraph_button.grid(row=1, column=0, stick="w", padx=pg_button_x_space, pady=pg_button_y_space)
 
 # ADD CHOICE Button
-new_choice_button = Button(choices_buttons_frame, text="New Choice", bg="#5fafde", fg="White", padx=buttons_width, pady=buttons_height, font=("Times New Roman", font_size), relief=FLAT, width=button_width, command=choice_buttons_func.c_new_window)
-new_choice_button.grid(row=0, column=0, stick="w", padx=button_x_space, pady=button_y_space)
+new_choice_button = Button(pg_choices_buttons_frame, text="New Choice", bg="#5fafde", fg="White", padx=pg_buttons_width,
+                           pady=pg_buttons_height, font=("Times New Roman", pg_font_size), relief=FLAT, width=pg_button_width,
+                           command=choice_buttons_func.c_new_window)
+new_choice_button.grid(row=0, column=0, stick="w", padx=pg_button_x_space, pady=pg_button_y_space)
 
 # EDIT CHOICE  Button
-edit_choice_button = Button(choices_buttons_frame, text="Edit Choice", bg="#5fafde", fg="White", padx=buttons_width, pady=buttons_height, font=("Times New Roman", font_size), relief=FLAT, width=button_width, command=choice_buttons_func.c_edt_window)
-edit_choice_button.grid(row=1, column=0, stick="w", padx=button_x_space, pady=button_y_space)
+edit_choice_button = Button(pg_choices_buttons_frame, text="Edit Choice", bg="#5fafde", fg="White", padx=pg_buttons_width,
+                            pady=pg_buttons_height, font=("Times New Roman", pg_font_size), relief=FLAT, width=pg_button_width,
+                            command=choice_buttons_func.c_edt_window)
+edit_choice_button.grid(row=1, column=0, stick="w", padx=pg_button_x_space, pady=pg_button_y_space)
 
 # -------------------------------------------
 # THIS IS THE END OF THE "PARAGRAPH" TAB CODE
 # -------------------------------------------
+# -------------------------------------------
+# THIS FOLLOWING CODE IS FOR "CHARACTERS" TAB
+# -------------------------------------------
+# ALL MAIN FRAMES
+# MAIN Frame
+ch_left_frame_width = int(0.75 * window_x)
+ch_main_frame = LabelFrame(characters_tab, width=ch_left_frame_width, height=window_y)
+ch_main_frame.pack(fill="both", expand=True)
+
+# Main Buttons Frame
+ch_main_frame_height = int(window_y / 4.8)
+ch_main_buttons_frame = LabelFrame(ch_main_frame, height=ch_main_frame_height, width=ch_left_frame_width)
+ch_main_buttons_frame.pack(fill="both")
+
+# Characters Frame
+ch_main_characters_frame = LabelFrame(ch_main_frame, height=window_x - ch_main_frame_height)
+ch_main_characters_frame.pack(fill="both", expand=True)
+
+ch_button_width = 22
+ch_buttons_width = 30
+ch_buttons_height = 1
+ch_button_x_space = 2
+ch_button_y_space = 4
+ch_font_size = 18
+# NEW CHARACTER Button
+ch_new_character_button = Button(ch_main_buttons_frame, text="New Character", bg="#5fafde", fg="White", padx=ch_buttons_width,
+                                 pady=ch_buttons_height, font=("Times New Roman", ch_font_size), relief=FLAT, width=ch_button_width,
+                                 command=character_buttons_func.ch_new_window)
+ch_new_character_button.pack(padx=ch_button_x_space, pady=ch_button_y_space)
+
+# EDIT CHARACTER Button
+ch_edit_character_button = Button(ch_main_buttons_frame, text="Edit Character", bg="#5fafde", fg="White", padx=ch_buttons_width,
+                                  pady=ch_buttons_height, font=("Times New Roman", ch_font_size), relief=FLAT, width=ch_button_width,
+                                  command=None)
+ch_edit_character_button.pack(padx=ch_button_x_space, pady=ch_button_y_space)
 
 # -------------------------------------------
 # LOOP END
