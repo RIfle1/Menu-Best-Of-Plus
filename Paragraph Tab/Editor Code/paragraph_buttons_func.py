@@ -15,9 +15,7 @@ def p_new_save():
     conn = sqlite3.connect(database)
     c = conn.cursor()
 
-    c.execute("""CREATE TABLE IF NOT EXISTS paragraphs
-    (s_id text,
-    p_id text)""")
+    # Create Id's and stuff in paragraphs list table
 
     c.execute("""CREATE TABLE IF NOT EXISTS paragraphs_list
         (s_id text,
@@ -39,19 +37,28 @@ def p_new_save():
     p_new_p_id_num_max = id.max_num(id.int_list(p_new_p_id))
 
     if p_new_p_id_num_max == '':
-        p_new_new_p_id = 0
+        p_new_new_p_id = 1
     else:
-        p_new_new_p_id = p_new_p_id_num_max + 1
+        p_new_new_p_id = int(p_new_p_id_num_max) + 1
     
     p_new_c_p_id = id.decoder_2(p_new_c_id)[0]
 
     if f'{p_new_s_id}' == f'{p_new_c_p_id}':
         if p_new_text_length != 1:
-            c.execute("INSERT INTO paragraphs_list VALUES (:s_id, :lp_id, :p_text)",
+            c.execute("INSERT INTO paragraphs_list VALUES (:s_id, :lp_id, :p_text, :npc_id, :mst_id)",
                       {
                           "s_id": f"{p_new_s_id}",
                           "lp_id": f"{p_new_s_id}_{id.conv('p_id', p_new_new_p_id)}",
-                          "p_text": str(p_new_paragraph_text_entry.get("1.0", "end"))
+                          "p_text": str(p_new_paragraph_text_entry.get("1.0", "end")),
+                          "npc_id": '',
+                          "mst_id": ''
+                      })
+
+            # Assign Paragraph to choice
+            c.execute("""UPDATE choices SET c_id = :c_id_new WHERE c_id = :c_id_old""",
+                      {
+                          "c_id_new": f"{p_new_c_id}_{id.conv('p_id', p_new_new_p_id)}",
+                          "c_id_old": f'{p_new_c_id}'
                       })
 
             messagebox.showinfo("Success", f"Paragraph Number {p_new_new_p_id}\nIn Story Number {id.id_int(p_new_s_id)}\nhas been successfully created.")
@@ -60,11 +67,13 @@ def p_new_save():
     else:
         messagebox.showerror("ID Error", f"Choice's Story ID is {p_new_c_p_id} but Story ID is {p_new_s_id}")
 
-    conn.commit()
-    conn.close()
+
 
     # Clear the Text Boxes
     p_new_paragraph_text_entry.delete("1.0", "end")
+
+    conn.commit()
+    conn.close()
 
     p_new_s_id_opt_menu()
     p_new_c_id_opt_menu()
@@ -206,12 +215,13 @@ def p_new_window():
     p_new_s_id_opt_menu()
 
     def p_new_c_id_opt_menu():
-        # Options Menu For all existing paragraphs
+        # Options Menu For all existing choices
         conn = sqlite3.connect(database)
         c = conn.cursor()
 
-        c.execute(f"""SELECT c_id FROM choices ORDER BY c_id""")
+        c.execute(f"""SELECT c_id FROM choices""")
         p_new_c_id_ist_raw = c.fetchall()
+        # Get Only c_id's with no paragraphs assigned to them
         p_new_c_id_list = id.c_id_sorter(id.raw_conv(p_new_c_id_ist_raw))
 
         if p_new_c_id_list:

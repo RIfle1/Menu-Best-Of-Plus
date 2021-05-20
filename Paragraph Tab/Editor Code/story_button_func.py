@@ -63,6 +63,7 @@ def s_new_save():
 
     s_new_ch_id_opt_menu()
 
+
 # Function for new story window
 def s_new_window():
     global s_new_wd
@@ -210,7 +211,7 @@ def s_del_delete():
     if s_del_warning == 'yes':
         c.execute(f"""DELETE FROM stories WHERE s_id = '{s_del_s_id}'""")
         c.execute(f"""DELETE FROM initial_paragraphs WHERE s_id = '{s_del_s_id}'""")
-        c.execute(f"""DELETE FROM paragraphs WHERE s_id = '{s_del_s_id}'""")
+        c.execute(f"""DELETE FROM paragraphs_list WHERE s_id = '{s_del_s_id}'""")
         c.execute(f"""DELETE FROM choices WHERE s_id = '{s_del_s_id}'""")
 
         # Show Success pop-up

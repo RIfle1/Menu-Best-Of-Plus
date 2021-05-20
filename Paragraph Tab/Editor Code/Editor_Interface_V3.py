@@ -29,9 +29,6 @@ def tables():
         (s_id text, 
         ip_id text,
         ip_text text)""")
-    c.execute("""CREATE TABLE IF NOT EXISTS paragraphs
-        (s_id text,
-        p_id text)""")
     c.execute("""CREATE TABLE IF NOT EXISTS paragraphs_list
             (s_id text,
             pl_id text,
@@ -143,7 +140,7 @@ tabControl = ttk.Notebook(editor)
 paragraphs_tab = ttk.Frame(tabControl)
 characters_tab = ttk.Frame(tabControl)
 npc_tab = ttk.Frame(tabControl)
-monsters_tab = ttk.Frame(tabControl)
+mst_tab = ttk.Frame(tabControl)
 objects_tab = ttk.Frame(tabControl)
 game_settings_tab = ttk.Frame(tabControl)
 test_tab = ttk.Frame(tabControl)
@@ -152,7 +149,7 @@ test_tab = ttk.Frame(tabControl)
 tabControl.add(paragraphs_tab, text="Paragraphs")
 tabControl.add(characters_tab, text="Characters")
 tabControl.add(npc_tab, text="Npc's")
-tabControl.add(monsters_tab, text="Monsters / Enemies")
+tabControl.add(mst_tab, text="Monsters / Enemies")
 tabControl.add(objects_tab, text="Objects")
 tabControl.add(game_settings_tab, text="Game Settings")
 tabControl.add(test_tab, text="Test")
@@ -293,9 +290,88 @@ ch_new_character_button.pack(padx=ch_button_x_space, pady=ch_button_y_space)
 # EDIT CHARACTER Button
 ch_edit_character_button = Button(ch_main_buttons_frame, text="Edit Character", bg="#5fafde", fg="White", padx=ch_buttons_width,
                                   pady=ch_buttons_height, font=("Times New Roman", ch_font_size), relief=FLAT, width=ch_button_width,
-                                  command=None)
+                                  command=character_buttons_func.ch_edt_window)
 ch_edit_character_button.pack(padx=ch_button_x_space, pady=ch_button_y_space)
+# -------------------------------------------
+# THIS IS THE END OF THE "CHARACTER" TAB CODE
+# -------------------------------------------
+# -------------------------------------------
+# THIS FOLLOWING CODE IS FOR "NPC" TAB
+# -------------------------------------------
+# ALL MAIN FRAMES
+# MAIN Frame
+npc_left_frame_width = int(0.75 * window_x)
+npc_main_frame = LabelFrame(npc_tab, width=npc_left_frame_width, height=window_y)
+npc_main_frame.pack(fill="both", expand=True)
 
+# Main Buttons Frame
+npc_main_frame_height = int(window_y / 4.8)
+npc_main_buttons_frame = LabelFrame(npc_main_frame, height=npc_main_frame_height, width=npc_left_frame_width)
+npc_main_buttons_frame.pack(fill="both")
+
+# NPC Frame
+npc_main_npc_frame = LabelFrame(npc_main_frame, height=window_x - npc_main_frame_height)
+npc_main_npc_frame.pack(fill="both", expand=True)
+
+npc_button_width = 22
+npc_buttons_width = 30
+npc_buttons_height = 1
+npc_button_x_space = 2
+npc_button_y_space = 4
+npc_font_size = 18
+# NEW NPC Button
+npc_new_npc_button = Button(npc_main_buttons_frame, text="New NPC", bg="#5fafde", fg="White", padx=npc_buttons_width,
+                            pady=npc_buttons_height, font=("Times New Roman", npc_font_size), relief=FLAT, width=npc_button_width,
+                            command=character_buttons_func.ch_new_window)
+npc_new_npc_button.pack(padx=npc_button_x_space, pady=npc_button_y_space)
+
+# EDIT NPC Button
+npc_edit_npc_button = Button(npc_main_buttons_frame, text="Edit NPC", bg="#5fafde", fg="White", padx=npc_buttons_width,
+                             pady=npc_buttons_height, font=("Times New Roman", npc_font_size), relief=FLAT, width=npc_button_width,
+                             command=character_buttons_func.ch_edt_window)
+npc_edit_npc_button.pack(padx=npc_button_x_space, pady=npc_button_y_space)
+# -------------------------------------------
+# THIS IS THE END OF THE "NPC" TAB CODE
+# -------------------------------------------
+# -------------------------------------------
+# THIS FOLLOWING CODE IS FOR "MONSTERS / ENEMIES" TAB
+# -------------------------------------------
+# ALL MAIN FRAMES
+# MAIN Frame
+mst_main_frame_width = int(0.75 * window_x)
+mst_main_frame = LabelFrame(mst_tab, width=mst_main_frame_width, height=window_y)
+mst_main_frame.pack(fill="both", expand=True)
+
+# Main Buttons Frame
+mst_main_frame_height = int(window_y / 4.8)
+mst_main_buttons_frame = LabelFrame(mst_main_frame, height=mst_main_frame_height, width=mst_main_frame_width)
+mst_main_buttons_frame.pack(fill="both")
+
+# NPC Frame
+mst_main_mst_frame = LabelFrame(mst_main_frame, height=window_x - mst_main_frame_height)
+mst_main_mst_frame.pack(fill="both", expand=True)
+
+mst_button_width = 22
+mst_buttons_width = 30
+mst_buttons_height = 1
+mst_button_x_space = 2
+mst_button_y_space = 4
+mst_font_size = 18
+# NEW NPC Button
+mst_new_mst_button = Button(mst_main_buttons_frame, text="New Monster Or Enemy", bg="#5fafde", fg="White", padx=mst_buttons_width,
+                            pady=mst_buttons_height, font=("Times New Roman", mst_font_size), relief=FLAT, width=mst_button_width,
+                            command=character_buttons_func.ch_new_window)
+mst_new_mst_button.pack(padx=mst_button_x_space, pady=mst_button_y_space)
+
+# EDIT NPC Button
+mst_edit_mst_button = Button(mst_main_buttons_frame, text="Edit Monster Or Enemy", bg="#5fafde", fg="White", padx=mst_buttons_width,
+                             pady=mst_buttons_height, font=("Times New Roman", mst_font_size), relief=FLAT, width=mst_button_width,
+                             command=character_buttons_func.ch_edt_window)
+mst_edit_mst_button.pack(padx=mst_button_x_space, pady=mst_button_y_space)
+
+# -------------------------------------------
+# THIS IS THE END OF THE "MONSTERS / ENEMIES" TAB CODE
+# -------------------------------------------
 # -------------------------------------------
 # LOOP END
 # -------------------------------------------

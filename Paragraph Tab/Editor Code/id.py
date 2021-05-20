@@ -182,3 +182,14 @@ def max_num(inp):
     return final_num
 
 
+# Function to remove assigned paragraph from a choice
+def p_del(inp):
+    x_id = decoder_2(inp)
+    x_id.pop(-1)
+    output = ''
+    for item in x_id:
+        output += f'{item}_'
+    output = output[:-1]
+    return output
+
+

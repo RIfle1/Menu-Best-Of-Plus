@@ -89,6 +89,7 @@ def c_new_save():
 
     # Id sandwich
     c_new_from_p_id = id.decoder_2(c_new_from_p_id_variable.get())[-1]
+    c_new_p_id = c_new_from_p_id_variable.get()
     c_new_c_number = c_new_get_choice_id_entry.get()
 
     if c_new_to_p_id_variable.get() == 'Assign No Paragraph':
@@ -98,7 +99,7 @@ def c_new_save():
         c_new_to_p_id = id.decoder_2(c_new_to_p_id_variable.get())[-1]
         c_new_c_id = f'{c_new_s_id}_{c_new_from_p_id}_C{c_new_c_number}_{c_new_to_p_id}'
 
-    c.execute(f"""SELECT c_id FROM choices WHERE c_id LIKE '{c_new_from_p_id}%'""")
+    c.execute(f"""SELECT c_id FROM choices WHERE c_id LIKE '{c_new_p_id}%'""")
     c_new_c_id_list_raw = c.fetchall()
     c_new_c_id_list = id.raw_conv(c_new_c_id_list_raw)
 
@@ -110,8 +111,6 @@ def c_new_save():
             c_new_c_id_numbers_list.append(id.id_int(id.decoder_2(c_id)[-2]))
         else:
             c_new_c_id_numbers_list.append(id.id_int(id.decoder_2(c_id)[-1]))
-
-    print(c_new_c_id_numbers_list)
 
     # Vars for coherence checking
     c_new_from_s_id = id.decoder_2(c_new_from_p_id_variable.get())[0]
@@ -174,7 +173,7 @@ def c_new_window():
 
     c_new_frame_height = 200
     c_new_rest = window_y_2 - c_new_frame_height*2
-    print(int(c_new_rest/2))
+
     # Info Frame 0_1
     c_new_info_frame_0_1 = Frame(c_new_wd, width=window_x_2, height=c_new_frame_height)
     c_new_info_frame_0_1.pack(fill="both", side=TOP)
@@ -332,7 +331,6 @@ def c_new_window():
         conn.commit()
         conn.close()
 
-
     c_new_to_p_id_opt_menu()
 
     c_new_wd.mainloop()
@@ -434,65 +432,91 @@ def c_edt_assign_save():
 
     # Get pl_id and old c_id
     c_edt_c_id = c_edt_c_id_variable.get()
-    c_edt_pl_id = id.decoder_2(c_edt_pl_id_variable.get())[1]
-
-    # Get Paragraph Number "From Paragraph"
-    c_edt_pl_id_from_num = id.id_int(id.decoder_2(c_edt_c_id)[1])
-
-    # Get Paragraph Number "To Paragraph"
-    c_edt_pl_id_to_num = id.id_int(c_edt_pl_id)
-
-    # Assign 0 If the paragraph ID is 'IP'
-    c_edt_c_id_p_from_num = id.id_int(id.decoder_2(c_edt_c_id)[1])
-    if c_edt_c_id_p_from_num == 'IP':
-        c_edt_c_id_p_from_num = 0
+    # Avoid getting an error when choosing 'Assign no Paragraph' and pressing the button
+    c_edt_pl_id = c_edt_pl_id_variable.get()
+    if c_edt_pl_id == 'Assign No Paragraph':
+        messagebox.showerror('Error', 'Action Not Possible', icon='warning')
     else:
-        c_edt_c_id_p_from_num = int(c_edt_c_id_p_from_num)
+        c_edt_pl_id = id.decoder_2(c_edt_pl_id_variable.get())[1]
+        # Get Paragraph Number "From Paragraph"
+        c_edt_pl_id_from_num = id.id_int(id.decoder_2(c_edt_c_id)[1])
 
-    # Get Number of choice
-    c_edt_c_id_num = id.id_int(id.decoder_2(c_edt_c_id)[2])
+        # Get Paragraph Number "To Paragraph"
+        c_edt_pl_id_to_num = id.id_int(c_edt_pl_id)
 
-    # Create new c_id
-    c_edt_new_c_id = f'{c_edt_c_id}_{c_edt_pl_id}'
-
-    # Create reversed c_id to avoid loops
-    c_edt_rev_c_id_1 = id.loop_1(c_edt_new_c_id)
-    c_edt_rev_c_id_2 = id.loop_2(c_edt_new_c_id)
-
-    # Check if the reversed id already exists in the database
-    c.execute(f"""SELECT c_id FROM choices WHERE c_id LIKE'{c_edt_rev_c_id_1}%{c_edt_rev_c_id_2}'""")
-    c_edt_c_id_check_raw = c.fetchall()
-    c_edt_c_id_check = id.raw_conv(c_edt_c_id_check_raw)
-
-    c_edt_d_c_id = id.decoder_2(c_edt_c_id)[1]
-
-    if int(c_edt_pl_id_to_num) > c_edt_c_id_p_from_num:
-        if not c_edt_c_id_check:
-            if id.id_str(id.decoder_2(c_edt_c_id)[-1]) == 'C':
-                if c_edt_pl_id != c_edt_d_c_id:
-                    c.execute("""UPDATE choices SET c_id = :c_id_new WHERE c_id = :c_id_old""",
-                              {
-                                  "c_id_new": f"{c_edt_new_c_id}",
-                                  "c_id_old": f'{c_edt_c_id}'
-                              })
-                    messagebox.showinfo('Success', f"Choice Number {c_edt_c_id_num} in Paragraph {c_edt_pl_id_from_num} Has Been sucessfully assigned to Paragraph {c_edt_pl_id_to_num}")
-                else:
-                    messagebox.showerror('Assignment Error', "Choice Can't Loop Back To Root Paragraph", icon='warning')
-            else:
-                messagebox.showerror('Loop Error', f"Choice Number {c_edt_c_id_num} Already Has A 'To Paragraph' Assigned.", icon='warning')
+        # Assign 0 If the paragraph ID is 'IP'
+        c_edt_c_id_p_from_num = id.id_int(id.decoder_2(c_edt_c_id)[1])
+        if c_edt_c_id_p_from_num == 'IP':
+            c_edt_c_id_p_from_num = 0
         else:
-            messagebox.showerror('Loop Error', f"Assigning Choice Number {c_edt_c_id_num} To Paragraph Number {c_edt_pl_id_from_num} Will Create A Loop.", icon='warning')
+            c_edt_c_id_p_from_num = int(c_edt_c_id_p_from_num)
+
+        # Get Number of choice
+        c_edt_c_id_num = id.id_int(id.decoder_2(c_edt_c_id)[2])
+
+        # Create new c_id
+        c_edt_new_c_id = f'{c_edt_c_id}_{c_edt_pl_id}'
+
+        # Create reversed c_id to avoid loops
+        c_edt_rev_c_id_1 = id.loop_1(c_edt_new_c_id)
+        c_edt_rev_c_id_2 = id.loop_2(c_edt_new_c_id)
+
+        # Check if the reversed id already exists in the database
+        c.execute(f"""SELECT c_id FROM choices WHERE c_id LIKE'{c_edt_rev_c_id_1}%{c_edt_rev_c_id_2}'""")
+        c_edt_c_id_check_raw = c.fetchall()
+        c_edt_c_id_check = id.raw_conv(c_edt_c_id_check_raw)
+
+        c_edt_d_c_id = id.decoder_2(c_edt_c_id)[1]
+
+        if int(c_edt_pl_id_to_num) > c_edt_c_id_p_from_num:
+            if not c_edt_c_id_check:
+                if id.id_str(id.decoder_2(c_edt_c_id)[-1]) == 'C':
+                    if c_edt_pl_id != c_edt_d_c_id:
+                        c.execute("""UPDATE choices SET c_id = :c_id_new WHERE c_id = :c_id_old""",
+                                  {
+                                      "c_id_new": f"{c_edt_new_c_id}",
+                                      "c_id_old": f'{c_edt_c_id}'
+                                  })
+                    else:
+                        messagebox.showerror('Assignment Error', "Choice Can't Loop Back To Root Paragraph", icon='warning')
+                else:
+                    messagebox.showerror('Loop Error', f"Choice Number {c_edt_c_id_num} Already Has A 'To Paragraph' Assigned.", icon='warning')
+            else:
+                messagebox.showerror('Loop Error', f"Assigning Choice Number {c_edt_c_id_num} To Paragraph Number {c_edt_pl_id_from_num} Will Create A Loop.", icon='warning')
+        else:
+            messagebox.showerror('Priority Error', f"'To Paragraph' ID ({c_edt_c_id_p_from_num}) has to be Bigger than 'From Paragraph' ID ({c_edt_pl_id_from_num})", icon='warning')
+
+        conn.commit()
+        conn.close()
+
+        c_edt_c_id_opt_menu()
+
+
+def c_del_assign_delete():
+    conn = sqlite3.connect(database)
+    c = conn.cursor()
+
+    # Get c_id to modify
+    c_del_c_id_old = c_edt_c_id_variable.get()
+
+    # Check that the selected id has a paragraph connected to it
+    if c_del_c_id_old[-2] == 'P':
+        # Modify id
+        c_de_c_id_new = id.p_del(c_del_c_id_old)
+
+        # Update table
+        c.execute("""UPDATE choices SET c_id = :c_id_new WHERE c_id = :c_id_old""",
+                  {
+                      "c_id_new": f"{c_de_c_id_new}",
+                      "c_id_old": f'{c_del_c_id_old}'
+                  })
     else:
-        messagebox.showerror('Priority Error', f"'To Paragraph' ID ({c_edt_c_id_p_from_num}) has to be Bigger than 'From Paragraph' ID ({c_edt_pl_id_from_num})", icon='warning')
+        messagebox.showerror('Error', f'Choice Number {id.id_int(c_del_c_id_old)} Has No Paragraphs Assigned to it.', icon='warning')
 
     conn.commit()
     conn.close()
 
     c_edt_c_id_opt_menu()
-
-
-def c_del_assign_delete():
-    pass
 
 
 # Function to open edit window
@@ -620,7 +644,7 @@ def c_edt_window():
 
     # Buttons Assign Choice
     p_edt_width_buttons_2 = 31
-    p_edt_save_p_to_c_button = Button(c_edt_assign_choice_button_frame, text="Assign Paragraph To Choice", width=p_edt_width_buttons_2, command=c_edt_assign_save)
+    p_edt_save_p_to_c_button = Button(c_edt_assign_choice_button_frame, text="Assign Choice To Paragraph ", width=p_edt_width_buttons_2, command=c_edt_assign_save)
     p_edt_save_p_to_c_button.grid(row=0, column=0, padx=(c_edt_pad + 3, c_edt_pad), pady=c_edt_pad, stick="w")
 
     p_edt_delete_p_from_c_button = Button(c_edt_assign_choice_button_frame, text="Delete Paragraph From Choice", width=p_edt_width_buttons_2, command=c_del_assign_delete)
@@ -634,11 +658,7 @@ def c_edt_window():
 
         c.execute("""SELECT s_id FROM choices UNION SELECT s_id FROM choices""")
         c_edt_s_id_list_raw = c.fetchall()
-        c_edt_s_id_list = []
-
-        for tp in c_edt_s_id_list_raw:
-            for item in tp:
-                c_edt_s_id_list.append(item)
+        c_edt_s_id_list = id.raw_conv(c_edt_s_id_list_raw)
 
         if c_edt_s_id_list:
             global c_edt_s_id_variable
@@ -659,13 +679,9 @@ def c_edt_window():
         conn = sqlite3.connect(database)
         c = conn.cursor()
 
-        c.execute(f"""SELECT c_id FROM choices """)
+        c.execute(f"""SELECT c_id FROM choices""")
         c_edt_c_id_list_raw = c.fetchall()
-        c_edt_c_id_list = []
-
-        for tp in c_edt_c_id_list_raw:
-            for item in tp:
-                c_edt_c_id_list.append(item)
+        c_edt_c_id_list = id.raw_conv(c_edt_c_id_list_raw)
 
         if c_edt_c_id_list:
             global c_edt_c_id_variable
@@ -688,29 +704,28 @@ def c_edt_window():
 
         c.execute(f"""SELECT pl_id FROM paragraphs_list""")
         c_edt_pl_id_list_raw = c.fetchall()
-        c_edt_pl_id_list = []
+        c_edt_pl_id_list = id.raw_conv(c_edt_pl_id_list_raw)
 
-        for tp in c_edt_pl_id_list_raw:
-            for item in tp:
-                c_edt_pl_id_list.append(item)
+        global c_edt_pl_id_variable
+        c_edt_pl_id_variable = StringVar()
 
         if c_edt_pl_id_list:
-            global c_edt_pl_id_variable
-            c_edt_pl_id_variable = StringVar()
             c_edt_pl_id_variable.set(c_edt_pl_id_list[0])
-            c_edt_pl_id_opt_menu_var = OptionMenu(c_edt_info_frame_1, c_edt_pl_id_variable, *c_edt_pl_id_list)
-            c_edt_pl_id_opt_menu_var.config(width=c_edt_width+1)
-            c_edt_pl_id_opt_menu_var.grid(row=2, column=1, pady=c_edt_pad, padx=c_edt_pad, stick="ew")
-
         else:
-            messagebox.showerror("Index Error", "No Existing Choices Found")
-            c_edt_wd.destroy()
+            c_edt_pl_id_list.append('Assign No Paragraph')
+            c_edt_pl_id_variable.set(c_edt_pl_id_list[0])
+
+        c_edt_pl_id_opt_menu_var = OptionMenu(c_edt_info_frame_1, c_edt_pl_id_variable, *c_edt_pl_id_list)
+        c_edt_pl_id_opt_menu_var.config(width=c_edt_width + 1)
+        c_edt_pl_id_opt_menu_var.grid(row=2, column=1, pady=c_edt_pad, padx=c_edt_pad, stick="ew")
+
 
         conn.commit()
         conn.close()
 
-    c_edt_pl_id_opt_menu()
     c_edt_s_id_opt_menu()
     c_edt_c_id_opt_menu()
+    c_edt_pl_id_opt_menu()
+
 
     c_edt_wd.mainloop()
