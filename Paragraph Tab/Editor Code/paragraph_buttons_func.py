@@ -250,11 +250,23 @@ def p_edt_edit():
 
     p_edt_s_id = p_edt_s_id_variable.get()
     p_edt_p_id = p_edt_p_id_variable.get()
+
+    p_edt_npc_name = p_edt_npc_name_variable.get()
+    # Get npc_id with npc_name
+    c.execute(f"""SELECT npc_id FROM npcs WHERE npc_name='{p_edt_npc_name}'""")
+    p_edt_npc_id_raw = c.fetchall()
+    p_edt_npc_id = id.raw_conv(p_edt_npc_id_raw)[0]
+
+
     if len(p_edt_paragraph_text_entry.get("1.0", "end")) != 1:
-        c.execute("""UPDATE paragraphs_list SET p_text = :p_text WHERE pl_id = :pl_id""",
+        c.execute("""UPDATE paragraphs_list SET 
+        p_text = :p_text,
+        npc_id = :npc_id 
+        WHERE pl_id = :pl_id""",
                   {
                       "p_text": p_edt_paragraph_text_entry.get("1.0", "end"),
-                      "pl_id": f'{p_edt_p_id}'
+                      "pl_id": f'{p_edt_p_id}',
+                      "npc_id": f'{p_edt_npc_id}'
                   })
 
         # Show Success pop-up
@@ -327,7 +339,7 @@ def p_edt_window():
     screen_x_2 = p_edt_wd.winfo_screenwidth()
     screen_y_2 = p_edt_wd.winfo_screenheight()
     window_x_2 = 500
-    window_y_2 = 663
+    window_y_2 = 713
     p_edt_wd.minsize(window_x_2, window_y_2)
     p_edt_wd.maxsize(window_x_2, window_y_2)
     pos_x_2 = int((screen_x_2 - window_x_2) / 2)
@@ -362,8 +374,14 @@ def p_edt_window():
     p_edt_pad = 10
 
     # Labels
-    p_edt_story_id_label = Label(p_edt_info_frame_1, text="Select Choice ID:", width=int(p_edt_width / 2), anchor=W)
-    p_edt_story_id_label.grid(row=0, column=0, padx=(p_edt_pad, p_edt_pad-6), pady=p_edt_pad, stick="w")
+    p_edt_story_id_label = Label(p_edt_info_frame_1, text="Select Story ID:", width=int(p_edt_width / 2), anchor=W)
+    p_edt_story_id_label.grid(row=0, column=0, padx=(p_edt_pad, p_edt_pad - 6), pady=p_edt_pad, stick="w")
+
+    p_edt_choice_id_label = Label(p_edt_info_frame_1, text="Select Choice ID:", width=int(p_edt_width / 2), anchor=W)
+    p_edt_choice_id_label.grid(row=1, column=0, padx=(p_edt_pad, p_edt_pad-6), pady=p_edt_pad, stick="w")
+
+    p_edt_npc_name_label = Label(p_edt_info_frame_1, text="Select NPC Name:", width=int(p_edt_width / 2), anchor=W)
+    p_edt_npc_name_label.grid(row=2, column=0, padx=(p_edt_pad, p_edt_pad - 6), pady=p_edt_pad, stick="w")
 
     p_edt_decode_id_label_text = Label(p_edt_info_frame_2, text="Decoded ID:", width=int(p_edt_width / 2), anchor=NW)
     p_edt_decode_id_label_text.grid(row=0, column=0, padx=(p_edt_pad, p_edt_pad-5), pady=p_edt_pad, stick="nw")
@@ -411,11 +429,7 @@ def p_edt_window():
 
         c.execute("""SELECT s_id FROM paragraphs_list UNION SELECT s_id FROM paragraphs_list""")
         p_edt_s_id_list_raw = c.fetchall()
-        p_edt_s_id_list = []
-
-        for tp in p_edt_s_id_list_raw:
-            for item in tp:
-                p_edt_s_id_list.append(item)
+        p_edt_s_id_list = id.raw_conv(p_edt_s_id_list_raw)
 
         if p_edt_s_id_list:
             global p_edt_s_id_variable
@@ -438,11 +452,7 @@ def p_edt_window():
 
         c.execute(f"""SELECT pl_id FROM paragraphs_list""")
         p_edt_p_id_list_raw = c.fetchall()
-        p_edt_p_id_list = []
-
-        for tp in p_edt_p_id_list_raw:
-            for item in tp:
-                p_edt_p_id_list.append(item)
+        p_edt_p_id_list = id.raw_conv(p_edt_p_id_list_raw)
 
         if p_edt_p_id_list:
             global p_edt_p_id_variable
@@ -459,7 +469,40 @@ def p_edt_window():
         conn.commit()
         conn.close()
 
+    def p_edt_npc_name_opt_menu():
+        conn = sqlite3.connect(database)
+        c = conn.cursor()
+
+        # Get npc_id's that haven't been used
+        c.execute(f"""SELECT npc_id FROM npcs EXCEPT SELECT npc_id FROM paragraphs_list""")
+        p_edt_npc_id_list_raw = c.fetchall()
+        p_edt_npc_id_list = id.raw_conv(p_edt_npc_id_list_raw)
+
+        # Create a list for the names of each npc_id
+        p_edt_npc_name_list = []
+        for x_id in p_edt_npc_id_list:
+            c.execute(f"""SELECT npc_name FROM npcs WHERE npc_id='{x_id}'""")
+            p_edt_npc_name_raw = c.fetchall()
+            p_edt_npc_name = id.raw_conv(p_edt_npc_name_raw)
+            p_edt_npc_name_list.append(p_edt_npc_name)
+
+        if p_edt_npc_name_list:
+            global p_edt_npc_name_variable
+            p_edt_npc_name_variable = StringVar()
+            p_edt_npc_name_variable.set(p_edt_npc_name_list[0])
+            p_edt_npc_name_opt_menu_var = OptionMenu(p_edt_info_frame_1, p_edt_npc_name_variable, *p_edt_npc_name_list)
+            p_edt_npc_name_opt_menu_var.config(width=p_edt_width+1)
+            p_edt_npc_name_opt_menu_var.grid(row=2, column=1, pady=p_edt_pad, padx=p_edt_pad, stick="ew")
+
+        else:
+            messagebox.showerror("Index Error", "No Existing NPC's Found")
+            p_edt_wd.destroy()
+
+        conn.commit()
+        conn.close()
+
     p_edt_s_id_opt_menu()
     p_edt_p_id_opt_menu()
+    p_edt_npc_name_opt_menu()
 
     p_edt_wd.mainloop()

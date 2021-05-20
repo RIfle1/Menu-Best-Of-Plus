@@ -32,8 +32,8 @@ def npc_id(inp):
     return x_id
 
 
-def ob_id(inp):
-    x_id = f'OB{inp}'
+def obj_id(inp):
+    x_id = f'OBJ{inp}'
     return x_id
 
 

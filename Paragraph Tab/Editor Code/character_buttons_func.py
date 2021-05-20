@@ -65,7 +65,7 @@ def ch_new_save():
                 'ch_background': str(ch_new_background_text_entry.get("1.0", "end"))
             })
         # Success Message
-        messagebox.showinfo("Sucess", f'Character Number {ch_new_ch_id} Has Been Successfully Created.')
+        messagebox.showinfo("Success", f'Character Number {ch_new_ch_id} Has Been Successfully Created.')
         # Clear the Text Boxes
         ch_new_name_entry.delete(0, END)
         ch_new_breed_entry.delete(0, END)
@@ -199,7 +199,6 @@ def ch_edt_delete():
     c.execute(f"""SELECT s_id FROM stories WHERE ch_id = '{ch_edt_ch_id}'""")
     ch_edt_s_id_raw = c.fetchall()
     ch_edt_s_id = id.raw_conv(ch_edt_s_id_raw)
-    print(ch_edt_s_id)
 
     # Make a string of it only if an actual s_id connected to this character exists
     if ch_edt_s_id:
@@ -227,7 +226,7 @@ def ch_edt_delete():
 
             # Show Success pop-up
             messagebox.showinfo("Success",
-                                f"Character Number {id.id_int(ch_edt_ch_id)} has been successfully deleted\nAll Stories, Paragraphs And Choices From Story Number {id.id_int(ch_edt_s_id)} Have Also Been Deleted.")
+                                f"Character Number {id.id_int(ch_edt_ch_id)} has been successfully deleted.\nAll Stories, Paragraphs And Choices From Story Number {id.id_int(ch_edt_s_id)} Have Also Been Deleted.")
 
         conn.commit()
         conn.close()

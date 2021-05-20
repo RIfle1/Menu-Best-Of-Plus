@@ -11,6 +11,7 @@ import initial_paragraph_buttons_func
 import paragraph_buttons_func
 import choice_buttons_func
 import character_buttons_func
+import npc_buttons_func
 import id
 
 
@@ -49,6 +50,9 @@ def tables():
                  ch_defense integer,
                  ch_attack integer,
                  ch_background text)""")
+    c.execute("""CREATE TABLE IF NOT EXISTS npcs
+                 (npc_id text,
+                 npc_name text)""")
     conn.commit()
     conn.close()
 
@@ -322,13 +326,13 @@ npc_font_size = 18
 # NEW NPC Button
 npc_new_npc_button = Button(npc_main_buttons_frame, text="New NPC", bg="#5fafde", fg="White", padx=npc_buttons_width,
                             pady=npc_buttons_height, font=("Times New Roman", npc_font_size), relief=FLAT, width=npc_button_width,
-                            command=character_buttons_func.ch_new_window)
+                            command=npc_buttons_func.npc_new_window)
 npc_new_npc_button.pack(padx=npc_button_x_space, pady=npc_button_y_space)
 
 # EDIT NPC Button
 npc_edit_npc_button = Button(npc_main_buttons_frame, text="Edit NPC", bg="#5fafde", fg="White", padx=npc_buttons_width,
                              pady=npc_buttons_height, font=("Times New Roman", npc_font_size), relief=FLAT, width=npc_button_width,
-                             command=character_buttons_func.ch_edt_window)
+                             command=npc_buttons_func.npc_edt_window)
 npc_edit_npc_button.pack(padx=npc_button_x_space, pady=npc_button_y_space)
 # -------------------------------------------
 # THIS IS THE END OF THE "NPC" TAB CODE
@@ -347,7 +351,7 @@ mst_main_frame_height = int(window_y / 4.8)
 mst_main_buttons_frame = LabelFrame(mst_main_frame, height=mst_main_frame_height, width=mst_main_frame_width)
 mst_main_buttons_frame.pack(fill="both")
 
-# NPC Frame
+# MONSTER / ENEMY Frame
 mst_main_mst_frame = LabelFrame(mst_main_frame, height=window_x - mst_main_frame_height)
 mst_main_mst_frame.pack(fill="both", expand=True)
 
@@ -357,20 +361,57 @@ mst_buttons_height = 1
 mst_button_x_space = 2
 mst_button_y_space = 4
 mst_font_size = 18
-# NEW NPC Button
+# NEW MONSTER / ENEMY Button
 mst_new_mst_button = Button(mst_main_buttons_frame, text="New Monster Or Enemy", bg="#5fafde", fg="White", padx=mst_buttons_width,
                             pady=mst_buttons_height, font=("Times New Roman", mst_font_size), relief=FLAT, width=mst_button_width,
-                            command=character_buttons_func.ch_new_window)
+                            command=None)
 mst_new_mst_button.pack(padx=mst_button_x_space, pady=mst_button_y_space)
 
-# EDIT NPC Button
+# EDIT MONSTER / ENEMY Button
 mst_edit_mst_button = Button(mst_main_buttons_frame, text="Edit Monster Or Enemy", bg="#5fafde", fg="White", padx=mst_buttons_width,
                              pady=mst_buttons_height, font=("Times New Roman", mst_font_size), relief=FLAT, width=mst_button_width,
-                             command=character_buttons_func.ch_edt_window)
+                             command=None)
 mst_edit_mst_button.pack(padx=mst_button_x_space, pady=mst_button_y_space)
-
 # -------------------------------------------
 # THIS IS THE END OF THE "MONSTERS / ENEMIES" TAB CODE
+# -------------------------------------------
+# -------------------------------------------
+# THIS FOLLOWING CODE IS FOR "OBJECTS / CONDITIONS" TAB
+# -------------------------------------------
+# ALL MAIN FRAMES
+# MAIN Frame
+obj_main_frame_width = int(0.75 * window_x)
+obj_main_frame = LabelFrame(objects_tab, width=obj_main_frame_width, height=window_y)
+obj_main_frame.pack(fill="both", expand=True)
+
+# Main Buttons Frame
+obj_main_frame_height = int(window_y / 4.8)
+obj_main_buttons_frame = LabelFrame(obj_main_frame, height=obj_main_frame_height, width=obj_main_frame_width)
+obj_main_buttons_frame.pack(fill="both")
+
+# OBJECT Frame
+obj_main_mst_frame = LabelFrame(obj_main_frame, height=window_x - obj_main_frame_height)
+obj_main_mst_frame.pack(fill="both", expand=True)
+
+obj_button_width = 22
+obj_buttons_width = 30
+obj_buttons_height = 1
+obj_button_x_space = 2
+obj_button_y_space = 4
+obj_font_size = 18
+# NEW OBJECT Button
+obj_new_obj_button = Button(obj_main_buttons_frame, text="New Object", bg="#5fafde", fg="White", padx=obj_buttons_width,
+                            pady=obj_buttons_height, font=("Times New Roman", obj_font_size), relief=FLAT, width=obj_button_width,
+                            command=None)
+obj_new_obj_button.pack(padx=obj_button_x_space, pady=obj_button_y_space)
+
+# EDIT OBJECT Button
+obj_edit_obj_button = Button(obj_main_buttons_frame, text="Edit Object / Set Conditions", bg="#5fafde", fg="White", padx=obj_buttons_width,
+                             pady=obj_buttons_height, font=("Times New Roman", obj_font_size), relief=FLAT, width=obj_button_width,
+                             command=None)
+obj_edit_obj_button.pack(padx=obj_button_x_space, pady=obj_button_y_space)
+# -------------------------------------------
+# THIS IS THE END OF THE "OBJECTS / CONDITIONS" TAB CODE
 # -------------------------------------------
 # -------------------------------------------
 # LOOP END
