@@ -12,6 +12,7 @@ import paragraph_buttons_func
 import choice_buttons_func
 import character_buttons_func
 import npc_buttons_func
+import monster_enemy_buttons_func
 import id
 
 
@@ -35,7 +36,9 @@ def tables():
             pl_id text,
             p_text text,
             npc_id text,
-            mst_id text)""")
+            mst_id text,
+            npc_bool integer,
+            mst_bool integer)""")
     c.execute("""CREATE TABLE IF NOT EXISTS choices
         (s_id text,
         ip_id text,
@@ -53,6 +56,10 @@ def tables():
     c.execute("""CREATE TABLE IF NOT EXISTS npcs
                  (npc_id text,
                  npc_name text)""")
+    c.execute("""CREATE TABLE IF NOT EXISTS monsters
+                 (mst_id text,
+                 mst_name text,
+                 mst_type text)""")
     conn.commit()
     conn.close()
 
@@ -364,13 +371,13 @@ mst_font_size = 18
 # NEW MONSTER / ENEMY Button
 mst_new_mst_button = Button(mst_main_buttons_frame, text="New Monster Or Enemy", bg="#5fafde", fg="White", padx=mst_buttons_width,
                             pady=mst_buttons_height, font=("Times New Roman", mst_font_size), relief=FLAT, width=mst_button_width,
-                            command=None)
+                            command=monster_enemy_buttons_func.mst_new_window)
 mst_new_mst_button.pack(padx=mst_button_x_space, pady=mst_button_y_space)
 
 # EDIT MONSTER / ENEMY Button
 mst_edit_mst_button = Button(mst_main_buttons_frame, text="Edit Monster Or Enemy", bg="#5fafde", fg="White", padx=mst_buttons_width,
                              pady=mst_buttons_height, font=("Times New Roman", mst_font_size), relief=FLAT, width=mst_button_width,
-                             command=None)
+                             command=monster_enemy_buttons_func.mst_edt_window)
 mst_edit_mst_button.pack(padx=mst_button_x_space, pady=mst_button_y_space)
 # -------------------------------------------
 # THIS IS THE END OF THE "MONSTERS / ENEMIES" TAB CODE

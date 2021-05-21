@@ -22,7 +22,9 @@ def p_new_save():
         pl_id text,
         p_text text,
         npc_id text,
-        mst_id text)""")
+        mst_id text,
+        npc_bool integer,
+        mst_bool integer)""")
 
     # Get all needed id's
     p_new_s_id = p_new_s_id_variable.get()
@@ -45,13 +47,15 @@ def p_new_save():
 
     if f'{p_new_s_id}' == f'{p_new_c_p_id}':
         if p_new_text_length != 1:
-            c.execute("INSERT INTO paragraphs_list VALUES (:s_id, :lp_id, :p_text, :npc_id, :mst_id)",
+            c.execute("INSERT INTO paragraphs_list VALUES (:s_id, :lp_id, :p_text, :npc_id, :mst_id, :npc_bool, :mst_bool)",
                       {
                           "s_id": f"{p_new_s_id}",
                           "lp_id": f"{p_new_s_id}_{id.conv('p_id', p_new_new_p_id)}",
                           "p_text": str(p_new_paragraph_text_entry.get("1.0", "end")),
-                          "npc_id": '',
-                          "mst_id": ''
+                          "npc_id": 'None',
+                          "mst_id": 'None',
+                          "npc_bool": 0,
+                          "mst_bool": 0
                       })
 
             # Assign Paragraph to choice
@@ -146,7 +150,7 @@ def p_new_window():
     p_new_get_story_id_label = Label(p_new_info_frame_1, text="Select Story ID:", width=int(p_new_width / 2), anchor=W)
     p_new_get_story_id_label.grid(row=0, column=0, padx=(p_new_pad, p_new_pad+1), pady=p_new_pad, stick="w")
 
-    p_new_get_choice_id_label = Label(p_new_info_frame_1, text="Select Choice ID:", width=int(p_new_width / 2), anchor=W)
+    p_new_get_choice_id_label = Label(p_new_info_frame_1, text="Select Paragraph ID:", width=int(p_new_width / 2), anchor=W)
     p_new_get_choice_id_label.grid(row=1, column=0, padx=(p_new_pad, p_new_pad+1), pady=p_new_pad, stick="w")
 
     p_new_decode_c_id_label = Label(p_new_info_frame_1, text="Decoded ID:", width=int(p_new_width / 2), anchor=NW)
@@ -252,36 +256,83 @@ def p_edt_edit():
     p_edt_p_id = p_edt_p_id_variable.get()
 
     p_edt_npc_name = p_edt_npc_name_variable.get()
-    # Get npc_id with npc_name
-    c.execute(f"""SELECT npc_id FROM npcs WHERE npc_name='{p_edt_npc_name}'""")
-    p_edt_npc_id_raw = c.fetchall()
-    p_edt_npc_id = id.raw_conv(p_edt_npc_id_raw)[0]
+    p_edt_mst_name = p_edt_mst_name_variable.get()
 
-
-    if len(p_edt_paragraph_text_entry.get("1.0", "end")) != 1:
-        c.execute("""UPDATE paragraphs_list SET 
-        p_text = :p_text,
-        npc_id = :npc_id 
-        WHERE pl_id = :pl_id""",
-                  {
-                      "p_text": p_edt_paragraph_text_entry.get("1.0", "end"),
-                      "pl_id": f'{p_edt_p_id}',
-                      "npc_id": f'{p_edt_npc_id}'
-                  })
-
-        # Show Success pop-up
-        messagebox.showinfo("Success", f"Paragraph Number {id.id_int(p_edt_p_id)} in Story Number {id.id_int(p_edt_s_id)} has been successfully modified.")
+    # Check to see if an npc or mst has been assigned
+    if p_edt_npc_name == p_edt_mst_name == 'None':
+        messagebox.showerror("Input Error", f'You Must Assign An NPC or Enemy To This Paragraph', icon='warning')
     else:
-        messagebox.showerror("Input Error", f'Paragraph Text is Empty', icon='warning')
+        if p_edt_npc_name != 'None' and p_edt_mst_name == 'None':
+            # Save Paragraph to NPC ID
+            # Get npc_id with npc_name
+            c.execute(f"""SELECT npc_id FROM npcs WHERE npc_name = '{p_edt_npc_name}'""")
+            p_edt_npc_id_raw = c.fetchall()
+            p_edt_npc_id = id.raw_conv(p_edt_npc_id_raw)[0]
 
-    # Clear the Text Boxes
-    p_edt_paragraph_text_entry.delete("1.0", "end")
+            if len(p_edt_paragraph_text_entry.get("1.0", "end")) != 1:
+                c.execute("""UPDATE paragraphs_list SET 
+                p_text = :p_text,
+                npc_id = :npc_id,
+                npc_bool = :npc_bool,
+                mst_id = :mst_id,
+                mst_bool = :mst_bool 
+                WHERE pl_id = :pl_id""",
+                          {
+                              "p_text": p_edt_paragraph_text_entry.get("1.0", "end"),
+                              "pl_id": f'{p_edt_p_id}',
+                              "npc_id": f'{p_edt_npc_id}',
+                              "npc_bool": 1,
+                              "mst_id": 'None',
+                              "mst_bool": 0
+                          })
+
+                # Show Success pop-up
+                messagebox.showinfo("Success", f"Paragraph Number {id.id_int(p_edt_p_id)} in Story Number {id.id_int(p_edt_s_id)} has been successfully modified.")
+            else:
+                messagebox.showerror("Input Error", f'Paragraph Text is Empty', icon='warning')
+
+        elif p_edt_mst_name != 'None' and p_edt_npc_name == 'None':
+            # Save paragraph to mst_id
+            # Get mst_id with mst_name
+            c.execute(f"""SELECT mst_id FROM monsters WHERE mst_name = '{p_edt_mst_name}'""")
+            p_edt_mst_id_raw = c.fetchall()
+            p_edt_mst_id = id.raw_conv(p_edt_mst_id_raw)[0]
+
+            if len(p_edt_paragraph_text_entry.get("1.0", "end")) != 1:
+                c.execute("""UPDATE paragraphs_list SET 
+                p_text = :p_text,
+                mst_id = :mst_id,
+                mst_bool = :mst_bool,
+                npc_id = :npc_id,
+                npc_bool = :npc_bool 
+                WHERE pl_id = :pl_id""",
+                          {
+                              "p_text": p_edt_paragraph_text_entry.get("1.0", "end"),
+                              "pl_id": f'{p_edt_p_id}',
+                              "mst_id": f'{p_edt_mst_id}',
+                              "mst_bool": 1,
+                              "npc_id": 'None',
+                              "npc_bool": 0
+                          })
+
+                # Show Success pop-up
+                messagebox.showinfo("Success",
+                                    f"Paragraph Number {id.id_int(p_edt_p_id)} in Story Number {id.id_int(p_edt_s_id)} has been successfully modified.")
+            else:
+                messagebox.showerror("Input Error", f'Paragraph Text is Empty', icon='warning')
+        else:
+            messagebox.showerror("Input Error", f'You Cannot Assign An Enemy And An NPC To A Paragraph', icon='warning')
+
+        # Clear the Text Boxes
+        p_edt_paragraph_text_entry.delete("1.0", "end")
 
     conn.commit()
     conn.close()
 
     p_edt_s_id_opt_menu()
     p_edt_p_id_opt_menu()
+    p_edt_npc_name_opt_menu()
+    p_edt_mst_name_opt_menu()
 
 
 def p_edt_insert():
@@ -339,7 +390,7 @@ def p_edt_window():
     screen_x_2 = p_edt_wd.winfo_screenwidth()
     screen_y_2 = p_edt_wd.winfo_screenheight()
     window_x_2 = 500
-    window_y_2 = 713
+    window_y_2 = 763
     p_edt_wd.minsize(window_x_2, window_y_2)
     p_edt_wd.maxsize(window_x_2, window_y_2)
     pos_x_2 = int((screen_x_2 - window_x_2) / 2)
@@ -383,6 +434,9 @@ def p_edt_window():
     p_edt_npc_name_label = Label(p_edt_info_frame_1, text="Select NPC Name:", width=int(p_edt_width / 2), anchor=W)
     p_edt_npc_name_label.grid(row=2, column=0, padx=(p_edt_pad, p_edt_pad - 6), pady=p_edt_pad, stick="w")
 
+    p_edt_npc_name_label = Label(p_edt_info_frame_1, text="Or Select Enemy Name:", width=int(p_edt_width / 2), anchor=W)
+    p_edt_npc_name_label.grid(row=3, column=0, padx=(p_edt_pad, p_edt_pad - 6), pady=p_edt_pad, stick="w")
+
     p_edt_decode_id_label_text = Label(p_edt_info_frame_2, text="Decoded ID:", width=int(p_edt_width / 2), anchor=NW)
     p_edt_decode_id_label_text.grid(row=0, column=0, padx=(p_edt_pad, p_edt_pad-5), pady=p_edt_pad, stick="nw")
 
@@ -421,7 +475,7 @@ def p_edt_window():
                                  command=p_edt_wd.destroy)
     p_edt_cancel_button.grid(row=0, column=3, padx=p_edt_pad, pady=p_edt_pad, stick="w")
 
-    global p_edt_s_id_opt_menu, p_edt_p_id_opt_menu
+    global p_edt_s_id_opt_menu, p_edt_p_id_opt_menu, p_edt_npc_name_opt_menu, p_edt_mst_name_opt_menu
 
     def p_edt_s_id_opt_menu():
         conn = sqlite3.connect(database)
@@ -480,16 +534,21 @@ def p_edt_window():
 
         # Create a list for the names of each npc_id
         p_edt_npc_name_list = []
-        for x_id in p_edt_npc_id_list:
-            c.execute(f"""SELECT npc_name FROM npcs WHERE npc_id='{x_id}'""")
-            p_edt_npc_name_raw = c.fetchall()
-            p_edt_npc_name = id.raw_conv(p_edt_npc_name_raw)
-            p_edt_npc_name_list.append(p_edt_npc_name)
+        if p_edt_npc_id_list:
+            for x_id in p_edt_npc_id_list:
+                c.execute(f"""SELECT npc_name FROM npcs WHERE npc_id='{x_id}'""")
+                p_edt_npc_name_raw = c.fetchall()
+                p_edt_npc_name = id.raw_conv(p_edt_npc_name_raw)[0]
+                p_edt_npc_name_list.append(p_edt_npc_name)
+
+        else:
+            p_edt_npc_name_list.append('None')
 
         if p_edt_npc_name_list:
             global p_edt_npc_name_variable
             p_edt_npc_name_variable = StringVar()
-            p_edt_npc_name_variable.set(p_edt_npc_name_list[0])
+            p_edt_npc_name_list.append('None')
+            p_edt_npc_name_variable.set(p_edt_npc_name_list[-1])
             p_edt_npc_name_opt_menu_var = OptionMenu(p_edt_info_frame_1, p_edt_npc_name_variable, *p_edt_npc_name_list)
             p_edt_npc_name_opt_menu_var.config(width=p_edt_width+1)
             p_edt_npc_name_opt_menu_var.grid(row=2, column=1, pady=p_edt_pad, padx=p_edt_pad, stick="ew")
@@ -501,8 +560,46 @@ def p_edt_window():
         conn.commit()
         conn.close()
 
+    def p_edt_mst_name_opt_menu():
+        conn = sqlite3.connect(database)
+        c = conn.cursor()
+
+        # Get mst_id's that haven't been used
+        c.execute(f"""SELECT mst_id FROM monsters EXCEPT SELECT mst_id FROM paragraphs_list""")
+        p_edt_mst_id_list_raw = c.fetchall()
+        p_edt_mst_id_list = id.raw_conv(p_edt_mst_id_list_raw)
+
+        p_edt_mst_name_list = []
+        if p_edt_mst_id_list:
+            # Create a list for the names of each npc_id
+            for x_id in p_edt_mst_id_list:
+                c.execute(f"""SELECT mst_name FROM monsters WHERE mst_id='{x_id}'""")
+                p_edt_mst_name_raw = c.fetchall()
+                p_edt_mst_name = id.raw_conv(p_edt_mst_name_raw)[0]
+                p_edt_mst_name_list.append(p_edt_mst_name)
+
+        else:
+            p_edt_mst_name_list.append('None')
+
+        if p_edt_mst_name_list:
+            global p_edt_mst_name_variable
+            p_edt_mst_name_variable = StringVar()
+            p_edt_mst_name_list.append('None')
+            p_edt_mst_name_variable.set(p_edt_mst_name_list[-1])
+            p_edt_mst_name_opt_menu_var = OptionMenu(p_edt_info_frame_1, p_edt_mst_name_variable, *p_edt_mst_name_list)
+            p_edt_mst_name_opt_menu_var.config(width=p_edt_width+1)
+            p_edt_mst_name_opt_menu_var.grid(row=3, column=1, pady=p_edt_pad, padx=p_edt_pad, stick="ew")
+
+        else:
+            messagebox.showerror("Index Error", "No Existing Enemies Found")
+            p_edt_wd.destroy()
+
+        conn.commit()
+        conn.close()
+
     p_edt_s_id_opt_menu()
     p_edt_p_id_opt_menu()
     p_edt_npc_name_opt_menu()
+    p_edt_mst_name_opt_menu()
 
     p_edt_wd.mainloop()

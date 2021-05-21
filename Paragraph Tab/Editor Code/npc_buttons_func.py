@@ -42,7 +42,7 @@ def npc_new_save():
                    :npc_name)""",
                   {
                       'npc_id': str(id.npc_id(npc_new_npc_id)),
-                      'npc_name': str(npc_new_name_entry_var.get())
+                      'npc_name': str(npc_new_name_entry_var.get()),
                   })
 
         messagebox.showinfo("Success", f'NPC Number {npc_new_npc_id} Has Been Successfully Created.')
@@ -140,7 +140,10 @@ def npc_edt_delete():
             messagebox.showinfo("Success", f"NPC Number {id.id_int(npc_edt_npc_id)} has been successfully deleted.")
         else:
             c.execute(f"""DELETE FROM npcs WHERE npc_id = '{npc_edt_npc_id}'""")
-            c.execute(f"""UPDATE paragraphs_list SET npc_id = None WHERE npc_id = f'{npc_edt_npc_id}'""")
+            c.execute(f"""UPDATE paragraphs_list SET 
+            npc_id = 'None'
+            npc_bool = {False} 
+            WHERE npc_id = '{npc_edt_npc_id}'""")
 
             # Show Success pop-up
             messagebox.showinfo("Success",
@@ -186,7 +189,7 @@ def npc_edt_edit():
     npc_edt_npc_name_var = npc_new_npc_name_id_var.get()
 
     npc_edt_npc_name = npc_edt_name_entry.get()
-    if npc_edt_npc_name_var != '':
+    if npc_edt_npc_name != '':
         c.execute(f"""UPDATE npcs SET npc_name = '{npc_edt_npc_name}' WHERE npc_name = '{npc_edt_npc_name_var}'""")
 
         messagebox.showinfo("Success", f"NPC '{npc_edt_npc_name_var}' has been successfully Renamed.")
@@ -260,9 +263,9 @@ def npc_edt_window():
                                           command=npc_edt_insert)
     npc_edt_load_npc_button.grid(row=0, column=1, padx=npc_edt_pad, pady=npc_edt_pad, stick="w")
 
-    ch_edt_delete_npc_button = Button(npc_edt_button_frame, text="Delete NPC", width=npc_edt_width_buttons,
+    mst_edt_delete_npc_button = Button(npc_edt_button_frame, text="Delete NPC", width=npc_edt_width_buttons,
                                             command=npc_edt_delete)
-    ch_edt_delete_npc_button.grid(row=0, column=2, padx=npc_edt_pad, pady=npc_edt_pad, stick="w")
+    mst_edt_delete_npc_button.grid(row=0, column=2, padx=npc_edt_pad, pady=npc_edt_pad, stick="w")
 
     npc_edt_cancel_button = Button(npc_edt_button_frame, text="Cancel", width=npc_edt_width_buttons,
                                   command=npc_edt_wd.destroy)

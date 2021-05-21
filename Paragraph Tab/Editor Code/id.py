@@ -32,6 +32,11 @@ def npc_id(inp):
     return x_id
 
 
+def mst_id(inp):
+    x_id = f'MST{inp}'
+    return x_id
+
+
 def obj_id(inp):
     x_id = f'OBJ{inp}'
     return x_id
