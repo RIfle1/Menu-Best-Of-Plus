@@ -188,7 +188,7 @@ def ch_edt_delete():
     conn = sqlite3.connect(database)
     c = conn.cursor()
 
-    ch_edt_ch_name = ch_new_ch_name_id_var.get()
+    ch_edt_ch_name = ch_edt_ch_name_id_var.get()
 
     # Get ch_id with ch_name
     c.execute(f"""SELECT ch_id FROM characters WHERE ch_name = '{ch_edt_ch_name}'""")
@@ -260,7 +260,7 @@ def ch_edt_insert():
     conn = sqlite3.connect(database)
     c = conn.cursor()
 
-    ch_edt_ch_name = ch_new_ch_name_id_var.get()
+    ch_edt_ch_name = ch_edt_ch_name_id_var.get()
 
     c.execute(f"""SELECT * FROM characters WHERE ch_name = '{ch_edt_ch_name}'""")
     ch_edt_info_list_raw = c.fetchall()
@@ -283,7 +283,7 @@ def ch_edt_edit():
     conn = sqlite3.connect(database)
     c = conn.cursor()
 
-    ch_edt_ch_name = ch_new_ch_name_id_var.get()
+    ch_edt_ch_name = ch_edt_ch_name_id_var.get()
 
     edt_ch_name = ch_edt_name_entry.get()
     edt_ch_breed = ch_edt_breed_entry.get()
@@ -468,10 +468,10 @@ def ch_edt_window():
         ch_new_ch_name_id_list = id.raw_conv(ch_new_ch_name_id_ist_raw)
 
         if ch_new_ch_name_id_list:
-            global ch_new_ch_name_id_var
-            ch_new_ch_name_id_var = StringVar()
-            ch_new_ch_name_id_var.set(ch_new_ch_name_id_list[0])
-            ch_edt_ch_name_id_opt_menu_var = OptionMenu(ch_edt_info_frame_0, ch_new_ch_name_id_var, *ch_new_ch_name_id_list)
+            global ch_edt_ch_name_id_var
+            ch_edt_ch_name_id_var = StringVar()
+            ch_edt_ch_name_id_var.set(ch_new_ch_name_id_list[0])
+            ch_edt_ch_name_id_opt_menu_var = OptionMenu(ch_edt_info_frame_0, ch_edt_ch_name_id_var, *ch_new_ch_name_id_list)
             ch_edt_ch_name_id_opt_menu_var.config(width=ch_edt_width+1)
             ch_edt_ch_name_id_opt_menu_var.grid(row=0, column=1, pady=ch_edt_pad, padx=ch_edt_pad, stick="ew")
 

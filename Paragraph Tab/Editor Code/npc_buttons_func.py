@@ -15,6 +15,11 @@ def npc_new_save():
     conn = sqlite3.connect(database)
     c = conn.cursor()
 
+    # Create Table
+    c.execute("""CREATE TABLE IF NOT EXISTS npcs
+                 (npc_id text,
+                 npc_name text)""")
+
     # Create a new ch_id
     c.execute(f"""SELECT npc_id from npcs""")
     npc_new_npc_id_list_raw = c.fetchall()
@@ -31,26 +36,23 @@ def npc_new_save():
     npc_new_name_list_raw = c.fetchall()
     npc_new_name_list = id.raw_conv(npc_new_name_list_raw)
 
-    # Create Table
-    c.execute("""CREATE TABLE IF NOT EXISTS npcs
-             (npc_id text,
-             npc_name text)""")
+    if not npc_new_npc_name == '':
+        if not npc_new_name_list:
+            c.execute("""INSERT INTO npcs VALUES (
+                       :npc_id, 
+                       :npc_name)""",
+                      {
+                          'npc_id': str(id.npc_id(npc_new_npc_id)),
+                          'npc_name': str(npc_new_npc_name),
+                      })
 
-    if not npc_new_name_list:
-        c.execute("""INSERT INTO npcs VALUES (
-                   :npc_id, 
-                   :npc_name)""",
-                  {
-                      'npc_id': str(id.npc_id(npc_new_npc_id)),
-                      'npc_name': str(npc_new_name_entry_var.get()),
-                  })
-
-        messagebox.showinfo("Success", f'NPC Number {npc_new_npc_id} Has Been Successfully Created.')
-        # Clear the Text Boxes
-        npc_new_name_entry.delete(0, END)
+            messagebox.showinfo("Success", f'NPC {npc_new_npc_name} Has Been Successfully Created.')
+            # Clear the Text Boxes
+            npc_new_name_entry.delete(0, END)
+        else:
+            messagebox.showerror("Duplication Error", f"NPC Called '{npc_new_npc_name}' Already Exists.", icon='warning')
     else:
-        messagebox.showerror("Duplication Error", f"NPC Called '{npc_new_npc_name}' Already Exists.")
-
+        messagebox.showerror("Input Error", f"NPC Has To Be Named.", icon='warning')
     conn.commit()
     conn.close()
 
@@ -110,44 +112,44 @@ def npc_edt_delete():
     conn = sqlite3.connect(database)
     c = conn.cursor()
 
-    npc_edt_ch_name = npc_new_npc_name_id_var.get()
+    npc_edt_npc_name = npc_edt_npc_name_var.get()
 
     # Get npc_id with npc_name
-    c.execute(f"""SELECT npc_id FROM npcs WHERE npc_name = '{npc_edt_ch_name}'""")
+    c.execute(f"""SELECT npc_id FROM npcs WHERE npc_name = '{npc_edt_npc_name}'""")
     npc_edt_npc_id_raw = c.fetchall()
     npc_edt_npc_id = str(id.raw_conv(npc_edt_npc_id_raw)[0])
 
     # Get pl_id with npc_id
     c.execute(f"""SELECT pl_id FROM paragraphs_list WHERE npc_id = '{npc_edt_npc_id}'""")
-    npc_edt_s_id_raw = c.fetchall()
-    npc_edt_s_id = id.raw_conv(npc_edt_s_id_raw)
+    npc_edt_pl_id_raw = c.fetchall()
+    npc_edt_pl_id = id.raw_conv(npc_edt_pl_id_raw)
 
     # Make a string of it only if an actual pl_id connected to this character exists
-    if npc_edt_s_id:
-        npc_edt_s_id = str(id.raw_conv(npc_edt_s_id_raw)[0])
+    if npc_edt_pl_id:
+        npc_edt_pl_id = str(id.raw_conv(npc_edt_pl_id_raw)[0])
     else:
-        npc_edt_s_id = '/'
+        npc_edt_pl_id = '/'
 
     s_del_warning = messagebox.askquestion('Confirm Deletion',
-                                           f"Are you sure you want to delete NPC called '{npc_edt_ch_name}'?",
+                                           f"Are you sure you want to delete NPC called '{npc_edt_npc_name}'?",
                                            icon='warning')
 
     if s_del_warning == 'yes':
-        if npc_edt_s_id == '/':
+        if npc_edt_pl_id == '/':
             c.execute(f"""DELETE FROM npcs WHERE npc_id = '{npc_edt_npc_id}'""")
 
             # Show Success pop-up
-            messagebox.showinfo("Success", f"NPC Number {id.id_int(npc_edt_npc_id)} has been successfully deleted.")
+            messagebox.showinfo("Success", f"NPC Called {npc_edt_npc_name} has been successfully deleted.")
         else:
             c.execute(f"""DELETE FROM npcs WHERE npc_id = '{npc_edt_npc_id}'""")
             c.execute(f"""UPDATE paragraphs_list SET 
             npc_id = 'None'
-            npc_bool = {False} 
+            npc_bool = f{0} 
             WHERE npc_id = '{npc_edt_npc_id}'""")
 
             # Show Success pop-up
             messagebox.showinfo("Success",
-                                f"Character Number {id.id_int(npc_edt_npc_id)} has been successfully deleted.")
+                                f"Character Number '{npc_edt_npc_name}' has been successfully deleted.")
 
         conn.commit()
         conn.close()
@@ -169,7 +171,7 @@ def npc_edt_insert():
     conn = sqlite3.connect(database)
     c = conn.cursor()
 
-    npc_edt_npc_name = npc_new_npc_name_id_var.get()
+    npc_edt_npc_name = npc_edt_npc_name_var.get()
 
     c.execute(f"""SELECT npc_name FROM npcs WHERE npc_name = '{npc_edt_npc_name}'""")
     npc_edt_name_list_raw = c.fetchall()
@@ -186,13 +188,13 @@ def npc_edt_edit():
     conn = sqlite3.connect(database)
     c = conn.cursor()
 
-    npc_edt_npc_name_var = npc_new_npc_name_id_var.get()
+    npc_edt_npc_name_old = npc_edt_npc_name_var.get()
 
     npc_edt_npc_name = npc_edt_name_entry.get()
     if npc_edt_npc_name != '':
-        c.execute(f"""UPDATE npcs SET npc_name = '{npc_edt_npc_name}' WHERE npc_name = '{npc_edt_npc_name_var}'""")
+        c.execute(f"""UPDATE npcs SET npc_name = '{npc_edt_npc_name}' WHERE npc_name = '{npc_edt_npc_name_old}'""")
 
-        messagebox.showinfo("Success", f"NPC '{npc_edt_npc_name_var}' has been successfully Renamed.")
+        messagebox.showinfo("Success", f"NPC '{npc_edt_npc_name_old}' has been successfully Renamed.")
 
         # Clear the Text Boxes
         npc_edt_name_entry.delete(0, END)
@@ -244,7 +246,7 @@ def npc_edt_window():
     npc_edt_select_npc_label = Label(npc_edt_info_frame_0, text="Select NPC:", width=int(npc_edt_width / 2), anchor=W)
     npc_edt_select_npc_label.grid(row=0, column=0, padx=(npc_edt_pad, npc_edt_pad - 3), pady=npc_edt_pad, stick="w")
 
-    npc_edt_name_label = Label(npc_edt_info_frame_1, text="Name:", width=int(npc_edt_width / 2), anchor=W)
+    npc_edt_name_label = Label(npc_edt_info_frame_1, text="Rename:", width=int(npc_edt_width / 2), anchor=W)
     npc_edt_name_label.grid(row=0, column=0, padx=npc_edt_pad, pady=npc_edt_pad, stick="w")
 
     # Short Entries
@@ -263,9 +265,9 @@ def npc_edt_window():
                                           command=npc_edt_insert)
     npc_edt_load_npc_button.grid(row=0, column=1, padx=npc_edt_pad, pady=npc_edt_pad, stick="w")
 
-    mst_edt_delete_npc_button = Button(npc_edt_button_frame, text="Delete NPC", width=npc_edt_width_buttons,
+    npc_edt_delete_npc_button = Button(npc_edt_button_frame, text="Delete NPC", width=npc_edt_width_buttons,
                                             command=npc_edt_delete)
-    mst_edt_delete_npc_button.grid(row=0, column=2, padx=npc_edt_pad, pady=npc_edt_pad, stick="w")
+    npc_edt_delete_npc_button.grid(row=0, column=2, padx=npc_edt_pad, pady=npc_edt_pad, stick="w")
 
     npc_edt_cancel_button = Button(npc_edt_button_frame, text="Cancel", width=npc_edt_width_buttons,
                                   command=npc_edt_wd.destroy)
@@ -279,17 +281,17 @@ def npc_edt_window():
         c = conn.cursor()
 
         c.execute(f"""SELECT npc_name FROM npcs""")
-        npc_new_npc_name_id_ist_raw = c.fetchall()
-        npc_new_npc_name_id_list = id.raw_conv(npc_new_npc_name_id_ist_raw)
+        npc_new_npc_name_list_raw = c.fetchall()
+        npc_new_npc_name_list = id.raw_conv(npc_new_npc_name_list_raw)
 
-        if npc_new_npc_name_id_list:
-            global npc_new_npc_name_id_var
-            npc_new_npc_name_id_var = StringVar()
-            npc_new_npc_name_id_var.set(npc_new_npc_name_id_list[0])
-            npc_edt_npc_name_id_opt_menu_var = OptionMenu(npc_edt_info_frame_0, npc_new_npc_name_id_var,
-                                                        *npc_new_npc_name_id_list)
-            npc_edt_npc_name_id_opt_menu_var.config(width=npc_edt_width + 1)
-            npc_edt_npc_name_id_opt_menu_var.grid(row=0, column=1, pady=npc_edt_pad, padx=npc_edt_pad, stick="ew")
+        if npc_new_npc_name_list:
+            global npc_edt_npc_name_var
+            npc_edt_npc_name_var = StringVar()
+            npc_edt_npc_name_var.set(npc_new_npc_name_list[0])
+            npc_edt_npc_name_opt_menu_var = OptionMenu(npc_edt_info_frame_0, npc_edt_npc_name_var,
+                                                          *npc_new_npc_name_list)
+            npc_edt_npc_name_opt_menu_var.config(width=npc_edt_width + 1)
+            npc_edt_npc_name_opt_menu_var.grid(row=0, column=1, pady=npc_edt_pad, padx=npc_edt_pad, stick="ew")
 
         else:
             messagebox.showerror("Index Error", "No Existing NPC's were Found")

@@ -13,6 +13,7 @@ import choice_buttons_func
 import character_buttons_func
 import npc_buttons_func
 import monster_enemy_buttons_func
+import object_buttons_func
 import id
 
 
@@ -38,11 +39,13 @@ def tables():
             npc_id text,
             mst_id text,
             npc_bool integer,
-            mst_bool integer)""")
+            mst_bool integer,
+            obj_id text)""")
     c.execute("""CREATE TABLE IF NOT EXISTS choices
         (s_id text,
         ip_id text,
         c_id text,
+        obj_id text,
         c_text text)""")
     c.execute("""CREATE TABLE IF NOT EXISTS characters
                  (ch_id text,
@@ -60,6 +63,10 @@ def tables():
                  (mst_id text,
                  mst_name text,
                  mst_type text)""")
+    c.execute("""CREATE TABLE IF NOT EXISTS objects
+                     (obj_id text,
+                     obj_name text)""")
+
     conn.commit()
     conn.close()
 
@@ -409,13 +416,13 @@ obj_font_size = 18
 # NEW OBJECT Button
 obj_new_obj_button = Button(obj_main_buttons_frame, text="New Object", bg="#5fafde", fg="White", padx=obj_buttons_width,
                             pady=obj_buttons_height, font=("Times New Roman", obj_font_size), relief=FLAT, width=obj_button_width,
-                            command=None)
+                            command=object_buttons_func.obj_new_window)
 obj_new_obj_button.pack(padx=obj_button_x_space, pady=obj_button_y_space)
 
 # EDIT OBJECT Button
 obj_edit_obj_button = Button(obj_main_buttons_frame, text="Edit Object / Set Conditions", bg="#5fafde", fg="White", padx=obj_buttons_width,
                              pady=obj_buttons_height, font=("Times New Roman", obj_font_size), relief=FLAT, width=obj_button_width,
-                             command=None)
+                             command=object_buttons_func.obj_edt_window)
 obj_edit_obj_button.pack(padx=obj_button_x_space, pady=obj_button_y_space)
 # -------------------------------------------
 # THIS IS THE END OF THE "OBJECTS / CONDITIONS" TAB CODE

@@ -81,9 +81,9 @@ def c_new_save():
     (s_id text,
     ip_id text,
     c_id text,
+    obj_id text,
     c_text text)""")
 
-    # i'll explain it...
     c_new_s_id = c_new_s_id_variable.get()
     c_new_ip_id = id.ip_id(c_new_s_id)
 
@@ -125,11 +125,12 @@ def c_new_save():
                     c_new_c_number = int(c_new_c_number)
                     if c_new_c_text_length != 1:
                         if c_new_c_number > 0:
-                            c.execute("INSERT INTO choices VALUES (:s_id, :ip_id, :c_id, :c_text)",
+                            c.execute("INSERT INTO choices VALUES (:s_id, :ip_id, :c_id, :obj_id, :c_text)",
                                       {
                                           "s_id": f"{c_new_s_id}",
                                           "ip_id": f"{c_new_ip_id}",
                                           "c_id": f"{c_new_c_id}",
+                                          "obj_id": 'None',
                                           "c_text": str(c_new_choice_text_entry.get("1.0", "end"))
                                       })
                             messagebox.showinfo("Success",
@@ -392,7 +393,7 @@ def c_edt_decode_id():
 
     c.execute(f"""SELECT p_text FROM paragraphs_list WHERE pl_id='{c_edt_pl_id_variable.get()}'""")
     c_edt_pl_text_raw = c.fetchall()
-    c_edt_pl_text = id.raw_conv(c_edt_pl_text_raw)
+    c_edt_pl_text = id.raw_conv(c_edt_pl_text_raw)[0]
 
     conn.commit()
     conn.close()
@@ -426,7 +427,7 @@ def c_del_delete():
     c_edt_c_id_opt_menu()
 
 
-def c_edt_assign_save():
+def c_edt_assign_paragraph_save():
     conn = sqlite3.connect(database)
     c = conn.cursor()
 
@@ -492,7 +493,7 @@ def c_edt_assign_save():
         c_edt_c_id_opt_menu()
 
 
-def c_del_assign_delete():
+def c_del_assign_paragraph_delete():
     conn = sqlite3.connect(database)
     c = conn.cursor()
 
@@ -519,6 +520,37 @@ def c_del_assign_delete():
     c_edt_c_id_opt_menu()
 
 
+def c_edt_assign_object_save():
+    conn = sqlite3.connect(database)
+    c = conn.cursor()
+
+    # Get Object's Name
+    c_edt_obj_name = c_edt_obj_name_variable.get()
+
+    # Get c_id
+    c_edt_c_id = c_edt_c_id_variable.get()
+
+    # Get c_id number
+    c_ed_c_id_num = id.id_int(c_edt_c_id)
+
+    if c_edt_obj_name != 'Assign No Object':
+        # Get Object's id
+        c.execute(f"""SELECT obj_id FROM objects where obj_name ='{c_edt_obj_name}'""")
+        c_edt_obj_id_raw = c.fetchall()
+        c_edt_obj_id = id.raw_conv(c_edt_obj_id_raw)[0]
+
+        c.execute(f"""UPDATE choices SET obj_id = '{c_edt_obj_id}' WHERE c_id = '{c_edt_c_id}'""")
+        messagebox.showinfo("Success", f"Choice Number {c_ed_c_id_num} Has Been Assigned Object '{c_edt_obj_name}' As A Condition.")
+
+    else:
+        c.execute(f"""UPDATE choices SET obj_id = 'None' WHERE c_id = '{c_edt_c_id}'""")
+        messagebox.showinfo("Success",
+                            f"Choice Number {c_ed_c_id_num} Condition Has Been Removed.")
+
+    conn.commit()
+    conn.close()
+
+
 # Function to open edit window
 def c_edt_window():
     global c_edt_wd
@@ -528,7 +560,7 @@ def c_edt_window():
     screen_x_2 = c_edt_wd.winfo_screenwidth()
     screen_y_2 = c_edt_wd.winfo_screenheight()
     window_x_2 = 1000
-    window_y_2 = 703
+    window_y_2 = 653
     c_edt_wd.minsize(window_x_2, window_y_2)
     c_edt_wd.maxsize(window_x_2, window_y_2)
     pos_x_2 = int((screen_x_2 - window_x_2) / 2)
@@ -538,117 +570,154 @@ def c_edt_window():
     c_edt_frame_height = 400
     c_edt_info_frame_height = 57
 
-    # Info Frame 0_1
-    c_edt_info_frame_0_1 = LabelFrame(c_edt_wd, height=c_edt_info_frame_height, width=window_x_2)
-    c_edt_info_frame_0_1.pack(fill="y", side=TOP)
+    # Info Frame UP
+    c_edt_info_frame_up = Frame(c_edt_wd, height=c_edt_info_frame_height, width=window_x_2)
+    c_edt_info_frame_up.pack(fill="both", side=TOP)
 
-    # Info Frame 1
-    c_edt_info_frame_1 = Frame(c_edt_info_frame_0_1, height=c_edt_info_frame_height, width=window_x_2)
-    c_edt_info_frame_1.pack(fill="y")
 
-    # Info Frame 2
-    c_edt_info_frame_2 = Frame(c_edt_info_frame_0_1, height=c_edt_info_frame_height, width=window_x_2)
-    c_edt_info_frame_2.pack(fill="y")
+    # Select Info MAIN Frame
+    c_edt_select_info_frame_0 = LabelFrame(c_edt_info_frame_up, height=c_edt_info_frame_height, width=window_x_2)
+    c_edt_select_info_frame_0.pack(fill="both", side=LEFT, expand=True)
 
-    # Info Frame 3
-    c_edt_info_frame_3 = Frame(c_edt_info_frame_0_1, height=c_edt_info_frame_height, width=window_x_2)
-    c_edt_info_frame_3.pack(fill="y")
+    # Select Info Frame 1
+    c_edt_select_info_frame_1 = Frame(c_edt_select_info_frame_0, height=c_edt_info_frame_height, width=window_x_2)
+    c_edt_select_info_frame_1.pack(fill="y")
 
-    # Info Frame 0_2
-    c_edt_info_frame_0_2 = LabelFrame(c_edt_wd, height=c_edt_info_frame_height, width=window_x_2)
-    c_edt_info_frame_0_2.pack(fill="both")
+    # Select Info Frame 2
+    c_edt_select_info_frame_2 = Frame(c_edt_select_info_frame_0, height=c_edt_info_frame_height, width=window_x_2)
+    c_edt_select_info_frame_2.pack(fill="y")
 
-    # Edit Choice Frame
-    c_edt_edit_choice_frame = LabelFrame(c_edt_info_frame_0_2, height=c_edt_frame_height, width=window_x_2)
-    c_edt_edit_choice_frame.pack(fill="both", side=LEFT)
+    # Select Info Frame 3
+    c_edt_select_info_frame_3 = Frame(c_edt_select_info_frame_0, height=c_edt_info_frame_height, width=window_x_2)
+    c_edt_select_info_frame_3.pack(fill="y")
+
+
+    # Assign Object (Condition) MAIN Frame
+    c_edt_assign_object_frame_0 = LabelFrame(c_edt_info_frame_up, height=c_edt_info_frame_height, width=window_x_2)
+    c_edt_assign_object_frame_0.pack(fill="both", side=RIGHT)
+
+    # Assign Object Frame 1
+    c_edt_assign_object_frame_1 = Frame(c_edt_assign_object_frame_0, height=c_edt_info_frame_height, width=window_x_2)
+    c_edt_assign_object_frame_1.pack(fill="y", side=TOP, expand=True)
+
+    # Assign Object Frame 2
+    c_edt_assign_object_frame_2 = Frame(c_edt_assign_object_frame_0, height=c_edt_info_frame_height, width=window_x_2)
+    c_edt_assign_object_frame_2.pack(fill="y", side=BOTTOM)
+
+
+    # Info Frame DOWN
+    c_edt_info_frame_down = Frame(c_edt_wd, height=c_edt_info_frame_height, width=window_x_2)
+    c_edt_info_frame_down.pack(fill="both")
+
+
+    # Edit Choice MAIN Frame
+    c_edt_edit_choice_frame_0 = LabelFrame(c_edt_info_frame_down, height=c_edt_frame_height, width=window_x_2)
+    c_edt_edit_choice_frame_0.pack(fill="both", side=RIGHT)
 
     # Edit Choice Text Frame
-    c_edt_edit_choice_text_frame = Frame(c_edt_edit_choice_frame, height=window_y_2 - c_edt_frame_height, width=window_x_2)
-    c_edt_edit_choice_text_frame.pack(fill="both")
+    c_edt_edit_choice_frame_1 = Frame(c_edt_edit_choice_frame_0, height=window_y_2 - c_edt_frame_height, width=window_x_2)
+    c_edt_edit_choice_frame_1.pack(fill="both")
 
     # Edit Choice Buttons Frame
-    c_edt_edit_choice_button_frame = Frame(c_edt_edit_choice_frame, height=window_y_2 - c_edt_frame_height, width=window_x_2)
-    c_edt_edit_choice_button_frame.pack(fill="both")
+    c_edt_edit_choice_frame_2 = Frame(c_edt_edit_choice_frame_0, height=window_y_2 - c_edt_frame_height, width=window_x_2)
+    c_edt_edit_choice_frame_2.pack(fill="both")
 
-    # Assign Choice Frame
-    c_edt_assign_choice_frame = LabelFrame(c_edt_info_frame_0_2, height=c_edt_frame_height, width=window_x_2)
-    c_edt_assign_choice_frame.pack(fill="both", side=RIGHT, expand=True)
+
+    # Assign Choice MAIN Frame
+    c_edt_assign_choice_frame_0 = LabelFrame(c_edt_info_frame_down, height=c_edt_frame_height, width=window_x_2)
+    c_edt_assign_choice_frame_0.pack(fill="both", side=LEFT, expand=True)
 
     # Assign Choice Select Frame
-    c_edt_assign_choice_select_frame = Frame(c_edt_assign_choice_frame, height=window_y_2 - c_edt_frame_height, width=window_x_2)
-    c_edt_assign_choice_select_frame.pack(fill="both")
+    c_edt_assign_choice_frame_1 = Frame(c_edt_assign_choice_frame_0, height=window_y_2 - c_edt_frame_height, width=window_x_2)
+    c_edt_assign_choice_frame_1.pack(fill="both")
 
     # Assign Choice Buttons Frame
-    c_edt_assign_choice_button_frame = Frame(c_edt_assign_choice_frame, height=window_y_2 - c_edt_frame_height, width=window_x_2)
-    c_edt_assign_choice_button_frame.pack(fill="both")
+    c_edt_assign_choice_frame_2 = Frame(c_edt_assign_choice_frame_0, height=window_y_2 - c_edt_frame_height, width=window_x_2)
+    c_edt_assign_choice_frame_2.pack(fill="both")
 
     c_edt_entry_width = 37
     c_edt_width = 42
     c_edt_pad = 10
 
     # Labels
-    c_edt_story_id_label = Label(c_edt_info_frame_1, text="Select Story ID:", width=int(c_edt_width / 2), anchor=W)
+    c_edt_story_id_label = Label(c_edt_select_info_frame_1, text="Select Story ID:", width=int(c_edt_width / 2), anchor=W)
     c_edt_story_id_label.grid(row=0, column=0, padx=c_edt_pad-3, pady=c_edt_pad, stick="w")
 
-    c_edt_choice_id_label = Label(c_edt_info_frame_1, text="Select Choice ID:", width=int(c_edt_width / 2), anchor=W)
+    c_edt_choice_id_label = Label(c_edt_select_info_frame_1, text="Select Choice ID:", width=int(c_edt_width / 2), anchor=W)
     c_edt_choice_id_label.grid(row=1, column=0, padx=c_edt_pad-3, pady=c_edt_pad, stick="w")
 
-    c_edt_to_p_id_label = Label(c_edt_info_frame_1, text="Select 'To Paragraph' ID:", width=int(c_edt_width / 2), anchor=W)
-    c_edt_to_p_id_label.grid(row=2, column=0, padx=c_edt_pad - 3, pady=c_edt_pad, stick="w")
-
-    c_edt_decode_id_label = Label(c_edt_info_frame_2, text="Decoded Choice ID:", width=int(c_edt_width / 2), anchor=NW)
+    c_edt_decode_id_label = Label(c_edt_select_info_frame_2, text="Decoded Choice ID:", width=int(c_edt_width / 2), anchor=NW)
     c_edt_decode_id_label.grid(row=0, column=0, padx=c_edt_pad-2, pady=c_edt_pad, stick="nw")
 
-    c_edt_edit_c_text_label = Label(c_edt_edit_choice_text_frame, text="Edit Choice:", width=int(c_edt_width / 2) - 1, anchor=NW)
-    c_edt_edit_c_text_label.grid(row=0, column=0, padx=c_edt_pad, pady=c_edt_pad, stick="nw")
+    #
 
-    c_edt_edit_c_text_label = Label(c_edt_assign_choice_select_frame, text="'To Paragraph' Text:", width=int(c_edt_width / 2) - 1, anchor=NW)
-    c_edt_edit_c_text_label.grid(row=0, column=0, padx=c_edt_pad, pady=c_edt_pad, stick="nw")
+    c_edt_object_id_label = Label(c_edt_assign_object_frame_1, text="Select Object Name:", width=int(c_edt_width / 2), anchor=W)
+    c_edt_object_id_label.grid(row=0, column=0, padx=c_edt_pad-3, pady=c_edt_pad, stick="w")
+
+    #
+
+    c_edt_edit_c_text_label = Label(c_edt_edit_choice_frame_1, text="Edit Choice:", width=int(c_edt_width / 2) - 1, anchor=NW)
+    c_edt_edit_c_text_label.grid(row=0, column=0, padx=(c_edt_pad+4, c_edt_pad), pady=c_edt_pad, stick="nw")
+
+    #
+
+    c_edt_to_p_id_label = Label(c_edt_assign_choice_frame_1, text="Select 'To Paragraph' ID:",
+                                width=int(c_edt_width / 2), anchor=W)
+    c_edt_to_p_id_label.grid(row=0, column=0, padx=c_edt_pad, pady=c_edt_pad, stick="w")
+
+    c_edt_edit_c_text_label = Label(c_edt_assign_choice_frame_1, text="'To Paragraph' Text:", width=int(c_edt_width / 2) - 1, anchor=NW)
+    c_edt_edit_c_text_label.grid(row=1, column=0, padx=c_edt_pad, pady=c_edt_pad, stick="nw")
 
     global c_edt_decode_id_variable, c_edt_edit_c_text_entry, c_edt_pl_text_variable
 
     # Message
-    c_edt_decode_id_variable = Text(c_edt_info_frame_2, width=c_edt_entry_width, height=5)
+    c_edt_decode_id_variable = Text(c_edt_select_info_frame_2, width=c_edt_entry_width, height=5)
     c_edt_decode_id_variable.bind("<Key>", lambda a: "break")
     c_edt_decode_id_variable.grid(row=0, column=1, padx=c_edt_pad, pady=c_edt_pad, stick="w")
 
-    c_edt_pl_text_variable = Text(c_edt_assign_choice_select_frame, width=c_edt_entry_width, height=20)
+    c_edt_pl_text_variable = Text(c_edt_assign_choice_frame_1, width=c_edt_entry_width, height=17)
     c_edt_pl_text_variable.bind("<Key>", lambda a: "break")
-    c_edt_pl_text_variable.grid(row=0, column=1, padx=c_edt_pad, pady=c_edt_pad, stick="w")
+    c_edt_pl_text_variable.grid(row=1, column=1, padx=c_edt_pad, pady=c_edt_pad, stick="w")
 
     # Text Entry
-    c_edt_edit_c_text_entry = Text(c_edt_edit_choice_text_frame, width=c_edt_entry_width, height=20)
-    c_edt_edit_c_text_entry.grid(row=0, column=1, padx=c_edt_pad, pady=c_edt_pad, stick="w")
+    c_edt_edit_c_text_entry = Text(c_edt_edit_choice_frame_1, width=c_edt_entry_width, height=20)
+    c_edt_edit_c_text_entry.grid(row=0, column=1, padx=c_edt_pad, pady=(c_edt_pad+2, c_edt_pad), stick="w")
 
     # Button Submit
-    c_edt_submit_id_button = Button(c_edt_info_frame_3, text="Submit Information", width=int(c_edt_width / 2), command=c_edt_decode_id)
+    c_edt_submit_id_button = Button(c_edt_select_info_frame_3, text="Submit Information", width=int(c_edt_width / 2), command=c_edt_decode_id)
     c_edt_submit_id_button.grid(row=0, column=0, padx=c_edt_pad, pady=c_edt_pad, stick="w", ipadx=157)
 
     # Buttons Edit Choice
     p_edt_width_buttons = 13
-    p_edt_save_choice_button = Button(c_edt_edit_choice_button_frame, text="Save Changes", width=p_edt_width_buttons,
+    p_edt_save_choice_button = Button(c_edt_edit_choice_frame_2, text="Save Changes", width=p_edt_width_buttons,
                                      command=c_edt_edit)
     p_edt_save_choice_button.grid(row=0, column=0, padx=(c_edt_pad + 3, c_edt_pad), pady=c_edt_pad, stick="w")
 
-    p_edt_load_choice_button = Button(c_edt_edit_choice_button_frame, text="Load Choice", width=p_edt_width_buttons,
+    p_edt_load_choice_button = Button(c_edt_edit_choice_frame_2, text="Load Choice", width=p_edt_width_buttons,
                                     command=c_edt_insert)
     p_edt_load_choice_button.grid(row=0, column=1, padx=c_edt_pad, pady=c_edt_pad, stick="w")
 
-    p_edt_delete_choice_button = Button(c_edt_edit_choice_button_frame, text="Delete Choice", width=p_edt_width_buttons,
+    p_edt_delete_choice_button = Button(c_edt_edit_choice_frame_2, text="Delete Choice", width=p_edt_width_buttons,
                                       command=c_del_delete)
     p_edt_delete_choice_button.grid(row=0, column=2, padx=c_edt_pad, pady=c_edt_pad, stick="w")
 
-    p_edt_cancel_button = Button(c_edt_edit_choice_button_frame, text="Cancel", width=p_edt_width_buttons,
+    p_edt_cancel_button = Button(c_edt_edit_choice_frame_2, text="Cancel", width=p_edt_width_buttons,
                                  command=c_edt_wd.destroy)
     p_edt_cancel_button.grid(row=0, column=3, padx=c_edt_pad, pady=c_edt_pad, stick="w")
 
     # Buttons Assign Choice
-    p_edt_width_buttons_2 = 31
-    p_edt_save_p_to_c_button = Button(c_edt_assign_choice_button_frame, text="Assign Choice To Paragraph ", width=p_edt_width_buttons_2, command=c_edt_assign_save)
-    p_edt_save_p_to_c_button.grid(row=0, column=0, padx=(c_edt_pad + 3, c_edt_pad), pady=c_edt_pad, stick="w")
+    p_edt_width_buttons_2 = 30
+    p_edt_save_p_to_c_button = Button(c_edt_assign_choice_frame_2, text="Assign Choice To Paragraph ", width=p_edt_width_buttons_2, command=c_edt_assign_paragraph_save)
+    p_edt_save_p_to_c_button.grid(row=0, column=0, padx=(c_edt_pad + 3, c_edt_pad+4), pady=c_edt_pad, stick="w")
 
-    p_edt_delete_p_from_c_button = Button(c_edt_assign_choice_button_frame, text="Delete Paragraph From Choice", width=p_edt_width_buttons_2, command=c_del_assign_delete)
+    p_edt_delete_p_from_c_button = Button(c_edt_assign_choice_frame_2, text="Delete Paragraph From Choice", width=p_edt_width_buttons_2, command=c_del_assign_paragraph_delete)
     p_edt_delete_p_from_c_button.grid(row=0, column=2, padx=c_edt_pad, pady=c_edt_pad, stick="w")
+
+    # Buttons Assign Object
+    p_edt_width_buttons_3 = 31
+    p_edt_save_p_to_c_button = Button(c_edt_assign_object_frame_2, text="Assign Object To Choice",
+                                      width=p_edt_width_buttons_3, command=c_edt_assign_object_save)
+    p_edt_save_p_to_c_button.grid(row=0, column=0, padx=c_edt_pad, pady=c_edt_pad, stick="w", ipadx=117)
 
     global c_edt_s_id_opt_menu, c_edt_c_id_opt_menu
 
@@ -664,7 +733,7 @@ def c_edt_window():
             global c_edt_s_id_variable
             c_edt_s_id_variable = StringVar()
             c_edt_s_id_variable.set(c_edt_s_id_list[0])
-            c_edt_s_id_opt_menu_var = OptionMenu(c_edt_info_frame_1, c_edt_s_id_variable, *c_edt_s_id_list)
+            c_edt_s_id_opt_menu_var = OptionMenu(c_edt_select_info_frame_1, c_edt_s_id_variable, *c_edt_s_id_list)
             c_edt_s_id_opt_menu_var.config(width=c_edt_width+1)
             c_edt_s_id_opt_menu_var.grid(row=0, column=1, pady=c_edt_pad, padx=c_edt_pad, stick="ew")
 
@@ -687,7 +756,7 @@ def c_edt_window():
             global c_edt_c_id_variable
             c_edt_c_id_variable = StringVar()
             c_edt_c_id_variable.set(c_edt_c_id_list[0])
-            c_edt_c_id_opt_menu_var = OptionMenu(c_edt_info_frame_1, c_edt_c_id_variable, *c_edt_c_id_list)
+            c_edt_c_id_opt_menu_var = OptionMenu(c_edt_select_info_frame_1, c_edt_c_id_variable, *c_edt_c_id_list)
             c_edt_c_id_opt_menu_var.config(width=c_edt_width+1)
             c_edt_c_id_opt_menu_var.grid(row=1, column=1, pady=c_edt_pad, padx=c_edt_pad, stick="ew")
 
@@ -715,17 +784,36 @@ def c_edt_window():
             c_edt_pl_id_list.append('Assign No Paragraph')
             c_edt_pl_id_variable.set(c_edt_pl_id_list[0])
 
-        c_edt_pl_id_opt_menu_var = OptionMenu(c_edt_info_frame_1, c_edt_pl_id_variable, *c_edt_pl_id_list)
+        c_edt_pl_id_opt_menu_var = OptionMenu(c_edt_assign_choice_frame_1, c_edt_pl_id_variable, *c_edt_pl_id_list)
         c_edt_pl_id_opt_menu_var.config(width=c_edt_width + 1)
-        c_edt_pl_id_opt_menu_var.grid(row=2, column=1, pady=c_edt_pad, padx=c_edt_pad, stick="ew")
+        c_edt_pl_id_opt_menu_var.grid(row=0, column=1, pady=c_edt_pad, padx=(c_edt_pad-2, c_edt_pad), stick="ew")
 
 
         conn.commit()
         conn.close()
 
+    def c_edt_obj_id_opt_menu():
+        conn = sqlite3.connect(database)
+        c = conn.cursor()
+
+        c.execute(f"""SELECT obj_name FROM objects""")
+        c_edt_obj_namelist_raw = c.fetchall()
+        c_edt_obj_name_list = id.raw_conv(c_edt_obj_namelist_raw)
+
+        global c_edt_obj_name_variable
+        c_edt_obj_name_variable = StringVar()
+        c_edt_obj_name_list.append('Assign No Object')
+        c_edt_obj_name_variable.set(c_edt_obj_name_list[-1])
+        c_edt_pl_id_opt_menu_var = OptionMenu(c_edt_assign_object_frame_1, c_edt_obj_name_variable, *c_edt_obj_name_list)
+        c_edt_pl_id_opt_menu_var.config(width=c_edt_width + 1)
+        c_edt_pl_id_opt_menu_var.grid(row=0, column=1, pady=c_edt_pad, padx=c_edt_pad, stick="ew")
+
+        conn.commit()
+        conn.close()
+
+    c_edt_obj_id_opt_menu()
     c_edt_s_id_opt_menu()
     c_edt_c_id_opt_menu()
     c_edt_pl_id_opt_menu()
-
 
     c_edt_wd.mainloop()
