@@ -121,8 +121,6 @@ c.execute("""CREATE TABLE IF NOT EXISTS objects
 conn.commit()
 
 
-
-
 # Main App
 editor = Tk()
 editor.title("Game Editor")
@@ -135,7 +133,7 @@ editor.geometry(f"{window_x}x{window_y}")
 main_menu = tkinter.Menu(editor)
 
 file_menu = tkinter.Menu(main_menu, tearoff=0)
-file_menu.add_command(label="Load Game Editor", command=None)
+file_menu.add_command(label="Load Game Editor", command=editor_settings.load_save)
 file_menu.add_command(label="Save Game Editor", command=editor_settings.new_save)
 
 options_menu = tkinter.Menu(main_menu, tearoff=0)
