@@ -74,6 +74,7 @@ def obj_new_window():
 
     obj_new_frame_height = 200
     obj_new_rest = window_y_2 - obj_new_frame_height * 2
+
     # Info Frame 1
     obj_new_info_frame_1 = LabelFrame(obj_new_wd, width=window_x_2, height=obj_new_frame_height)
     obj_new_info_frame_1.pack(fill="both", side=TOP)
@@ -209,7 +210,7 @@ def obj_edt_window():
     screen_x_2 = obj_edt_wd.winfo_screenwidth()
     screen_y_2 = obj_edt_wd.winfo_screenheight()
     window_x_2 = 505
-    window_y_2 = 150
+    window_y_2 = 142
     obj_edt_wd.minsize(window_x_2, window_y_2)
     obj_edt_wd.maxsize(window_x_2, window_y_2)
     pos_x_2 = int((screen_x_2 - window_x_2) / 2)
@@ -218,16 +219,21 @@ def obj_edt_window():
 
     obj_edt_frame_height = 200
     obj_edt_rest = window_y_2 - obj_edt_frame_height * 2
+
+    # Main Frame
+    obj_edt_main_frame = LabelFrame(obj_edt_wd, width=window_x_2, height=obj_edt_frame_height)
+    obj_edt_main_frame.pack(fill="both")
+
     # Info Frame 0
-    obj_edt_info_frame_0 = LabelFrame(obj_edt_wd, width=window_x_2, height=obj_edt_frame_height)
-    obj_edt_info_frame_0.pack(fill="both", side=TOP)
+    obj_edt_info_frame_0 = Frame(obj_edt_main_frame, width=window_x_2, height=obj_edt_frame_height)
+    obj_edt_info_frame_0.pack(fill="both")
 
     # Info Frame 1
-    obj_edt_info_frame_1 = LabelFrame(obj_edt_wd, width=window_x_2, height=obj_edt_frame_height)
-    obj_edt_info_frame_1.pack(fill="both", side=TOP)
+    obj_edt_info_frame_1 = Frame(obj_edt_main_frame, width=window_x_2, height=obj_edt_frame_height)
+    obj_edt_info_frame_1.pack(fill="both")
 
     # Button Frame
-    obj_edt_button_frame = LabelFrame(obj_edt_wd, height=obj_edt_rest / 2, width=window_x_2)
+    obj_edt_button_frame = Frame(obj_edt_main_frame, height=obj_edt_rest / 2, width=window_x_2)
     obj_edt_button_frame.pack(fill="both")
 
     obj_edt_width = 42

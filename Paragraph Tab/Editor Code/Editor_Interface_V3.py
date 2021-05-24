@@ -19,6 +19,7 @@ import id
 
 database = editor_settings.database_module.database
 
+
 # Class to set tab number in new_tab function
 class NewTab(Frame):
     def __init__(self, root, name):
@@ -91,7 +92,8 @@ c.execute("""CREATE TABLE IF NOT EXISTS paragraphs_list
                                                mst_id text,
                                                npc_bool integer,
                                                mst_bool integer,
-                                               obj_id text)""")
+                                               obj_id text,
+                                               end_bool integer)""")
 c.execute("""CREATE TABLE IF NOT EXISTS choices
                                            (s_id text,
                                            ip_id text,
@@ -123,6 +125,24 @@ conn.commit()
 
 # Main App
 editor = Tk()
+
+
+def close_window():
+    global database
+    database = editor_settings.database_module.database
+    if database == 'file:my_db?mode=memory&cache=shared':
+        s_del_warning = messagebox.askquestion('Exit Without Saving?',
+                                               f'Are you sure you want Exit Without Saving? All Unsaved Data Will Be Lost',
+                                               icon='warning')
+        if s_del_warning == 'no':
+            editor_settings.new_save()
+            editor.destroy()
+        else:
+            editor.destroy()
+    else:
+        editor.destroy()
+
+
 editor.title("Game Editor")
 
 window_x = editor.winfo_screenwidth()
@@ -380,7 +400,7 @@ mst_edit_mst_button.pack(padx=mst_button_x_space, pady=mst_button_y_space)
 # THIS IS THE END OF THE "MONSTERS / ENEMIES" TAB CODE
 # -------------------------------------------
 # -------------------------------------------
-# THIS FOLLOWING CODE IS FOR "OBJECTS / CONDITIONS" TAB
+# THIS FOLLOWING CODE IS FOR "OBJECTS" TAB
 # -------------------------------------------
 # ALL MAIN FRAMES
 # MAIN Frame
@@ -415,11 +435,12 @@ obj_edit_obj_button = Button(obj_main_buttons_frame, text="Edit Object", bg="#5f
                              command=object_buttons_func.obj_edt_window)
 obj_edit_obj_button.pack(padx=obj_button_x_space, pady=obj_button_y_space)
 # -------------------------------------------
-# THIS IS THE END OF THE "OBJECTS / CONDITIONS" TAB CODE
+# THIS IS THE END OF THE "OBJECTS" TAB CODE
 # -------------------------------------------
 # -------------------------------------------
 # LOOP END
 # -------------------------------------------
 
 editor.config(menu=main_menu)
+editor.protocol("WM_DELETE_WINDOW", close_window)
 editor.mainloop()

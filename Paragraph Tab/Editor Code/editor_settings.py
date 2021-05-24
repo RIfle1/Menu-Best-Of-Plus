@@ -1,18 +1,17 @@
 # All necessary imports
-import time
-import tkinter
-from tkinter import *
 from tkinter import messagebox
 from tkinter import filedialog
-from tkinter import ttk
-import tkinter.font as font
 import sqlite3
 import sys
 import os
 
 database_module = sys.modules[__name__]
 
+# Memory Database (Temporary -> Deleted if not saved)
 database_module.database = 'file:my_db?mode=memory&cache=shared'
+
+# Database Used For Code Modifications
+database_module.database0 = 'Editor.db'
 
 
 def new_save():
@@ -35,7 +34,7 @@ def new_save():
     db_name = os.path.basename(db_name_dir)
 
     if db_name_dir != '':
-        messagebox.showinfo("Save Editor", f"Success, New Editor Save '{db_name}' Has Been Created")
+        messagebox.showinfo("Save Editor", f"Success, New Editor Save '{db_name}' Has Been Created.\n(Be sure to Refresh In Options)")
 
     # Change The WHOLE data base
     database_module.database = f'{db_name_dir}'
@@ -50,7 +49,7 @@ def load_save():
     db_name = os.path.basename(db_name_dir)
 
     if db_name_dir != '':
-        messagebox.showinfo("Load Editor", f"Success, Editor Save '{db_name}' Has Been Loaded")
+        messagebox.showinfo("Load Editor", f"Success, Editor Save '{db_name}' Has Been Loaded.\n(Be sure to Refresh In Options)")
 
     database_module.database = f'{db_name_dir}'
 
