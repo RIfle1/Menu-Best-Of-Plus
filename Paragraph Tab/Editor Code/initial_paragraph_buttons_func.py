@@ -7,13 +7,11 @@ from tkinter import ttk
 import tkinter.font as font
 import sqlite3
 import id
-
-
-database = "EditorDataV3.db"
+import editor_settings
 
 
 def ip_new_save():
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     c.execute("""CREATE TABLE IF NOT EXISTS initial_paragraphs
@@ -37,7 +35,6 @@ def ip_new_save():
         messagebox.showerror("Input Error", "Story Text Is Empty")
 
     conn.commit()
-    conn.close()
 
     ip_new_paragraph_text_entry.delete("1.0", "end")
     ip_new_show_story_message.delete("1.0", "end")
@@ -45,7 +42,7 @@ def ip_new_save():
 
 
 def ip_new_insert():
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     ip_new_s_id = ip_new_ip_id_variable.get()
@@ -58,11 +55,11 @@ def ip_new_insert():
     ip_new_show_story_message.insert(END, str(ip_new_text))
 
     conn.commit()
-    conn.close()
 
 
 def ip_new_window():
-    global ip_new_wd
+    global ip_new_wd, database
+    database = editor_settings.database_module.database
     # Create New Window
     ip_new_wd = Toplevel()
     ip_new_wd.title("Create An Initial Paragraph")
@@ -135,7 +132,7 @@ def ip_new_window():
 
     def ip_new_s_id_opt_menu():
         # Options Menu For all existing stories
-        conn = sqlite3.connect(database)
+        conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
         c.execute("""SELECT s_id FROM stories""")
@@ -170,7 +167,6 @@ def ip_new_window():
             ip_new_wd.destroy()
 
         conn.commit()
-        conn.close()
 
     ip_new_s_id_opt_menu()
 
@@ -180,7 +176,7 @@ def ip_new_window():
 # Function to edit stories
 def ip_edt_edit():
     # Create a connection to the database
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     # Get id's
@@ -206,7 +202,6 @@ def ip_edt_edit():
     ip_edt_ip_text_entry.delete("1.0", "end")
 
     conn.commit()
-    conn.close()
 
     ip_edt_ip_id_opt_menu()
 
@@ -216,7 +211,7 @@ def ip_edt_insert():
     # Delete Previous Input
     ip_edt_ip_text_entry.delete("1.0", "end")
 
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     ip_edt_ip_id = ip_edt_ip_id_variable.get()
@@ -229,7 +224,6 @@ def ip_edt_insert():
     ip_edt_ip_text_entry.insert(END, f'{ip_edt_text}')
 
     conn.commit()
-    conn.close()
 
 
 # Function to insert decoded id
@@ -241,7 +235,7 @@ def ip_edt_decode_id():
 # Function to delete a story from the delete window
 def ip_del_delete():
     # Create connection to retrieve data
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
     ip_del_ip_id = ip_edt_ip_id_variable.get()
     ip_del_s_id = id.id_int(id.decoder_2(ip_del_ip_id)[-2])
@@ -250,7 +244,7 @@ def ip_del_delete():
 
     if ip_del_warning == 'yes':
         c.execute(f"""DELETE FROM initial_paragraphs WHERE ip_id = '{ip_del_ip_id}'""")
-        c.execute(f"""DELETE FROM paragraphs WHERE s_id = '{id.conv('s_id', id.id_int(ip_del_ip_id))}'""")
+        c.execute(f"""DELETE FROM paragraphs_list WHERE s_id = '{id.conv('s_id', id.id_int(ip_del_ip_id))}'""")
         c.execute(f"""DELETE FROM choices WHERE s_id = '{id.conv('s_id', id.id_int(ip_del_ip_id))}'""")
 
         # Show Success pop-up
@@ -260,14 +254,14 @@ def ip_del_delete():
         ip_edt_decode_id_text.delete("1.0", "end")
 
     conn.commit()
-    conn.close()
 
     ip_edt_ip_id_opt_menu()
 
 
 # Function to open edit window
 def ip_edt_window():
-    global ip_edt_wd
+    global ip_edt_wd, database
+    database = editor_settings.database_module.database
     # Create New Window
     ip_edt_wd = Toplevel()
     ip_edt_wd.title("Edit Initial Paragraph")
@@ -354,7 +348,7 @@ def ip_edt_window():
 
     def ip_edt_ip_id_opt_menu():
         # Options Menu For all existing stories
-        conn = sqlite3.connect(database)
+        conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
         c.execute("""SELECT ip_id FROM initial_paragraphs""")
@@ -377,7 +371,6 @@ def ip_edt_window():
             ip_edt_wd.destroy()
 
         conn.commit()
-        conn.close()
 
     ip_edt_ip_id_opt_menu()
 

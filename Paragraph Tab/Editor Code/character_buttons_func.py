@@ -7,14 +7,13 @@ from tkinter import ttk
 import tkinter.font as font
 import sqlite3
 import id
-
-database = 'EditorDataV3.db'
+import editor_settings
 
 
 def ch_new_save():
     # Create a cursor inside the function
     # Create a database or connect to one
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     # Create a new ch_id
@@ -78,12 +77,11 @@ def ch_new_save():
         messagebox.showerror('Value Error', 'Life, Speed, Defense and Attack Must Be Numbers.', icon="warning")
     # Commit changes
     conn.commit()
-    # Close Connection
-    conn.close()
 
 
 def ch_new_window():
-    global ch_new_wd
+    global ch_new_wd, database
+    database = editor_settings.database_module.database
     # Create New Window
     ch_new_wd = Toplevel()
     ch_new_wd.title("Create A New Character")
@@ -185,7 +183,7 @@ def ch_new_window():
 
 
 def ch_edt_delete():
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     ch_edt_ch_name = ch_edt_ch_name_id_var.get()
@@ -229,7 +227,6 @@ def ch_edt_delete():
                                 f"Character Number {id.id_int(ch_edt_ch_id)} has been successfully deleted.\nAll Stories, Paragraphs And Choices From Story Number {id.id_int(ch_edt_s_id)} Have Also Been Deleted.")
 
         conn.commit()
-        conn.close()
 
         # Delete Previous Input
         ch_edt_name_entry.delete(0, END)
@@ -242,9 +239,7 @@ def ch_edt_delete():
 
         ch_edt_ch_name_opt_menu()
 
-    else:
-        conn.commit()
-        conn.close()
+
 
 
 def ch_edt_insert():
@@ -257,7 +252,7 @@ def ch_edt_insert():
     ch_edt_attack_entry.delete(0, END)
     ch_edt_background_text_entry.delete("1.0", "end")
 
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     ch_edt_ch_name = ch_edt_ch_name_id_var.get()
@@ -276,11 +271,10 @@ def ch_edt_insert():
     ch_edt_background_text_entry.insert(END, f"{ch_edt_info_list[7]}")
 
     conn.commit()
-    conn.close()
 
 
 def ch_edt_edit():
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     ch_edt_ch_name = ch_edt_ch_name_id_var.get()
@@ -335,13 +329,13 @@ def ch_edt_edit():
         messagebox.showerror("Input Error", f'One Of The Stats Are Not a Number', icon='warning')
 
     conn.commit()
-    conn.close()
 
     ch_edt_ch_name_opt_menu()
 
 
 def ch_edt_window():
-    global ch_edt_wd
+    global ch_edt_wd, database
+    database = editor_settings.database_module.database
     # Create New Window
     ch_edt_wd = Toplevel()
     ch_edt_wd.title("Edit A Character")
@@ -460,7 +454,7 @@ def ch_edt_window():
 
     def ch_edt_ch_name_opt_menu():
         # Options Menu For all existing Character Names
-        conn = sqlite3.connect(database)
+        conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
         c.execute(f"""SELECT ch_name FROM characters""")
@@ -480,7 +474,6 @@ def ch_edt_window():
             ch_edt_wd.destroy()
 
         conn.commit()
-        conn.close()
 
     ch_edt_ch_name_opt_menu()
 

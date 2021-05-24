@@ -14,65 +14,10 @@ import character_buttons_func
 import npc_buttons_func
 import monster_enemy_buttons_func
 import object_buttons_func
+import editor_settings
 import id
 
-
-database = "EditorDataV3.db"
-
-
-# Function to create ALL necessary tables in the database
-def tables():
-    conn = sqlite3.connect(database)
-    c = conn.cursor()
-    c.execute("""CREATE TABLE IF NOT EXISTS stories 
-    (s_id text, 
-    s_text text,
-    ch_id text)""")
-    c.execute("""CREATE TABLE IF NOT EXISTS initial_paragraphs
-        (s_id text, 
-        ip_id text,
-        ip_text text)""")
-    c.execute("""CREATE TABLE IF NOT EXISTS paragraphs_list
-            (s_id text,
-            pl_id text,
-            p_text text,
-            npc_id text,
-            mst_id text,
-            npc_bool integer,
-            mst_bool integer,
-            obj_id text)""")
-    c.execute("""CREATE TABLE IF NOT EXISTS choices
-        (s_id text,
-        ip_id text,
-        c_id text,
-        obj_id text,
-        c_text text)""")
-    c.execute("""CREATE TABLE IF NOT EXISTS characters
-                 (ch_id text,
-                 ch_name text, 
-                 ch_breed text,
-                 ch_life integer,
-                 ch_speed integer,
-                 ch_defense integer,
-                 ch_attack integer,
-                 ch_background text)""")
-    c.execute("""CREATE TABLE IF NOT EXISTS npcs
-                 (npc_id text,
-                 npc_name text)""")
-    c.execute("""CREATE TABLE IF NOT EXISTS monsters
-                 (mst_id text,
-                 mst_name text,
-                 mst_type text)""")
-    c.execute("""CREATE TABLE IF NOT EXISTS objects
-                     (obj_id text,
-                     obj_name text)""")
-
-    conn.commit()
-    conn.close()
-
-
-tables()
-
+database = editor_settings.database_module.database
 
 # Class to set tab number in new_tab function
 class NewTab(Frame):
@@ -85,11 +30,13 @@ class NewTab(Frame):
 
 # Function to print all created stories as tabs
 def new_tab():
+    global database
+    database = editor_settings.database_module.database
     # Delete previous paragraphs in the frame
     for widgets in pg_main_story_frame.winfo_children():
         widgets.destroy()
 
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     c.execute(f"SELECT s_id FROM stories")
@@ -123,7 +70,57 @@ def new_tab():
         notebook.pack(side=TOP)
 
     conn.commit()
-    conn.close()
+
+
+# Function to create ALL necessary tables in the database
+conn = sqlite3.connect(database, uri=True)
+c = conn.cursor()
+c.execute("""CREATE TABLE IF NOT EXISTS stories 
+                                       (s_id text, 
+                                       s_text text,
+                                       ch_id text)""")
+c.execute("""CREATE TABLE IF NOT EXISTS initial_paragraphs
+                                           (s_id text, 
+                                           ip_id text,
+                                           ip_text text)""")
+c.execute("""CREATE TABLE IF NOT EXISTS paragraphs_list
+                                               (s_id text,
+                                               pl_id text,
+                                               p_text text,
+                                               npc_id text,
+                                               mst_id text,
+                                               npc_bool integer,
+                                               mst_bool integer,
+                                               obj_id text)""")
+c.execute("""CREATE TABLE IF NOT EXISTS choices
+                                           (s_id text,
+                                           ip_id text,
+                                           c_id text,
+                                           obj_id text,
+                                           c_text text)""")
+c.execute("""CREATE TABLE IF NOT EXISTS characters
+                                                    (ch_id text,
+                                                    ch_name text, 
+                                                    ch_breed text,
+                                                    ch_life integer,
+                                                    ch_speed integer,
+                                                    ch_defense integer,
+                                                    ch_attack integer,
+                                                    ch_background text)""")
+c.execute("""CREATE TABLE IF NOT EXISTS npcs
+                                                    (npc_id text,
+                                                    npc_name text)""")
+c.execute("""CREATE TABLE IF NOT EXISTS monsters
+                                                    (mst_id text,
+                                                    mst_name text,
+                                                    mst_type text)""")
+c.execute("""CREATE TABLE IF NOT EXISTS objects
+                                                        (obj_id text,
+                                                        obj_name text)""")
+
+conn.commit()
+
+
 
 
 # Main App
@@ -138,12 +135,10 @@ editor.geometry(f"{window_x}x{window_y}")
 main_menu = tkinter.Menu(editor)
 
 file_menu = tkinter.Menu(main_menu, tearoff=0)
-file_menu.add_command(label="New Game Editor")
-file_menu.add_command(label="Load Game Editor")
-file_menu.add_command(label="Save Game Editor")
+file_menu.add_command(label="Load Game Editor", command=None)
+file_menu.add_command(label="Save Game Editor", command=editor_settings.new_save)
 
 options_menu = tkinter.Menu(main_menu, tearoff=0)
-options_menu.add_command(label="Change Paragraph Order")
 options_menu.add_command(label="Dark Mode")
 options_menu.add_command(label="Refresh", command=new_tab)
 options_menu.add_command(label="Quit", command=editor.quit)
@@ -214,9 +209,6 @@ pg_choices_buttons_frame.pack(fill="both", side=LEFT)
 # Story Frame
 pg_main_story_frame = LabelFrame(pg_left_frame, height=window_x - pg_main_frame_height)
 pg_main_story_frame.pack(fill="both", expand=True)
-
-# Update Tabs Automatically
-new_tab()
 
 pg_button_width = 22
 pg_buttons_width = 30
@@ -420,7 +412,7 @@ obj_new_obj_button = Button(obj_main_buttons_frame, text="New Object", bg="#5faf
 obj_new_obj_button.pack(padx=obj_button_x_space, pady=obj_button_y_space)
 
 # EDIT OBJECT Button
-obj_edit_obj_button = Button(obj_main_buttons_frame, text="Edit Object / Set Conditions", bg="#5fafde", fg="White", padx=obj_buttons_width,
+obj_edit_obj_button = Button(obj_main_buttons_frame, text="Edit Object", bg="#5fafde", fg="White", padx=obj_buttons_width,
                              pady=obj_buttons_height, font=("Times New Roman", obj_font_size), relief=FLAT, width=obj_button_width,
                              command=object_buttons_func.obj_edt_window)
 obj_edit_obj_button.pack(padx=obj_button_x_space, pady=obj_button_y_space)

@@ -7,12 +7,11 @@ from tkinter import ttk
 import tkinter.font as font
 import sqlite3
 import id
-
-database = 'EditorDataV3.db'
+import editor_settings
 
 
 def npc_new_save():
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     # Create Table
@@ -53,12 +52,13 @@ def npc_new_save():
             messagebox.showerror("Duplication Error", f"NPC Called '{npc_new_npc_name}' Already Exists.", icon='warning')
     else:
         messagebox.showerror("Input Error", f"NPC Has To Be Named.", icon='warning')
+
     conn.commit()
-    conn.close()
 
 
 def npc_new_window():
-    global npc_new_wd
+    global npc_new_wd, database
+    database = editor_settings.database_module.database
     # Create New Window
     npc_new_wd = Toplevel()
     npc_new_wd.title("Create A New NPC")
@@ -109,7 +109,7 @@ def npc_new_window():
 
 
 def npc_edt_delete():
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     npc_edt_npc_name = npc_edt_npc_name_var.get()
@@ -148,27 +148,21 @@ def npc_edt_delete():
             WHERE npc_id = '{npc_edt_npc_id}'""")
 
             # Show Success pop-up
-            messagebox.showinfo("Success",
-                                f"Character Number '{npc_edt_npc_name}' has been successfully deleted.")
+            messagebox.showinfo("Success", f"Character Number '{npc_edt_npc_name}' has been successfully deleted.")
 
         conn.commit()
-        conn.close()
 
         # Delete Previous Input
         npc_edt_name_entry.delete(0, END)
 
         npc_edt_npc_name_opt_menu()
 
-    else:
-        conn.commit()
-        conn.close()
-
 
 def npc_edt_insert():
     # Delete Previous Input
     npc_edt_name_entry.delete(0, END)
 
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     npc_edt_npc_name = npc_edt_npc_name_var.get()
@@ -181,11 +175,10 @@ def npc_edt_insert():
     npc_edt_name_entry.insert(END, f'{npc_edt_name_list[0]}')
 
     conn.commit()
-    conn.close()
 
 
 def npc_edt_edit():
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     npc_edt_npc_name_old = npc_edt_npc_name_var.get()
@@ -203,16 +196,16 @@ def npc_edt_edit():
         messagebox.showerror("Input Error", f'Input a Name', icon='warning')
 
     conn.commit()
-    conn.close()
 
     npc_edt_npc_name_opt_menu()
 
 
 def npc_edt_window():
-    global npc_edt_wd
+    global npc_edt_wd, database
+    database = editor_settings.database_module.database
     # Create New Window
     npc_edt_wd = Toplevel()
-    npc_edt_wd.title("Edit A Character")
+    npc_edt_wd.title("Edit An NPC")
     screen_x_2 = npc_edt_wd.winfo_screenwidth()
     screen_y_2 = npc_edt_wd.winfo_screenheight()
     window_x_2 = 505
@@ -240,7 +233,6 @@ def npc_edt_window():
     npc_edt_width = 42
     npc_edt_pad = 10
     npc_edt_entry_width = 49
-    npc_edt_text_width = 37
 
     # Labels
     npc_edt_select_npc_label = Label(npc_edt_info_frame_0, text="Select NPC:", width=int(npc_edt_width / 2), anchor=W)
@@ -277,7 +269,7 @@ def npc_edt_window():
 
     def npc_edt_npc_name_opt_menu():
         # Options Menu For all existing NPC Names
-        conn = sqlite3.connect(database)
+        conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
         c.execute(f"""SELECT npc_name FROM npcs""")
@@ -298,10 +290,7 @@ def npc_edt_window():
             npc_edt_wd.destroy()
 
         conn.commit()
-        conn.close()
 
     npc_edt_npc_name_opt_menu()
 
     npc_edt_wd.mainloop()
-
-

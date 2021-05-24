@@ -7,14 +7,13 @@ from tkinter import ttk
 import tkinter.font as font
 import sqlite3
 import id
-
-database = "EditorDataV3.db"
+import editor_settings
 
 
 # Function to save new stories
 def s_new_save():
     # Create a connection to the database
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     # Create Table
@@ -57,7 +56,6 @@ def s_new_save():
         messagebox.showerror("Input Error", "Story Text Is Empty", icon='warning')
 
     conn.commit()
-    conn.close()
 
     s_new_beginning_story_entry.delete("1.0", "end")
 
@@ -66,7 +64,8 @@ def s_new_save():
 
 # Function for new story window
 def s_new_window():
-    global s_new_wd
+    global s_new_wd, database
+    database = editor_settings.database_module.database
     # Create New Window
     s_new_wd = Toplevel()
     s_new_wd.title("Create A New Story")
@@ -117,7 +116,7 @@ def s_new_window():
     global s_new_ch_id_opt_menu
 
     def s_new_ch_id_opt_menu():
-        conn = sqlite3.connect(database)
+        conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
         c.execute("""SELECT ch_id FROM characters EXCEPT SELECT ch_id FROM stories""")
@@ -144,7 +143,6 @@ def s_new_window():
             s_new_wd.destroy()
 
         conn.commit()
-        conn.close()
 
     s_new_ch_id_opt_menu()
 
@@ -156,7 +154,7 @@ def s_edt_insert():
     # Delete Previous Input
     s_edt_edit_text_entry.delete("1.0", "end")
 
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     s_edt_s_id = s_edt_s_id_variable.get()
@@ -169,13 +167,12 @@ def s_edt_insert():
     s_edt_edit_text_entry.insert(END, f'{s_edt_text}')
 
     conn.commit()
-    conn.close()
 
 
 # Function to edit stories
 def s_edt_edit():
     # Create a connection to the database
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     # Update Table
@@ -196,13 +193,12 @@ def s_edt_edit():
     s_edt_edit_text_entry.delete("1.0", "end")
 
     conn.commit()
-    conn.close()
 
 
 # Function to delete a story from the delete window
 def s_del_delete():
     # Create connection to retrieve data
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
     s_del_s_id = s_edt_s_id_variable.get()
 
@@ -218,7 +214,6 @@ def s_del_delete():
         messagebox.showinfo("Success", f"Story Number {id.id_int(s_del_s_id)} has been successfully deleted\nAll Paragraphs And Choices From Story Number {id.id_int(s_del_s_id)} Have Also Been Deleted.")
 
     conn.commit()
-    conn.close()
 
     s_edt_edit_text_entry.delete("1.0", "end")
 
@@ -227,7 +222,8 @@ def s_del_delete():
 
 # Function to open edit window
 def s_edt_window():
-    global s_edt_wd
+    global s_edt_wd, database
+    database = editor_settings.database_module.database
     # Create New Window
     s_edt_wd = Toplevel()
     s_edt_wd.title("Edit A Story")
@@ -289,7 +285,7 @@ def s_edt_window():
 
     def s_edt_s_id_opt_menu():
         # Options Menu For all existing stories
-        conn = sqlite3.connect(database)
+        conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
         c.execute("""SELECT s_id FROM stories""")
@@ -312,11 +308,10 @@ def s_edt_window():
             s_edt_wd.destroy()
 
         conn.commit()
-        conn.close()
 
     def s_edt_ch_id_opt_menu():
         # Options Menu For all existing stories
-        conn = sqlite3.connect(database)
+        conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
         c.execute("""SELECT character_name FROM characters""")
@@ -339,7 +334,6 @@ def s_edt_window():
             s_edt_wd.destroy()
 
         conn.commit()
-        conn.close()
 
     s_edt_s_id_opt_menu()
 

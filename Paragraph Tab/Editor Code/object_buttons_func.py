@@ -7,12 +7,11 @@ from tkinter import ttk
 import tkinter.font as font
 import sqlite3
 import id
-
-database = 'EditorDataV3.db'
+import editor_settings
 
 
 def obj_new_save():
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     # Create Table
@@ -55,11 +54,11 @@ def obj_new_save():
         messagebox.showerror("Input Error", f"Object Has to be named", icon='warning')
 
     conn.commit()
-    conn.close()
 
 
 def obj_new_window():
-    global obj_new_wd
+    global obj_new_wd, database
+    database = editor_settings.database_module.database
     # Create New Window
     obj_new_wd = Toplevel()
     obj_new_wd.title("Create A New Object")
@@ -110,7 +109,7 @@ def obj_new_window():
 
 
 def obj_edt_delete():
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     obj_edt_obj_name = obj_edt_obj_name_var.get()
@@ -152,23 +151,18 @@ def obj_edt_delete():
                                 f"Object '{obj_edt_obj_name}' has been successfully deleted.")
 
         conn.commit()
-        conn.close()
 
         # Delete Previous Input
         obj_edt_name_entry.delete(0, END)
 
         obj_edt_obj_name_opt_menu()
 
-    else:
-        conn.commit()
-        conn.close()
-
 
 def obj_edt_insert():
     # Delete Previous Input
     obj_edt_name_entry.delete(0, END)
 
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     obj_edt_obj_name = obj_edt_obj_name_var.get()
@@ -181,11 +175,10 @@ def obj_edt_insert():
     obj_edt_name_entry.insert(END, f'{obj_edt_name_list[0]}')
 
     conn.commit()
-    conn.close()
 
 
 def obj_edt_edit():
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     obj_edt_obj_name_old = obj_edt_obj_name_var.get()
@@ -203,13 +196,13 @@ def obj_edt_edit():
         messagebox.showerror("Input Error", f'Input a Name', icon='warning')
 
     conn.commit()
-    conn.close()
 
     obj_edt_obj_name_opt_menu()
 
 
 def obj_edt_window():
-    global obj_edt_wd
+    global obj_edt_wd, database
+    database = editor_settings.database_module.database
     # Create New Window
     obj_edt_wd = Toplevel()
     obj_edt_wd.title("Edit An Object")
@@ -277,7 +270,7 @@ def obj_edt_window():
 
     def obj_edt_obj_name_opt_menu():
         # Options Menu For all existing Objects
-        conn = sqlite3.connect(database)
+        conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
         c.execute(f"""SELECT obj_name FROM objects""")
@@ -298,7 +291,6 @@ def obj_edt_window():
             obj_edt_wd.destroy()
 
         conn.commit()
-        conn.close()
 
     obj_edt_obj_name_opt_menu()
 

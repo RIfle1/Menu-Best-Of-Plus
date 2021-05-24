@@ -7,12 +7,11 @@ from tkinter import ttk
 import tkinter.font as font
 import sqlite3
 import id
-
-database = "EditorDataV3.db"
+import editor_settings
 
 
 def c_new_insert():
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     c_new_p_id = c_new_from_p_id_variable.get()
@@ -70,11 +69,10 @@ def c_new_insert():
         c_new_c_id_counter_var.insert(END, 'No Existing Choices')
 
     conn.commit()
-    conn.close()
 
 
 def c_new_save():
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     c.execute("""CREATE TABLE IF NOT EXISTS choices
@@ -149,7 +147,6 @@ def c_new_save():
         messagebox.showerror("Duplication Error", f"Choice Number {c_new_c_number} Already Exists")
 
     conn.commit()
-    conn.close()
 
     c_new_get_choice_id_entry.delete(0, END)
     c_new_choice_text_entry.delete("1.0", "end")
@@ -158,7 +155,8 @@ def c_new_save():
 
 
 def c_new_window():
-    global c_new_wd
+    global c_new_wd, database
+    database = editor_settings.database_module.database
     # Create New Window
     c_new_wd = Toplevel()
     c_new_wd.title("Create A New Choice")
@@ -265,7 +263,7 @@ def c_new_window():
     global c_new_c_id_counter_message_func, c_new_from_p_id_opt_menu, c_new_s_id_opt_menu, c_new_to_p_id_opt_menu
 
     def c_new_s_id_opt_menu():
-        conn = sqlite3.connect(database)
+        conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
         c.execute("""SELECT s_id FROM paragraphs_list UNION SELECT s_id FROM paragraphs_list UNION SELECT s_id FROM initial_paragraphs""")
@@ -285,12 +283,11 @@ def c_new_window():
             c_new_wd.destroy()
 
         conn.commit()
-        conn.close()
 
     c_new_s_id_opt_menu()
 
     def c_new_from_p_id_opt_menu():
-        conn = sqlite3.connect(database)
+        conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
         c.execute(f"""SELECT pl_id FROM paragraphs_list UNION SELECT ip_id FROM initial_paragraphs""")
@@ -309,12 +306,11 @@ def c_new_window():
             c_new_wd.destroy()
 
         conn.commit()
-        conn.close()
 
     c_new_from_p_id_opt_menu()
 
     def c_new_to_p_id_opt_menu():
-        conn = sqlite3.connect(database)
+        conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
         c.execute(f"""SELECT pl_id FROM paragraphs_list""")
@@ -330,7 +326,6 @@ def c_new_window():
         c_new_to_p_id_opt_menu_var.grid(row=2, column=1, pady=c_new_pad, padx=c_new_pad, stick="ew")
 
         conn.commit()
-        conn.close()
 
     c_new_to_p_id_opt_menu()
 
@@ -338,7 +333,7 @@ def c_new_window():
 
 
 def c_edt_edit():
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     c_edt_s_id = c_edt_s_id_variable.get()
@@ -359,7 +354,6 @@ def c_edt_edit():
     c_edt_edit_c_text_entry.delete("1.0", "end")
 
     conn.commit()
-    conn.close()
 
 
 # Function to insert already written choice
@@ -367,7 +361,7 @@ def c_edt_insert():
     # Delete Previous Input
     c_edt_edit_c_text_entry.delete("1.0", "end")
 
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     c_id = c_edt_c_id_variable.get()
@@ -380,7 +374,6 @@ def c_edt_insert():
     c_edt_edit_c_text_entry.insert(END, f'{c_edt_text}')
 
     conn.commit()
-    conn.close()
 
 
 # Function to insert decoded id
@@ -388,22 +381,26 @@ def c_edt_decode_id():
     c_edt_decode_id_variable.delete("1.0", "end")
     c_edt_decode_id_variable.insert(END, id.decoder_3(c_edt_c_id_variable.get()))
 
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
-    c.execute(f"""SELECT p_text FROM paragraphs_list WHERE pl_id='{c_edt_pl_id_variable.get()}'""")
-    c_edt_pl_text_raw = c.fetchall()
-    c_edt_pl_text = id.raw_conv(c_edt_pl_text_raw)[0]
+    c_edt_pl_id = c_edt_pl_id_variable.get()
+
+    if c_edt_pl_id != 'Assign No Paragraph':
+        c.execute(f"""SELECT p_text FROM paragraphs_list WHERE pl_id='{c_edt_pl_id}'""")
+        c_edt_pl_text_raw = c.fetchall()
+        c_edt_pl_text = id.raw_conv(c_edt_pl_text_raw)[0]
+    else:
+        c_edt_pl_text = ''
 
     conn.commit()
-    conn.close()
 
     c_edt_pl_text_variable.delete("1.0", "end")
     c_edt_pl_text_variable.insert(END, c_edt_pl_text)
 
 
 def c_del_delete():
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
     c_del_s_id = c_edt_s_id_variable.get()
     c_del_c_id = c_edt_c_id_variable.get()
@@ -421,14 +418,13 @@ def c_del_delete():
         c_edt_decode_id_variable.delete("1.0", "end")
 
     conn.commit()
-    conn.close()
 
     c_edt_s_id_opt_menu()
     c_edt_c_id_opt_menu()
 
 
 def c_edt_assign_paragraph_save():
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     # Get pl_id and old c_id
@@ -488,13 +484,12 @@ def c_edt_assign_paragraph_save():
             messagebox.showerror('Priority Error', f"'To Paragraph' ID ({c_edt_c_id_p_from_num}) has to be Bigger than 'From Paragraph' ID ({c_edt_pl_id_from_num})", icon='warning')
 
         conn.commit()
-        conn.close()
 
         c_edt_c_id_opt_menu()
 
 
 def c_del_assign_paragraph_delete():
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     # Get c_id to modify
@@ -515,13 +510,12 @@ def c_del_assign_paragraph_delete():
         messagebox.showerror('Error', f'Choice Number {id.id_int(c_del_c_id_old)} Has No Paragraphs Assigned to it.', icon='warning')
 
     conn.commit()
-    conn.close()
 
     c_edt_c_id_opt_menu()
 
 
 def c_edt_assign_object_save():
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     # Get Object's Name
@@ -548,12 +542,12 @@ def c_edt_assign_object_save():
                             f"Choice Number {c_ed_c_id_num} Condition Has Been Removed.")
 
     conn.commit()
-    conn.close()
 
 
 # Function to open edit window
 def c_edt_window():
-    global c_edt_wd
+    global c_edt_wd, database
+    database = editor_settings.database_module.database
     # Create New Window
     c_edt_wd = Toplevel()
     c_edt_wd.title("Edit Choices")
@@ -722,7 +716,7 @@ def c_edt_window():
     global c_edt_s_id_opt_menu, c_edt_c_id_opt_menu
 
     def c_edt_s_id_opt_menu():
-        conn = sqlite3.connect(database)
+        conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
         c.execute("""SELECT s_id FROM choices UNION SELECT s_id FROM choices""")
@@ -742,10 +736,9 @@ def c_edt_window():
             c_edt_wd.destroy()
 
         conn.commit()
-        conn.close()
 
     def c_edt_c_id_opt_menu():
-        conn = sqlite3.connect(database)
+        conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
         c.execute(f"""SELECT c_id FROM choices""")
@@ -765,10 +758,9 @@ def c_edt_window():
             c_new_wd.destroy()
 
         conn.commit()
-        conn.close()
 
     def c_edt_pl_id_opt_menu():
-        conn = sqlite3.connect(database)
+        conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
         c.execute(f"""SELECT pl_id FROM paragraphs_list""")
@@ -788,12 +780,10 @@ def c_edt_window():
         c_edt_pl_id_opt_menu_var.config(width=c_edt_width + 1)
         c_edt_pl_id_opt_menu_var.grid(row=0, column=1, pady=c_edt_pad, padx=(c_edt_pad-2, c_edt_pad), stick="ew")
 
-
         conn.commit()
-        conn.close()
 
     def c_edt_obj_id_opt_menu():
-        conn = sqlite3.connect(database)
+        conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
         c.execute(f"""SELECT obj_name FROM objects""")
@@ -809,7 +799,6 @@ def c_edt_window():
         c_edt_pl_id_opt_menu_var.grid(row=0, column=1, pady=c_edt_pad, padx=c_edt_pad, stick="ew")
 
         conn.commit()
-        conn.close()
 
     c_edt_obj_id_opt_menu()
     c_edt_s_id_opt_menu()

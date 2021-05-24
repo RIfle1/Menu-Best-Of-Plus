@@ -7,12 +7,11 @@ from tkinter import ttk
 import tkinter.font as font
 import sqlite3
 import id
-
-database = "EditorDataV3.db"
+import editor_settings
 
 
 def p_new_save():
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     # Create Id's and stuff in paragraphs list table
@@ -73,20 +72,17 @@ def p_new_save():
     else:
         messagebox.showerror("ID Error", f"Choice's Story ID is {p_new_c_p_id} but Story ID is {p_new_s_id}")
 
-
-
     # Clear the Text Boxes
     p_new_paragraph_text_entry.delete("1.0", "end")
 
     conn.commit()
-    conn.close()
 
     p_new_s_id_opt_menu()
     p_new_c_id_opt_menu()
 
 
 def p_new_insert():
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     p_new_c_id = p_new_p_id_variable.get()
@@ -105,11 +101,11 @@ def p_new_insert():
 
     # End Connection
     conn.commit()
-    conn.close()
 
 
 def p_new_window():
-    global p_new_wd
+    global p_new_wd, database
+    database = editor_settings.database_module.database
     # Create New Window
     p_new_wd = Toplevel()
     p_new_wd.title("Create A New Paragraph")
@@ -152,7 +148,7 @@ def p_new_window():
     p_new_get_story_id_label = Label(p_new_info_frame_1, text="Select Story ID:", width=int(p_new_width / 2), anchor=W)
     p_new_get_story_id_label.grid(row=0, column=0, padx=(p_new_pad, p_new_pad+1), pady=p_new_pad, stick="w")
 
-    p_new_get_choice_id_label = Label(p_new_info_frame_1, text="Select Paragraph ID:", width=int(p_new_width / 2), anchor=W)
+    p_new_get_choice_id_label = Label(p_new_info_frame_1, text="Select Choice ID:", width=int(p_new_width / 2), anchor=W)
     p_new_get_choice_id_label.grid(row=1, column=0, padx=(p_new_pad, p_new_pad+1), pady=p_new_pad, stick="w")
 
     p_new_decode_c_id_label = Label(p_new_info_frame_1, text="Decoded ID:", width=int(p_new_width / 2), anchor=NW)
@@ -192,7 +188,7 @@ def p_new_window():
 
     def p_new_s_id_opt_menu():
         # Options Menu For all existing stories
-        conn = sqlite3.connect(database)
+        conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
         c.execute("""SELECT s_id FROM choices UNION SELECT s_id FROM choices""")
@@ -216,13 +212,12 @@ def p_new_window():
             p_new_wd.destroy()
 
         conn.commit()
-        conn.close()
 
     p_new_s_id_opt_menu()
 
     def p_new_c_id_opt_menu():
         # Options Menu For all existing choices
-        conn = sqlite3.connect(database)
+        conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
         c.execute(f"""SELECT c_id FROM choices""")
@@ -243,7 +238,6 @@ def p_new_window():
             p_new_wd.destroy()
 
         conn.commit()
-        conn.close()
 
     p_new_c_id_opt_menu()
 
@@ -251,7 +245,7 @@ def p_new_window():
 
 
 def p_edt_edit():
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     p_edt_s_id = p_edt_s_id_variable.get()
@@ -361,7 +355,6 @@ def p_edt_edit():
         p_edt_paragraph_text_entry.delete("1.0", "end")
 
     conn.commit()
-    conn.close()
 
     p_edt_s_id_opt_menu()
     p_edt_p_id_opt_menu()
@@ -372,7 +365,7 @@ def p_edt_edit():
 def p_edt_insert():
     p_edt_paragraph_text_entry.delete("1.0", "end")
 
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     p_edt_p_id = p_edt_p_id_variable.get()
@@ -384,7 +377,6 @@ def p_edt_insert():
     p_edt_paragraph_text_entry.insert(END, f'{p_edt_text}')
 
     conn.commit()
-    conn.close()
 
 
 def p_edt_decode_id():
@@ -393,7 +385,7 @@ def p_edt_decode_id():
 
 
 def p_del_delete():
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
     p_del_s_id = p_edt_s_id_variable.get()
     p_del_p_id = p_edt_p_id_variable.get()
@@ -433,14 +425,14 @@ def p_del_delete():
         p_edt_decode_id_variable.delete("1.0", "end")
 
     conn.commit()
-    conn.close()
 
     p_edt_p_id_opt_menu()
     p_edt_s_id_opt_menu()
 
 
 def p_edt_window():
-    global p_edt_wd
+    global p_edt_wd, database
+    database = editor_settings.database_module.database
     p_edt_wd = Toplevel()
     p_edt_wd.title("Edit Paragraphs")
     screen_x_2 = p_edt_wd.winfo_screenwidth()
@@ -537,7 +529,7 @@ def p_edt_window():
     global p_edt_s_id_opt_menu, p_edt_p_id_opt_menu, p_edt_npc_name_opt_menu, p_edt_mst_name_opt_menu, p_edt_obj_name_opt_menu
 
     def p_edt_s_id_opt_menu():
-        conn = sqlite3.connect(database)
+        conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
         c.execute("""SELECT s_id FROM paragraphs_list UNION SELECT s_id FROM paragraphs_list""")
@@ -557,10 +549,9 @@ def p_edt_window():
             p_edt_wd.destroy()
 
         conn.commit()
-        conn.close()
 
     def p_edt_p_id_opt_menu():
-        conn = sqlite3.connect(database)
+        conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
         c.execute(f"""SELECT pl_id FROM paragraphs_list""")
@@ -578,15 +569,15 @@ def p_edt_window():
             p_edt_npc_name_opt_menu()
             p_edt_mst_name_opt_menu()
             p_edt_obj_name_opt_menu()
+
         else:
             messagebox.showerror("Index Error", "No Existing Paragraphs Found")
             p_edt_wd.destroy()
 
         conn.commit()
-        conn.close()
 
     def p_edt_npc_name_opt_menu():
-        conn = sqlite3.connect(database)
+        conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
         # Get npc_id's that haven't been used
@@ -603,25 +594,22 @@ def p_edt_window():
             p_edt_npc_name = id.raw_conv(p_edt_npc_name_raw)[0]
             p_edt_npc_name_list.append(p_edt_npc_name)
 
-        if p_edt_npc_name_list:
-            global p_edt_npc_name_variable
-            p_edt_npc_name_variable = StringVar()
-            p_edt_npc_name_list.append('Previous')
-            p_edt_npc_name_list.append('None')
-            p_edt_npc_name_variable.set(p_edt_npc_name_list[-1])
-            p_edt_npc_name_opt_menu_var = OptionMenu(p_edt_info_frame_1, p_edt_npc_name_variable, *p_edt_npc_name_list)
-            p_edt_npc_name_opt_menu_var.config(width=p_edt_width+1)
-            p_edt_npc_name_opt_menu_var.grid(row=2, column=1, pady=p_edt_pad, padx=p_edt_pad, stick="ew")
+        global p_edt_npc_name_variable
+        p_edt_npc_name_variable = StringVar()
+        p_edt_npc_name_list.append('Previous')
+        p_edt_npc_name_list.append('None')
+        p_edt_npc_name_variable.set(p_edt_npc_name_list[-1])
+        p_edt_npc_name_opt_menu_var = OptionMenu(p_edt_info_frame_1, p_edt_npc_name_variable, *p_edt_npc_name_list)
+        p_edt_npc_name_opt_menu_var.config(width=p_edt_width + 1)
+        p_edt_npc_name_opt_menu_var.grid(row=2, column=1, pady=p_edt_pad, padx=p_edt_pad, stick="ew")
 
-        else:
+        if not p_edt_npc_name_list:
             messagebox.showerror("Index Error", "No Existing NPC's Found")
-            p_edt_wd.destroy()
 
         conn.commit()
-        conn.close()
 
     def p_edt_mst_name_opt_menu():
-        conn = sqlite3.connect(database)
+        conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
         # Get mst_id's that haven't been used
@@ -638,25 +626,23 @@ def p_edt_window():
             p_edt_mst_name = id.raw_conv(p_edt_mst_name_raw)[0]
             p_edt_mst_name_list.append(p_edt_mst_name)
 
-        if p_edt_mst_name_list:
-            global p_edt_mst_name_variable
-            p_edt_mst_name_variable = StringVar()
-            p_edt_mst_name_list.append('Previous')
-            p_edt_mst_name_list.append('None')
-            p_edt_mst_name_variable.set(p_edt_mst_name_list[-1])
-            p_edt_mst_name_opt_menu_var = OptionMenu(p_edt_info_frame_1, p_edt_mst_name_variable, *p_edt_mst_name_list)
-            p_edt_mst_name_opt_menu_var.config(width=p_edt_width+1)
-            p_edt_mst_name_opt_menu_var.grid(row=3, column=1, pady=p_edt_pad, padx=p_edt_pad, stick="ew")
 
-        else:
+        global p_edt_mst_name_variable
+        p_edt_mst_name_variable = StringVar()
+        p_edt_mst_name_list.append('Previous')
+        p_edt_mst_name_list.append('None')
+        p_edt_mst_name_variable.set(p_edt_mst_name_list[-1])
+        p_edt_mst_name_opt_menu_var = OptionMenu(p_edt_info_frame_1, p_edt_mst_name_variable, *p_edt_mst_name_list)
+        p_edt_mst_name_opt_menu_var.config(width=p_edt_width + 1)
+        p_edt_mst_name_opt_menu_var.grid(row=3, column=1, pady=p_edt_pad, padx=p_edt_pad, stick="ew")
+
+        if not p_edt_mst_name_list:
             messagebox.showerror("Index Error", "No Existing Enemies Found")
-            p_edt_wd.destroy()
 
         conn.commit()
-        conn.close()
 
     def p_edt_obj_name_opt_menu():
-        conn = sqlite3.connect(database)
+        conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
         # Get obj_name's
@@ -673,8 +659,10 @@ def p_edt_window():
         p_edt_mst_name_opt_menu_var.config(width=p_edt_width+1)
         p_edt_mst_name_opt_menu_var.grid(row=4, column=1, pady=p_edt_pad, padx=p_edt_pad, stick="ew")
 
+        if not p_edt_obj_name_list:
+            messagebox.showerror("Index Error", "No Existing Objects Found")
+
         conn.commit()
-        conn.close()
 
     p_edt_s_id_opt_menu()
     p_edt_p_id_opt_menu()

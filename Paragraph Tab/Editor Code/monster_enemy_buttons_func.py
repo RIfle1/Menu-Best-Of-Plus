@@ -7,12 +7,11 @@ from tkinter import ttk
 import tkinter.font as font
 import sqlite3
 import id
-
-database = 'EditorDataV3.db'
+import editor_settings
 
 
 def mst_new_save():
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     # Create Table
@@ -21,7 +20,7 @@ def mst_new_save():
                  mst_name text,
                  mst_type text)""")
 
-    # Create a new ch_id
+    # Create a new mst_id
     c.execute(f"""SELECT mst_id from monsters""")
     mst_new_mst_id_list_raw = c.fetchall()
     mst_new_mst_id_list = id.raw_conv(mst_new_mst_id_list_raw)
@@ -37,30 +36,33 @@ def mst_new_save():
     mst_new_name_list_raw = c.fetchall()
     mst_new_name_list = id.raw_conv(mst_new_name_list_raw)
 
-    if not mst_new_name_list:
-        c.execute("""INSERT INTO monsters VALUES (
-                   :mst_id, 
-                   :mst_name,
-                   :mst_type)""",
-                  {
-                      'mst_id': str(id.mst_id(mst_new_mst_id)),
-                      'mst_name': str(mst_new_name_entry_var.get()),
-                      'mst_type': str(mst_new_mst_type_var.get())
+    if not mst_new_mst_name == '':
+        if not mst_new_name_list:
+            c.execute("""INSERT INTO monsters VALUES (
+                       :mst_id, 
+                       :mst_name,
+                       :mst_type)""",
+                      {
+                          'mst_id': str(id.mst_id(mst_new_mst_id)),
+                          'mst_name': str(mst_new_name_entry_var.get()),
+                          'mst_type': str(mst_new_mst_type_var.get())
 
-                  })
+                      })
 
-        messagebox.showinfo("Success", f'{mst_new_mst_type_var.get()} Number {mst_new_mst_id} Has Been Successfully Created.')
-        # Clear the Text Boxes
-        mst_new_name_entry.delete(0, END)
+            messagebox.showinfo("Success", f'{mst_new_mst_type_var.get()} Number {mst_new_mst_id} Has Been Successfully Created.')
+            # Clear the Text Boxes
+            mst_new_name_entry.delete(0, END)
+        else:
+            messagebox.showerror("Duplication Error", f"{mst_new_mst_type_var.get()} Called '{mst_new_mst_name}' Already Exists.")
     else:
-        messagebox.showerror("Duplication Error", f"{mst_new_mst_type_var.get()} Called '{mst_new_mst_name}' Already Exists.")
+        messagebox.showerror("Input Error", f"Enemy Has To Be Named.", icon='warning')
 
     conn.commit()
-    conn.close()
 
 
 def mst_new_window():
-    global mst_new_wd
+    global mst_new_wd, database
+    database = editor_settings.database_module.database
     # Create New Window
     mst_new_wd = Toplevel()
     mst_new_wd.title("Create An Enemy")
@@ -123,7 +125,7 @@ def mst_new_window():
 
 
 def mst_edt_delete():
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     mst_edt_ch_name = mst_new_mst_name_id_var.get()
@@ -162,24 +164,21 @@ def mst_edt_delete():
             messagebox.showinfo("Success",
                                 f"Enemy '{mst_edt_ch_name}' has been successfully deleted.")
 
-        conn.commit()
-        conn.close()
-
         # Delete Previous Input
         mst_edt_name_entry.delete(0, END)
 
+        conn.commit()
+
         mst_edt_mst_name_opt_menu()
 
-    else:
-        conn.commit()
-        conn.close()
+    conn.commit()
 
 
 def mst_edt_insert():
     # Delete Previous Input
     mst_edt_name_entry.delete(0, END)
 
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     mst_edt_mst_name = mst_new_mst_name_id_var.get()
@@ -192,11 +191,10 @@ def mst_edt_insert():
     mst_edt_name_entry.insert(END, f'{mst_edt_name_list[0]}')
 
     conn.commit()
-    conn.close()
 
 
 def mst_edt_edit():
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
     mst_edt_mst_name_var = mst_new_mst_name_id_var.get()
@@ -214,13 +212,13 @@ def mst_edt_edit():
         messagebox.showerror("Input Error", f'Input a Name', icon='warning')
 
     conn.commit()
-    conn.close()
 
     mst_edt_mst_name_opt_menu()
 
 
 def mst_edt_window():
-    global mst_edt_wd
+    global mst_edt_wd, database
+    database = editor_settings.database_module.database
     # Create New Window
     mst_edt_wd = Toplevel()
     mst_edt_wd.title("Edit An Enemy")
@@ -286,8 +284,8 @@ def mst_edt_window():
     global mst_edt_mst_name_opt_menu
 
     def mst_edt_mst_name_opt_menu():
-        # Options Menu For all existing NPC Names
-        conn = sqlite3.connect(database)
+        # Options Menu For all existing Enemies Names
+        conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
         c.execute(f"""SELECT mst_name FROM monsters""")
@@ -308,7 +306,6 @@ def mst_edt_window():
             mst_edt_wd.destroy()
 
         conn.commit()
-        conn.close()
 
     mst_edt_mst_name_opt_menu()
 
