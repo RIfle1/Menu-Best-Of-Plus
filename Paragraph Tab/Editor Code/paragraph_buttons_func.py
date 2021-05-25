@@ -265,14 +265,24 @@ def p_edt_save_object():
     else:
         p_edt_obj_id = 'None'
 
-    c.execute("""UPDATE paragraphs_list SET obj_id = :obj_id WHERE pl_id = :pl_id""",
-                      {
-                          "pl_id": f'{p_edt_p_id}',
-                          "obj_id": f"{p_edt_obj_id}"
-                      })
+    c.execute(f"""SELECT end_bool FROM paragraphs_list WHERE pl_id = '{p_edt_p_id}'""")
+    p_edt_end_bool_raw = c.fetchall()
+    p_edt_end_bool = id.raw_conv(p_edt_end_bool_raw)[0]
 
-    # Show Success pop-up
-    messagebox.showinfo("Success", f"Paragraph Number {id.id_int(p_edt_p_id)} in Story Number {id.id_int(p_edt_s_id)} has been successfully modified.")
+    if p_edt_end_bool == 0:
+        c.execute("""UPDATE paragraphs_list SET obj_id = :obj_id WHERE pl_id = :pl_id""",
+                          {
+                              "pl_id": f'{p_edt_p_id}',
+                              "obj_id": f"{p_edt_obj_id}"
+                          })
+
+        # Show Success pop-up
+        messagebox.showinfo("Success", f"Paragraph Number {id.id_int(p_edt_p_id)} in Story Number {id.id_int(p_edt_s_id)} has been assigned {p_edt_obj_name} as a drop item.")
+    else:
+        messagebox.showerror("Cannot Perform Action", f"Paragraph Number {id.id_int(p_edt_p_id)} is set to an ending "
+                                                      f"paragraph, therefore it cannot have any drops assigned to "
+                                                      f"it.\nYou can change that by setting 'Ending Paragraph' To "
+                                                      f"'False'.")
 
     conn.commit()
 
@@ -463,21 +473,22 @@ def p_edt_p_end():
     else:
         p_edt_p_end_bool = 0
 
-    c.execute("""UPDATE paragraphs_list SET 
-                    end_bool = :end_bool
+    if p_edt_p_end_bool == 0:
+        c.execute(f"""UPDATE paragraphs_list SET end_bool = '{p_edt_p_end_bool}' WHERE pl_id = '{p_edt_p_id}'""")
 
-                    WHERE pl_id = :pl_id""",
-              {
-                  "end_bool": f'{p_edt_p_end_bool}',
-                  "pl_id": f'{p_edt_p_id}'
-              })
+        messagebox.showinfo("Ending Paragraph", f"Paragraph Number {id.id_int(p_edt_p_id)} Has Been Unassigned From Being An Ending Paragraph")
 
-    if p_edt_p_end_bool_raw == 'True':
-        messagebox.showinfo("Ending Paragraph", f"Paragraph Number {id.id_int(p_edt_p_id)} Has Been Set To An Ending Paragraph")
     else:
-        messagebox.showinfo("Ending Paragraph",
-                            f"Paragraph Number {id.id_int(p_edt_p_id)} Has Been Unassigned From Being An Ending Paragraph")
+        c.execute(f"""UPDATE paragraphs_list SET 
+        end_bool = '{p_edt_p_end_bool}',
+        obj_id = 'None'
+        
+        WHERE pl_id = '{p_edt_p_id}'""")
 
+        c.execute(f"""DELETE FROM choices WHERE c_id LIKE '{p_edt_p_id}%'""")
+
+        messagebox.showinfo("Ending Paragraph", f"Paragraph Number {id.id_int(p_edt_p_id)} Has Been Set To An Ending Paragraph."
+                                                f"\nThis Paragraph Can No Longer Have Choices Or Objects Assigned to it.")
     conn.commit()
 
 

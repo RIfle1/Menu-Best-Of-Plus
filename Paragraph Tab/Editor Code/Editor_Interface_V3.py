@@ -15,6 +15,7 @@ import npc_buttons_func
 import monster_enemy_buttons_func
 import object_buttons_func
 import editor_settings
+import error_buttons_func
 import id
 
 database = editor_settings.database_module.database
@@ -183,7 +184,7 @@ tabControl.add(npc_tab, text="Npc's")
 tabControl.add(mst_tab, text="Monsters / Enemies")
 tabControl.add(objects_tab, text="Objects")
 tabControl.add(game_settings_tab, text="Game Settings")
-tabControl.add(test_tab, text="Test")
+tabControl.add(test_tab, text="Test / Compile")
 
 # Positioning the Tabs
 tabControl.pack(expand=1, fill="both")
@@ -436,6 +437,44 @@ obj_edit_obj_button = Button(obj_main_buttons_frame, text="Edit Object", bg="#5f
 obj_edit_obj_button.pack(padx=obj_button_x_space, pady=obj_button_y_space)
 # -------------------------------------------
 # THIS IS THE END OF THE "OBJECTS" TAB CODE
+# -------------------------------------------
+# -------------------------------------------
+# THIS FOLLOWING CODE IS FOR "TEST" TAB
+# -------------------------------------------
+# ALL MAIN FRAMES
+# MAIN Frame
+test_main_frame_width = int(0.75 * window_x)
+test_main_frame = LabelFrame(test_tab, width=test_main_frame_width, height=window_y)
+test_main_frame.pack(fill="both", expand=True)
+
+# Main Buttons Frame
+test_main_frame_height = int(window_y / 4.8)
+test_main_buttons_frame = LabelFrame(test_main_frame, height=test_main_frame_height, width=test_main_frame_width)
+test_main_buttons_frame.pack(fill="both")
+
+# OBJECT Frame
+test_main_mst_frame = LabelFrame(test_main_frame, height=window_x - test_main_frame_height)
+test_main_mst_frame.pack(fill="both", expand=True)
+
+test_button_width = 22
+test_buttons_width = 30
+test_buttons_height = 1
+text_button_x_space = 2
+test_button_y_space = 4
+test_font_size = 18
+# NEW OBJECT Button
+test_test_script_button = Button(test_main_buttons_frame, text="Check For Errors", bg="#5fafde", fg="White", padx=test_buttons_width,
+                                 pady=test_buttons_height, font=("Times New Roman", test_font_size), relief=FLAT, width=test_button_width,
+                                 command=None)
+test_test_script_button.pack(padx=text_button_x_space, pady=test_button_y_space)
+
+# EDIT OBJECT Button
+test_compile_script_button = Button(test_main_buttons_frame, text="Compile Data Into Game", bg="#5fafde", fg="White", padx=test_buttons_width,
+                                    pady=test_buttons_height, font=("Times New Roman", test_font_size), relief=FLAT, width=test_button_width,
+                                    command=None)
+test_compile_script_button.pack(padx=text_button_x_space, pady=test_button_y_space)
+# -------------------------------------------
+# THIS IS THE END OF THE "TEST" TAB CODE
 # -------------------------------------------
 # -------------------------------------------
 # LOOP END

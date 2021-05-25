@@ -290,7 +290,7 @@ def c_new_window():
         conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
-        c.execute(f"""SELECT pl_id FROM paragraphs_list UNION SELECT ip_id FROM initial_paragraphs""")
+        c.execute(f"""SELECT pl_id FROM paragraphs_list UNION SELECT ip_id FROM initial_paragraphs EXCEPT SELECT pl_id FROM paragraphs_list WHERE end_bool = {1}""")
         c_new_from_p_id_list_raw = c.fetchall()
         c_new_from_p_id_list = id.raw_conv(c_new_from_p_id_list_raw)
 
@@ -313,7 +313,7 @@ def c_new_window():
         conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
-        c.execute(f"""SELECT pl_id FROM paragraphs_list""")
+        c.execute(f"""SELECT pl_id FROM paragraphs_list EXCEPT SELECT pl_id FROM paragraphs_list WHERE end_bool = {1}""")
         c_new_to_p_id_list_raw = c.fetchall()
         c_new_to_p_id_list = id.raw_conv(c_new_to_p_id_list_raw)
 

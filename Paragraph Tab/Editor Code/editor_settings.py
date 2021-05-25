@@ -8,10 +8,10 @@ import os
 database_module = sys.modules[__name__]
 
 # Memory Database (Temporary -> Deleted if not saved)
-database_module.database = 'file:my_db?mode=memory&cache=shared'
+database_module.database0 = 'file:my_db?mode=memory&cache=shared'
 
 # Database Used For Code Modifications
-database_module.database0 = 'Editor.db'
+database_module.database = 'Editor.db'
 
 
 def new_save():
