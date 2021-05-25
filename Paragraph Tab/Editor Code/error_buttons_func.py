@@ -2,14 +2,18 @@
 import sqlite3
 from tkinter import *
 from tkinter import messagebox
-
 import editor_settings
 import id
+import sys
+
+error_counter = sys.modules[__name__]
+
+error_counter.errors = 0
 
 
-def p_end_check():
+def paragraph_checker():
     global database
-    database = 'Editor.db'
+    database = editor_settings.database_module.database
     conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
     # Get s_id list
@@ -29,7 +33,8 @@ def p_end_check():
             s_id_with_no_paragraphs.append(s_id)
 
     for s_id in s_id_with_no_paragraphs:
-        warning_list.append(f"Story Number {id.id_int(s_id)} Has No Paragraphs Assigned")
+        warning_list.append(f"Story Number {id.id_int(s_id)} Has No Paragraphs And No Ending Paragraphs Assigned")
+        error_counter.errors += 1
 
     c.execute(f"""SELECT s_id, end_bool FROM paragraphs_list""")
     info_list_raw = c.fetchall()
@@ -48,20 +53,43 @@ def p_end_check():
                     counter += 1
         s_id_end_count_list.append([s_id, counter])
 
-    warning_list = []
+    warning_s_id_list = []
     for x_list in s_id_end_count_list:
         if x_list[1] == 0:
-            warning_list.append(x_list)
+            warning_s_id_list.append(x_list)
 
-    for x_list in warning_list:
+    for x_list in warning_s_id_list:
         warning_list.append(f"Story Number {id.id_int(x_list[0])} Has No Ending Paragraphs Assigned")
-    print(warning_list)
+        error_counter.errors += 1
 
-    messagebox.showerror("Error", f"{warning_list}", icon='warning')
+    warning_text = ''
+
+    for text in warning_list:
+        warning_text += f'{text}\n'
+    warning_text += '###'
+
+    errors_file = open("errors.txt", "w")
+    errors_file.write(warning_text)
+    errors_file.close()
 
 
-p_end_check()
+def update():
+    return error_counter.errors
 
 
 def function_runner():
-    p_end_check()
+    # Delete Previous Erros in file
+    errors_file = open("errors.txt", "w")
+    errors_file.truncate(0)
+    errors_file.close()
+    # Call Error Checking Functions
+    paragraph_checker()
+
+    # Update the number of errors
+    update()
+
+    # Show Message With Number of Errors
+    messagebox.showinfo("Errors", f"Your Game Editor Has {error_counter.errors} Errors.\nRefresh In Options To View Errors")
+
+
+

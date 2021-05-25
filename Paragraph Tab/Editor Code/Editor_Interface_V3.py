@@ -14,11 +14,59 @@ import character_buttons_func
 import npc_buttons_func
 import monster_enemy_buttons_func
 import object_buttons_func
-import editor_settings
 import error_buttons_func
+import editor_settings
 import id
 
 database = editor_settings.database_module.database
+
+
+# Functions That Refresh Button calls
+def refresh():
+    new_tab()
+    errors_print()
+
+
+def delete():
+    for widget in test_main_error_frame.winfo_children():
+        widget.destroy()
+
+
+# Function to print Errors
+def errors_print():
+
+    # Create A Canvas
+    canvas = Canvas(test_main_error_frame)
+    canvas.pack(side=LEFT, fill='both', expand=1)
+
+    # Add A Scroll Bar To Canvas
+    scroll_bar = Scrollbar(test_main_error_frame, orient=VERTICAL, command=canvas.yview)
+    scroll_bar.pack(side=RIGHT, fill='y')
+
+    # Configure Canvas
+    canvas.configure(yscrollcommand=scroll_bar.set)
+    canvas.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+
+    # Create Another Frame in Canvas
+    test_main_error_frame_0 = LabelFrame(canvas)
+
+    # Add A new Frame to a window in the canvas
+    canvas.create_window((0, 0), window=test_main_error_frame_0, anchor="nw")
+
+    # Update Canvas
+    canvas.update_idletasks()
+    canvas.config(scrollregion=test_main_error_frame_0.bbox())
+
+    padding = 10
+    errors_file = open("errors.txt", "r")
+    text = errors_file.read()
+    errors_list = text.split('###')
+
+    for errors in errors_list[0:-1]:
+        error_frame = LabelFrame(test_main_error_frame_0, height=100)
+        error_frame.pack()
+        error_message = Message(error_frame, text=errors, width=400)
+        error_message.grid(column=0, row=0, padx=padding, pady=(padding, 0))
 
 
 # Class to set tab number in new_tab function
@@ -143,6 +191,9 @@ def close_window():
     else:
         editor.destroy()
 
+    errors_file = open("errors.txt", "w")
+    errors_file.truncate(0)
+    errors_file.close()
 
 editor.title("Game Editor")
 
@@ -159,7 +210,7 @@ file_menu.add_command(label="Save Game Editor", command=editor_settings.new_save
 
 options_menu = tkinter.Menu(main_menu, tearoff=0)
 options_menu.add_command(label="Dark Mode")
-options_menu.add_command(label="Refresh", command=new_tab)
+options_menu.add_command(label="Refresh", command=refresh)
 options_menu.add_command(label="Quit", command=editor.quit)
 
 main_menu.add_cascade(label="File", menu=file_menu)
@@ -415,8 +466,8 @@ obj_main_buttons_frame = LabelFrame(obj_main_frame, height=obj_main_frame_height
 obj_main_buttons_frame.pack(fill="both")
 
 # OBJECT Frame
-obj_main_mst_frame = LabelFrame(obj_main_frame, height=window_x - obj_main_frame_height)
-obj_main_mst_frame.pack(fill="both", expand=True)
+obj_frame = LabelFrame(obj_main_frame, height=window_x - obj_main_frame_height)
+obj_frame.pack(fill="both", expand=True)
 
 obj_button_width = 22
 obj_buttons_width = 30
@@ -452,9 +503,10 @@ test_main_frame_height = int(window_y / 4.8)
 test_main_buttons_frame = LabelFrame(test_main_frame, height=test_main_frame_height, width=test_main_frame_width)
 test_main_buttons_frame.pack(fill="both")
 
-# OBJECT Frame
-test_main_mst_frame = LabelFrame(test_main_frame, height=window_x - test_main_frame_height)
-test_main_mst_frame.pack(fill="both", expand=True)
+# Errors Frame
+test_main_error_frame = LabelFrame(test_main_frame, height=window_x - test_main_frame_height)
+test_main_error_frame.pack(fill="both", expand=True)
+
 
 test_button_width = 22
 test_buttons_width = 30
@@ -462,15 +514,15 @@ test_buttons_height = 1
 text_button_x_space = 2
 test_button_y_space = 4
 test_font_size = 18
-# NEW OBJECT Button
+# CHECK ERRORS Button
 test_test_script_button = Button(test_main_buttons_frame, text="Check For Errors", bg="#5fafde", fg="White", padx=test_buttons_width,
                                  pady=test_buttons_height, font=("Times New Roman", test_font_size), relief=FLAT, width=test_button_width,
-                                 command=None)
+                                 command=error_buttons_func.function_runner)
 test_test_script_button.pack(padx=text_button_x_space, pady=test_button_y_space)
 
-# EDIT OBJECT Button
+# COMPILE DATA Button
 test_compile_script_button = Button(test_main_buttons_frame, text="Compile Data Into Game", bg="#5fafde", fg="White", padx=test_buttons_width,
-                                    pady=test_buttons_height, font=("Times New Roman", test_font_size), relief=FLAT, width=test_button_width,
+                                    pady=test_buttons_height, font=("Times New Roman", test_font_size), relief=FLAT, width=test_button_width, state=DISABLED,
                                     command=None)
 test_compile_script_button.pack(padx=text_button_x_space, pady=test_button_y_space)
 # -------------------------------------------
