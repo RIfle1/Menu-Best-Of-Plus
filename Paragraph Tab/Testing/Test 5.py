@@ -1,42 +1,21 @@
-from tkinter import *
+import tkinter as tk
+from tkinter import ttk
 
-test_main_error_frame = Tk()
-
-# Tkinter widgets needed for scrolling.  The only native scrollable container that Tkinter provides is a canvas.
-# A Frame is needed inside the Canvas so that widgets can be added to the Frame and the Canvas makes it scrollable.
-
-canvas = Canvas(test_main_error_frame)
-test_main_error_frame_0 = Frame(canvas)
-ScrollBar = Scrollbar(test_main_error_frame)
-
-# Sets up the Canvas, Frame, and scrollbars for scrolling
-
-canvas.config(yscrollcommand=ScrollBar.set, highlightthickness=0)
-canvas.pack(fill=BOTH, side=LEFT, expand=TRUE)
-canvas.create_window(0, 0, window=test_main_error_frame_0, anchor=NW)
-
-ScrollBar.config(orient=VERTICAL, command=canvas.yview)
-ScrollBar.pack(fill=Y, side=RIGHT, expand=FALSE)
+test_main_error_frame = tk.Tk()
+test_main_error_frame_1 = ttk.Frame(test_main_error_frame)
+canvas = tk.Canvas(test_main_error_frame_1)
+scrollbar = ttk.Scrollbar(test_main_error_frame_1, orient="vertical", command=canvas.yview)
+test_main_error_frame_0 = ttk.Frame(canvas)
 
 
-def errors_print():
-    padding = 10
-    errors_file = open("errors.txt", "r")
-    text = errors_file.read()
-    errors_list = text.split('###')
+test_main_error_frame_0.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
 
-    for errors in errors_list[0:-1]:
-        error_frame = LabelFrame(test_main_error_frame_0, height=100)
-        error_frame.pack()
-        error_message = Message(error_frame, text=errors, width=400)
-        error_message.grid(column=0, row=0, padx=padding, pady=(padding, 0))
+canvas.create_window((0, 0), window=test_main_error_frame_0, anchor="nw")
 
-    # Update the scroll region after new widgets are added
-    canvas.update_idletasks()
-    canvas.config(scrollregion=test_main_error_frame_0.bbox())
+canvas.configure(yscrollcommand=scrollbar.set)
 
-
-button = Button(test_main_error_frame, text="press me", command=errors_print)
-button.pack()
+test_main_error_frame_1.pack()
+canvas.pack(side="left", fill="both", expand=True)
+scrollbar.pack(side="right", fill="y")
 
 test_main_error_frame.mainloop()

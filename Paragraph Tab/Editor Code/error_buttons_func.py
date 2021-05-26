@@ -66,11 +66,77 @@ def paragraph_checker():
 
     for text in warning_list:
         warning_text += f'{text}\n'
-    warning_text += '###'
+    warning_text += '###\n'
 
-    errors_file = open("errors.txt", "w")
+    errors_file = open("errors.txt", "a")
     errors_file.write(warning_text)
     errors_file.close()
+
+    conn.commit()
+
+
+def npc_enemy_checker():
+    global database
+    database = editor_settings.database_module.database
+    conn = sqlite3.connect(database, uri=True)
+    c = conn.cursor()
+
+    warning_list = []
+
+    c.execute(f"""SELECT npc_id FROM npcs EXCEPT SELECT npc_id FROM paragraphs_list""")
+    npc_id_list_raw = c.fetchall()
+    npc_id_list = id.raw_conv(npc_id_list_raw)
+
+    npc_name_list = []
+    for npc_id in npc_id_list:
+        c.execute(f"""SELECT npc_name FROM npcs WHERE npc_id = '{npc_id}'""")
+        npc_name_raw = c.fetchall()
+        npc_name = id.raw_conv(npc_name_raw)[0]
+        npc_name_list.append(npc_name)
+
+    for npc_name in npc_name_list:
+        warning_list.append(f"NPC '{npc_name}' Has No Assigned Paragraph")
+        error_counter.errors += 1
+
+    c.execute(f"""SELECT mst_id FROM monsters EXCEPT SELECT mst_id FROM paragraphs_list""")
+    mst_id_list_raw = c.fetchall()
+    mst_id_list = id.raw_conv(mst_id_list_raw)
+
+    mst_name_list = []
+    for mst_id in mst_id_list:
+        c.execute(f"""SELECT mst_name FROM monsters WHERE mst_id = '{mst_id}'""")
+        mst_name_raw = c.fetchall()
+        mst_name = id.raw_conv(mst_name_raw)[0]
+        mst_name_list.append(mst_name)
+
+    for mst_name in mst_name_list:
+        warning_list.append(f"Enemy '{mst_name}' Has No Assigned Paragraph")
+        error_counter.errors += 1
+
+    warning_text = ''
+
+    for text in warning_list:
+        warning_text += f'{text}\n'
+    warning_text += '###\n'
+
+    errors_file = open("errors.txt", "a")
+    errors_file.write(warning_text)
+    errors_file.close()
+
+    conn.commit()
+
+
+def objects_checker():
+    global database
+    database = editor_settings.database_module.database
+    conn = sqlite3.connect(database, uri=True)
+    c = conn.cursor()
+
+    warning_list = []
+
+    c.execute(f"""SELECT obj_id from objects EXCEPT SELECT obj_id FROM paragraphs_list""")
+    obj_id_list_raw = c.fetchall()
+    obj_id_list = id.raw_conv(obj_id_list_raw)
 
 
 def update():
@@ -84,6 +150,7 @@ def function_runner():
     errors_file.close()
     # Call Error Checking Functions
     paragraph_checker()
+    npc_enemy_checker()
 
     # Update the number of errors
     update()
@@ -91,5 +158,7 @@ def function_runner():
     # Show Message With Number of Errors
     messagebox.showinfo("Errors", f"Your Game Editor Has {error_counter.errors} Errors.\nRefresh In Options To View Errors")
 
+    # Reset Number of errors
+    error_counter.errors = 0
 
 

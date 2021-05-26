@@ -4,9 +4,7 @@ root = tk.Tk()
 
 # Tkinter widgets needed for scrolling.  The only native scrollable container that Tkinter provides is a canvas.
 # A Frame is needed inside the Canvas so that widgets can be added to the Frame and the Canvas makes it scrollable.
-frame1 = tk.LabelFrame(root).pack()
-frame2 = tk.LabelFrame(root).pack()
-cTableContainer = tk.Canvas(frame2)
+cTableContainer = tk.Canvas(root)
 fTable = tk.Frame(cTableContainer)
 sbHorizontalScrollBar = tk.Scrollbar(root)
 sbVerticalScrollBar = tk.Scrollbar(root)
@@ -32,17 +30,19 @@ def createScrollableContainer():
 
 
 # Adds labels diagonally across the screen to demonstrate the scrollbar adapting to the increasing size
-
+i = 0
 
 
 def addNewLabel():
-    tk.Label(fTable, text="Hello World").pack()
+    global i
+    tk.Label(fTable, text="Hello World").grid(row=i, column=i)
+    i += 1
 
     # Update the scroll region after new widgets are added
     updateScrollRegion()
 
+    root.after(100, addNewLabel)
 
-button = tk.Button(frame1, text="", command=addNewLabel).pack()
 
 createScrollableContainer()
 addNewLabel()

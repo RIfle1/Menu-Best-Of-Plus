@@ -34,28 +34,8 @@ def delete():
 
 # Function to print Errors
 def errors_print():
-
-    # Create A Canvas
-    canvas = Canvas(test_main_error_frame)
-    canvas.pack(side=LEFT, fill='both', expand=1)
-
-    # Add A Scroll Bar To Canvas
-    scroll_bar = Scrollbar(test_main_error_frame, orient=VERTICAL, command=canvas.yview)
-    scroll_bar.pack(side=RIGHT, fill='y')
-
-    # Configure Canvas
-    canvas.configure(yscrollcommand=scroll_bar.set)
-    canvas.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
-
-    # Create Another Frame in Canvas
-    test_main_error_frame_0 = LabelFrame(canvas)
-
-    # Add A new Frame to a window in the canvas
-    canvas.create_window((0, 0), window=test_main_error_frame_0, anchor="nw")
-
-    # Update Canvas
-    canvas.update_idletasks()
-    canvas.config(scrollregion=test_main_error_frame_0.bbox())
+    for widget in test_main_error_frame_2.winfo_children():
+        widget.destroy()
 
     padding = 10
     errors_file = open("errors.txt", "r")
@@ -63,10 +43,10 @@ def errors_print():
     errors_list = text.split('###')
 
     for errors in errors_list[0:-1]:
-        error_frame = LabelFrame(test_main_error_frame_0, height=100)
-        error_frame.pack()
+        error_frame = LabelFrame(test_main_error_frame_2, height=100)
+        error_frame.pack(fill="both")
         error_message = Message(error_frame, text=errors, width=400)
-        error_message.grid(column=0, row=0, padx=padding, pady=(padding, 0))
+        error_message.grid(column=0, row=0, padx=padding, pady=(padding, 0), stick="w")
 
 
 # Class to set tab number in new_tab function
@@ -507,6 +487,25 @@ test_main_buttons_frame.pack(fill="both")
 test_main_error_frame = LabelFrame(test_main_frame, height=window_x - test_main_frame_height)
 test_main_error_frame.pack(fill="both", expand=True)
 
+# Scroll Bar stuff
+test_main_error_frame_1 = Frame(test_main_error_frame, height=window_x - test_main_frame_height)
+test_main_error_frame_1.pack(fill="both", expand=True)
+
+# Create Canvas
+canvas = Canvas(test_main_error_frame_1)
+
+# Create ScrollBar
+scrollbar = Scrollbar(test_main_error_frame_1, orient="vertical", command=canvas.yview)
+scrollbar.pack(side="right", fill="y")
+
+# Frame To Put Objects in
+test_main_error_frame_2 = Frame(canvas, height=window_x - test_main_frame_height)
+test_main_error_frame_2.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+
+# Canvas Config
+canvas.create_window((0, 0), window=test_main_error_frame_2, anchor="nw")
+canvas.configure(yscrollcommand=scrollbar.set)
+canvas.pack(side="left", fill="both", expand=True)
 
 test_button_width = 22
 test_buttons_width = 30
@@ -514,6 +513,7 @@ test_buttons_height = 1
 text_button_x_space = 2
 test_button_y_space = 4
 test_font_size = 18
+
 # CHECK ERRORS Button
 test_test_script_button = Button(test_main_buttons_frame, text="Check For Errors", bg="#5fafde", fg="White", padx=test_buttons_width,
                                  pady=test_buttons_height, font=("Times New Roman", test_font_size), relief=FLAT, width=test_button_width,
