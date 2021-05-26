@@ -497,15 +497,34 @@ def c_del_assign_paragraph_delete():
 
     # Check that the selected id has a paragraph connected to it
     if c_del_c_id_old[-2] == 'P':
-        # Modify id
-        c_de_c_id_new = id.p_del(c_del_c_id_old)
+        warning = messagebox.askquestion('Confirm Deletion',
+                                         f'Are you sure you want to Remove Paragraph Number '
+                                         f'{id.id_int(id.decoder_2(c_del_c_id_old)[-1])} From '
+                                         f'Choice Number {id.id_int(id.decoder_2(c_del_c_id_old)[-2])}?'
+                                         f'\nIf That Paragraph Has No Other Choices Connected To It, It will be deleted '
+                                         f"as well as all of it's information",
+                                         icon='warning')
+        if warning == 'yes':
+            # Modify id
+            c_del_c_id_new = id.p_del(c_del_c_id_old)
 
-        # Update table
-        c.execute("""UPDATE choices SET c_id = :c_id_new WHERE c_id = :c_id_old""",
-                  {
-                      "c_id_new": f"{c_de_c_id_new}",
-                      "c_id_old": f'{c_del_c_id_old}'
-                  })
+            # Update table
+            c.execute("""UPDATE choices SET c_id = :c_id_new WHERE c_id = :c_id_old""",
+                      {
+                          "c_id_new": f"{c_del_c_id_new}",
+                          "c_id_old": f'{c_del_c_id_old}'
+                      })
+
+            # Delete Paragraph If No Choices Are Connected to it
+            c.execute(f"""SELECT c_id FROM choices WHERE c_id LIKE '%{id.decoder_2(c_del_c_id_old)[-1]}'""")
+            c_del_c_id_list_raw = c.fetchall()
+            c_del_c_id_list = id.raw_conv(c_del_c_id_list_raw)
+
+            number = len(c_del_c_id_list)
+
+            if number == 0:
+                c.execute(f"""DELETE FROM paragraphs_list WHERE pl_id LIKE '%{id.decoder_2(c_del_c_id_old)[-1]}'""")
+                c.execute(f"""DELETE FROM choices WHERE c_id LIKE'%{id.decoder_2(c_del_c_id_old)[-1]}%'""")
     else:
         messagebox.showerror('Error', f'Choice Number {id.id_int(c_del_c_id_old)} Has No Paragraphs Assigned to it.', icon='warning')
 

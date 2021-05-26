@@ -21,15 +21,35 @@ def s_new_save():
     (s_id text, 
     s_text text)""")
 
-    # Create a new s_id
-    c.execute(f"""SELECT s_id from stories""")
+    # Script to create a new story number and to replace a number if a story has been deleted
+    c.execute("""SELECT s_id FROM stories ORDER BY s_id""")
     s_new_s_id_list_raw = c.fetchall()
     s_new_s_id_list = id.raw_conv(s_new_s_id_list_raw)
 
-    if not s_new_s_id_list:
-        s_new_s_id = 1
+    if s_new_s_id_list:
+        s_id_number_list = []
+        for s_id in s_new_s_id_list:
+            s_id_number_list.append(int(id.id_int(s_id)))
+
+        s_new_s_id_num_max = int(id.max_num(s_id_number_list))
+
+        s_id_number_real_list = []
+        for number in range(1, s_new_s_id_num_max + 1):
+            s_id_number_real_list.append(number)
+
+        s_id_missing_numbers_list = []
+        for number in s_id_number_real_list:
+            if number not in s_id_number_list:
+                s_id_missing_numbers_list.append(number)
+
+        if s_id_missing_numbers_list:
+            s_new_new_p_id = s_id_missing_numbers_list[0]
+        else:
+            s_new_new_p_id = int(s_new_s_id_num_max) + 1
     else:
-        s_new_s_id = int(id.max_num(id.int_list(s_new_s_id_list))) + 1
+        s_new_new_p_id = 1
+
+    # ----------------------------------------
 
     # Get c_id from character_name
     s_new_ch_name = s_new_ch_name_variable.get()
@@ -44,13 +64,13 @@ def s_new_save():
         c.execute(
             "INSERT INTO stories VALUES (:s_id, :s_text, :ch_id)",
             {
-                "s_id": f"{id.s_id(s_new_s_id)}",
+                "s_id": f"{id.s_id(s_new_new_p_id)}",
                 "s_text": str(s_new_beginning_story_entry.get("1.0", "end")),
                 "ch_id": f"{s_new_ch_id}"
             })
         # Show Success pop-up
         messagebox.showinfo("Success",
-                            f"Story Number {s_new_s_id} has been created and Character Called '{s_new_ch_name}' has been assigned to it.")
+                            f"Story Number {s_new_new_p_id} has been created and Character Called '{s_new_ch_name}' has been assigned to it.")
         s_new_beginning_story_entry.delete("1.0", "end")
     else:
         messagebox.showerror("Input Error", "Story Text Is Empty", icon='warning')

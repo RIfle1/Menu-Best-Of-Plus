@@ -69,7 +69,7 @@ def new_tab():
     conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
-    c.execute(f"SELECT s_id FROM stories")
+    c.execute(f"SELECT s_id FROM stories ORDER BY s_id")
     story_id_list_raw = c.fetchall()
     story_id_list = []
     for tp in story_id_list_raw:

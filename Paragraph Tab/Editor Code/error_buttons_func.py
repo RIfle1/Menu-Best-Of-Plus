@@ -11,7 +11,7 @@ error_counter = sys.modules[__name__]
 error_counter.errors = 0
 
 
-def paragraph_checker():
+def paragraphs_checker():
     global database
     database = editor_settings.database_module.database
     conn = sqlite3.connect(database, uri=True)
@@ -33,7 +33,7 @@ def paragraph_checker():
             s_id_with_no_paragraphs.append(s_id)
 
     for s_id in s_id_with_no_paragraphs:
-        warning_list.append(f"Story Number {id.id_int(s_id)} Has No Paragraphs And No Ending Paragraphs Assigned")
+        warning_list.append(f"Story Number {id.id_int(s_id)} Has No Paragraphs And No Ending Paragraphs Assigned\n")
         error_counter.errors += 1
 
     c.execute(f"""SELECT s_id, end_bool FROM paragraphs_list""")
@@ -59,14 +59,26 @@ def paragraph_checker():
             warning_s_id_list.append(x_list)
 
     for x_list in warning_s_id_list:
-        warning_list.append(f"Story Number {id.id_int(x_list[0])} Has No Ending Paragraphs Assigned")
+        warning_list.append(f"Story Number {id.id_int(x_list[0])} Has No Ending Paragraphs Assigned\n")
+        error_counter.errors += 1
+
+    c.execute(f"""SELECT pl_id, npc_bool, mst_bool FROM paragraphs_list""")
+    p_info_list_raw = c.fetchall()
+
+    p_errors_list = []
+    for info in p_info_list_raw:
+        if info[1] == 0 and info[2] == 0:
+            p_errors_list.append(info[0])
+
+    for p_id in p_errors_list:
+        warning_list.append(f"{id.decoder_3(p_id)} Has No NPC or Enemy Assigned\n")
         error_counter.errors += 1
 
     warning_text = ''
 
     for text in warning_list:
         warning_text += f'{text}\n'
-    warning_text += '###\n'
+    warning_text += '###'
 
     errors_file = open("errors.txt", "a")
     errors_file.write(warning_text)
@@ -95,7 +107,7 @@ def npc_enemy_checker():
         npc_name_list.append(npc_name)
 
     for npc_name in npc_name_list:
-        warning_list.append(f"NPC '{npc_name}' Has No Assigned Paragraph")
+        warning_list.append(f"NPC '{npc_name}' Has No Assigned Paragraph\n")
         error_counter.errors += 1
 
     c.execute(f"""SELECT mst_id FROM monsters EXCEPT SELECT mst_id FROM paragraphs_list""")
@@ -110,14 +122,14 @@ def npc_enemy_checker():
         mst_name_list.append(mst_name)
 
     for mst_name in mst_name_list:
-        warning_list.append(f"Enemy '{mst_name}' Has No Assigned Paragraph")
+        warning_list.append(f"Enemy '{mst_name}' Has No Assigned Paragraph\n")
         error_counter.errors += 1
 
     warning_text = ''
 
     for text in warning_list:
         warning_text += f'{text}\n'
-    warning_text += '###\n'
+    warning_text += '###'
 
     errors_file = open("errors.txt", "a")
     errors_file.write(warning_text)
@@ -138,19 +150,79 @@ def objects_checker():
     obj_id_list_raw = c.fetchall()
     obj_id_list = id.raw_conv(obj_id_list_raw)
 
+    obj_name_list = []
+    for obj_id in obj_id_list:
+        c.execute(f"""SELECT obj_name from objects WHERE obj_id = '{obj_id}'""")
+        obj_name_raw = c.fetchall()
+        obj_name = id.raw_conv(obj_name_raw)[0]
+        obj_name_list.append(obj_name)
+
+    for obj_name in obj_name_list:
+        warning_list.append(f"Object '{obj_name}' Has No Assigned Paragraph\n")
+        error_counter.errors += 1
+
+    warning_text = ''
+
+    for text in warning_list:
+        warning_text += f'{text}\n'
+    warning_text += '###'
+
+    errors_file = open("errors.txt", "a")
+    errors_file.write(warning_text)
+    errors_file.close()
+
+    conn.commit()
+
+
+def choice_checker():
+    global database
+    database = editor_settings.database_module.database
+    conn = sqlite3.connect(database, uri=True)
+    c = conn.cursor()
+
+    warning_list = []
+
+    c.execute(f"""SELECT c_id FROM choices""")
+    c_id_list_raw = c.fetchall()
+    c_id_list = id.raw_conv(c_id_list_raw)
+
+    c_id_error_list = []
+    for c_id in c_id_list:
+        ending = id.id_str(id.decoder_2(c_id)[-1])
+        if ending == 'C':
+            c_id_error_list.append(c_id)
+
+    for c_id in c_id_error_list:
+        warning_list.append(f"{id.decoder_3(c_id)} Has No Assigned Paragraph\n")
+        error_counter.errors += 1
+
+    warning_text = ''
+
+    for text in warning_list:
+        warning_text += f'{text}\n'
+    warning_text += '###'
+
+    errors_file = open("errors.txt", "a")
+    errors_file.write(warning_text)
+    errors_file.close()
+
+    conn.commit()
+
 
 def update():
     return error_counter.errors
 
 
 def function_runner():
-    # Delete Previous Erros in file
+    # Delete Previous Errors in file
     errors_file = open("errors.txt", "w")
     errors_file.truncate(0)
     errors_file.close()
     # Call Error Checking Functions
-    paragraph_checker()
+    paragraphs_checker()
     npc_enemy_checker()
+    objects_checker()
+    choice_checker()
 
     # Update the number of errors
     update()

@@ -31,15 +31,35 @@ def p_new_save():
     # Get entry text length for error checking
     p_new_text_length = len(p_new_paragraph_text_entry.get("1.0", "end"))
 
+    # Script to create a new paragraph number and to replace a number if a paragraph has been deleted
     c.execute("""SELECT pl_id FROM paragraphs_list ORDER BY pl_id""")
     p_new_p_id_list_raw = c.fetchall()
-    p_new_p_id = id.raw_conv(p_new_p_id_list_raw)
-    p_new_p_id_num_max = id.max_num(id.int_list(p_new_p_id))
+    p_new_p_id_list = id.raw_conv(p_new_p_id_list_raw)
 
-    if p_new_p_id_num_max == '':
-        p_new_new_p_id = 1
+    if p_new_p_id_list:
+        p_id_number_list = []
+        for p_id in p_new_p_id_list:
+            p_id_number_list.append(int(id.id_int(p_id)))
+
+        p_new_p_id_num_max = int(id.max_num(p_id_number_list))
+
+        p_id_number_real_list = []
+        for number in range(1, p_new_p_id_num_max+1):
+            p_id_number_real_list.append(number)
+
+        p_id_missing_numbers_list = []
+        for number in p_id_number_real_list:
+            if number not in p_id_number_list:
+                p_id_missing_numbers_list.append(number)
+
+        if p_id_missing_numbers_list:
+            p_new_new_p_id = p_id_missing_numbers_list[0]
+        else:
+            p_new_new_p_id = int(p_new_p_id_num_max) + 1
     else:
-        p_new_new_p_id = int(p_new_p_id_num_max) + 1
+        p_new_new_p_id = 1
+
+    # ----------------------------------------
 
     p_new_c_p_id = id.decoder_2(p_new_c_id)[0]
 
@@ -724,7 +744,7 @@ def p_edt_window():
         conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
-        c.execute(f"""SELECT pl_id FROM paragraphs_list""")
+        c.execute(f"""SELECT pl_id FROM paragraphs_list ORDER BY pl_id""")
         p_edt_p_id_list_raw = c.fetchall()
         p_edt_p_id_list = id.raw_conv(p_edt_p_id_list_raw)
 

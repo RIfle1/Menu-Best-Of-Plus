@@ -86,7 +86,7 @@ def decoder_1(inp):
             position = 'to'
 
         if id_x[0] == 'S':
-            inside_list.append('Story N.')
+            inside_list.append('In Story N.')
             inside_list.append(id_x[1])
         if id_x[0] == 'IP':
             inside_list.append('From Initial Paragraph')
