@@ -1,50 +1,19 @@
-import tkinter as tk
+# Scroll Bar stuff
+obj_main_error_frame_1 = Frame(test_main_error_frame, height=window_x - test_main_frame_height)
+obj_main_error_frame_1.pack(fill="both", expand=True)
 
-root = tk.Tk()
+# Create Canvas
+obj_canvas = Canvas(obj_main_error_frame_1)
 
-# Tkinter widgets needed for scrolling.  The only native scrollable container that Tkinter provides is a canvas.
-# A Frame is needed inside the Canvas so that widgets can be added to the Frame and the Canvas makes it scrollable.
-cTableContainer = tk.Canvas(root)
-fTable = tk.Frame(cTableContainer)
-sbHorizontalScrollBar = tk.Scrollbar(root)
-sbVerticalScrollBar = tk.Scrollbar(root)
+# Create ScrollBar
+obj_scrollbar = Scrollbar(obj_main_error_frame_1, orient="vertical", command=obj_canvas.yview)
+obj_scrollbar.pack(side="right", fill="y")
 
+# Frame To Put Objects in
+obj_main_error_frame_2 = Frame(obj_canvas, height=window_x - test_main_frame_height)
+obj_main_error_frame_2.bind("<Configure>", lambda e: obj_canvas.configure(scrollregion=obj_canvas.bbox("all")))
 
-# Updates the scrollable region of the Canvas to encompass all the widgets in the Frame
-def updateScrollRegion():
-    cTableContainer.update_idletasks()
-    cTableContainer.config(scrollregion=fTable.bbox())
-
-
-# Sets up the Canvas, Frame, and scrollbars for scrolling
-def createScrollableContainer():
-    cTableContainer.config(xscrollcommand=sbHorizontalScrollBar.set, yscrollcommand=sbVerticalScrollBar.set,
-                           highlightthickness=0)
-    sbHorizontalScrollBar.config(orient=tk.HORIZONTAL, command=cTableContainer.xview)
-    sbVerticalScrollBar.config(orient=tk.VERTICAL, command=cTableContainer.yview)
-
-    sbHorizontalScrollBar.pack(fill=tk.X, side=tk.BOTTOM, expand=tk.FALSE)
-    sbVerticalScrollBar.pack(fill=tk.Y, side=tk.RIGHT, expand=tk.FALSE)
-    cTableContainer.pack(fill=tk.BOTH, side=tk.LEFT, expand=tk.TRUE)
-    cTableContainer.create_window(0, 0, window=fTable, anchor=tk.NW)
-
-
-# Adds labels diagonally across the screen to demonstrate the scrollbar adapting to the increasing size
-i = 0
-
-
-def addNewLabel():
-    global i
-    tk.Label(fTable, text="Hello World").grid(row=i, column=i)
-    i += 1
-
-    # Update the scroll region after new widgets are added
-    updateScrollRegion()
-
-    root.after(100, addNewLabel)
-
-
-createScrollableContainer()
-addNewLabel()
-
-root.mainloop()
+# Canvas Config
+obj_canvas.create_window((0, 0), window=obj_main_error_frame_2, anchor="nw")
+obj_canvas.configure(yscrollcommand=obj_scrollbar.set)
+obj_canvas.pack(side="left", fill="both", expand=True)

@@ -76,13 +76,14 @@ def paragraphs_checker():
 
     warning_text = ''
 
-    for text in warning_list:
-        warning_text += f'{text}\n'
-    warning_text += '###'
+    if warning_list:
+        for text in warning_list:
+            warning_text += f'{text}\n'
+        warning_text += '###'
 
-    errors_file = open("errors.txt", "a")
-    errors_file.write(warning_text)
-    errors_file.close()
+        errors_file = open("errors.txt", "a")
+        errors_file.write(warning_text)
+        errors_file.close()
 
     conn.commit()
 
@@ -127,13 +128,14 @@ def npc_enemy_checker():
 
     warning_text = ''
 
-    for text in warning_list:
-        warning_text += f'{text}\n'
-    warning_text += '###'
+    if warning_list:
+        for text in warning_list:
+            warning_text += f'{text}\n'
+        warning_text += '###'
 
-    errors_file = open("errors.txt", "a")
-    errors_file.write(warning_text)
-    errors_file.close()
+        errors_file = open("errors.txt", "a")
+        errors_file.write(warning_text)
+        errors_file.close()
 
     conn.commit()
 
@@ -163,13 +165,14 @@ def objects_checker():
 
     warning_text = ''
 
-    for text in warning_list:
-        warning_text += f'{text}\n'
-    warning_text += '###'
+    if warning_list:
+        for text in warning_list:
+            warning_text += f'{text}\n'
+        warning_text += '###'
 
-    errors_file = open("errors.txt", "a")
-    errors_file.write(warning_text)
-    errors_file.close()
+        errors_file = open("errors.txt", "a")
+        errors_file.write(warning_text)
+        errors_file.close()
 
     conn.commit()
 
@@ -198,13 +201,14 @@ def choice_checker():
 
     warning_text = ''
 
-    for text in warning_list:
-        warning_text += f'{text}\n'
-    warning_text += '###'
+    if warning_list:
+        for text in warning_list:
+            warning_text += f'{text}\n'
+        warning_text += '###'
 
-    errors_file = open("errors.txt", "a")
-    errors_file.write(warning_text)
-    errors_file.close()
+        errors_file = open("errors.txt", "a")
+        errors_file.write(warning_text)
+        errors_file.close()
 
     conn.commit()
 

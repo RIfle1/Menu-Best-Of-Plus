@@ -1,21 +1,25 @@
-import tkinter as tk
+from tkinter import *
 from tkinter import ttk
 
-test_main_error_frame = tk.Tk()
-test_main_error_frame_1 = ttk.Frame(test_main_error_frame)
-canvas = tk.Canvas(test_main_error_frame_1)
-scrollbar = ttk.Scrollbar(test_main_error_frame_1, orient="vertical", command=canvas.yview)
-test_main_error_frame_0 = ttk.Frame(canvas)
+# Scroll Bar stuff
+pg_2_main_frame_1 = Frame(tab_id)
+pg_2_main_frame_1.pack(fill="both", expand=True)
 
+# Create Canvas
+pg_2_canvas = Canvas(pg_2_main_frame_1)
 
-test_main_error_frame_0.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+# Create ScrollBar
+pg_2_y_scrollbar = Scrollbar(pg_2_main_frame_1, orient="vertical", command=pg_2_canvas.yview)
+pg_2_y_scrollbar.pack(side="right", fill="y")
+pg_2_x_scrollbar = Scrollbar(pg_2_main_frame_1, orient="horizontal", command=pg_2_canvas.xview)
+pg_2_x_scrollbar.pack(side="bottom", fill="x")
 
-canvas.create_window((0, 0), window=test_main_error_frame_0, anchor="nw")
+# Frame To Put Objects in
+pg_2_main_frame_2 = Frame(pg_2_canvas)
+pg_2_main_frame_2.bind("<Configure>", lambda e: pg_2_canvas.configure(scrollregion=pg_2_canvas.bbox("all")))
 
-canvas.configure(yscrollcommand=scrollbar.set)
-
-test_main_error_frame_1.pack()
-canvas.pack(side="left", fill="both", expand=True)
-scrollbar.pack(side="right", fill="y")
-
-test_main_error_frame.mainloop()
+# Canvas Config
+pg_2_canvas.create_window((0, 0), window=pg_2_main_frame_2, anchor="nw")
+pg_2_canvas.configure(yscrollcommand=pg_2_y_scrollbar.set)
+pg_2_canvas.configure(xscrollcommand=pg_2_x_scrollbar.set)
+pg_2_canvas.pack(side="left", fill="both", expand=True)

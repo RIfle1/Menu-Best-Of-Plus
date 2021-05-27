@@ -27,14 +27,9 @@ def refresh():
     errors_print()
 
 
-def delete():
-    for widget in test_main_error_frame.winfo_children():
-        widget.destroy()
-
-
 # Function to print Errors
 def errors_print():
-    for widget in test_main_error_frame_2.winfo_children():
+    for widget in test_main_frame_2.winfo_children():
         widget.destroy()
 
     padding = 10
@@ -42,11 +37,22 @@ def errors_print():
     text = errors_file.read()
     errors_list = text.split('###')
 
+    row = 1
+    column_frame = Frame(test_main_frame_2, height=100)
+    column_frame.pack(fill="both", side=LEFT)
+
     for errors in errors_list[0:-1]:
-        error_frame = LabelFrame(test_main_error_frame_2, height=100)
+        if row == 0 or row == 15:
+            column_frame = Frame(test_main_frame_2, height=100)
+            column_frame.pack(fill="both", side=LEFT)
+            row = 0
+
+        error_frame = LabelFrame(column_frame, height=100)
         error_frame.pack(fill="both")
+
         error_message = Message(error_frame, text=errors, width=400)
         error_message.grid(column=0, row=0, padx=padding, pady=(padding, 0), stick="w")
+        row += 1
 
 
 # Class to set tab number in new_tab function
@@ -76,7 +82,7 @@ def new_tab():
         for item in tp:
             story_id_list.append(item)
 
-    notebook = ttk.Notebook(pg_main_story_frame, width=pg_left_frame_width, height=window_y - pg_main_frame_height)
+    notebook = ttk.Notebook(pg_main_story_frame)
 
     tab_id_dict = {}
     tab_id_list = []
@@ -96,8 +102,33 @@ def new_tab():
         # Adding Tab
         notebook.add(tab_id, text=f"Story {id.id_int(s_id)}")
 
+        # Scroll Bar stuff
+        pg_main_frame_1 = Frame(tab_id)
+        pg_main_frame_1.pack(fill="both", expand=True)
+
+        # Create Canvas
+        pg_canvas = Canvas(pg_main_frame_1)
+
+        # Create ScrollBar
+        pg_y_scrollbar = Scrollbar(pg_main_frame_1, orient="vertical", command=pg_canvas.yview)
+        pg_y_scrollbar.pack(side="right", fill="y")
+        pg_x_scrollbar = Scrollbar(pg_main_frame_1, orient="horizontal", command=pg_canvas.xview)
+        pg_x_scrollbar.pack(side="bottom", fill="x")
+
+        # Frame To Put Objects in
+        pg_main_frame_2 = Frame(pg_canvas)
+        pg_main_frame_2.bind("<Configure>", lambda e: pg_canvas.configure(scrollregion=pg_canvas.bbox("all")))
+
+        # Canvas Config
+        pg_canvas.create_window((0, 0), window=pg_main_frame_2, anchor="nw")
+        pg_canvas.configure(yscrollcommand=pg_y_scrollbar.set)
+        pg_canvas.configure(xscrollcommand=pg_x_scrollbar.set)
+        pg_canvas.pack(side="left", fill="both", expand=True)
+
+        # Add stuff here
+
         # Position
-        notebook.pack(side=TOP)
+        notebook.pack(side=TOP, expand=True, fill="both")
 
     conn.commit()
 
@@ -226,38 +257,59 @@ tabControl.pack(expand=1, fill="both")
 # ALL MAIN FRAMES
 
 # Left Frame
-pg_left_frame_width = int(0.75 * window_x)
-pg_left_frame = LabelFrame(paragraphs_tab, width=pg_left_frame_width, height=window_y)
-pg_left_frame.pack(fill="both", expand=True, side=LEFT)
+pg_left_frame_width = int(0.65 * window_x)
+pg_left_frame = Frame(paragraphs_tab)
+pg_left_frame.pack(fill="both", side=LEFT)
 
 # List Frame
-pg_right_frame = LabelFrame(paragraphs_tab, width=window_x - pg_left_frame_width, height=window_y)
-pg_right_frame.pack(fill="both", side=RIGHT)
+pg_right_frame = LabelFrame(paragraphs_tab, height=window_y)
+pg_right_frame.pack(fill="both", expand=True, side=RIGHT)
+
+# Scroll Bar stuff
+pg_2_main_frame_1 = Frame(pg_right_frame)
+pg_2_main_frame_1.pack(fill="both", expand=True)
+
+# Create Canvas
+pg_2_canvas = Canvas(pg_2_main_frame_1)
+
+# Create ScrollBar
+pg_2_y_scrollbar = Scrollbar(pg_2_main_frame_1, orient="vertical", command=pg_2_canvas.yview)
+pg_2_y_scrollbar.pack(side="right", fill="y")
+pg_2_x_scrollbar = Scrollbar(pg_2_main_frame_1, orient="horizontal", command=pg_2_canvas.xview)
+pg_2_x_scrollbar.pack(side="bottom", fill="x")
+
+# Frame To Put Objects in
+pg_2_main_frame_2 = Frame(pg_2_canvas)
+pg_2_main_frame_2.bind("<Configure>", lambda e: pg_2_canvas.configure(scrollregion=pg_2_canvas.bbox("all")))
+
+# Canvas Config
+pg_2_canvas.create_window((0, 0), window=pg_2_main_frame_2, anchor="nw")
+pg_2_canvas.configure(yscrollcommand=pg_2_y_scrollbar.set)
+pg_2_canvas.configure(xscrollcommand=pg_2_x_scrollbar.set)
+pg_2_canvas.pack(side="left", fill="both", expand=True)
 
 # Main Buttons Frame
-pg_main_frame_height = int(window_y / 4.8)
-pg_main_buttons_frame = LabelFrame(pg_left_frame, height=pg_main_frame_height, width=pg_left_frame_width)
+pg_main_buttons_frame = Frame(pg_left_frame)
 pg_main_buttons_frame.pack(fill="both")
 
 # Story Buttons Frame
-pg_sub_frame_width = int(pg_left_frame_width / 4)
-pg_story_buttons_frame = LabelFrame(pg_main_buttons_frame, height=pg_main_frame_height, width=pg_sub_frame_width)
+pg_story_buttons_frame = Frame(pg_main_buttons_frame)
 pg_story_buttons_frame.pack(fill="both", side=LEFT)
 
 # Initial Paragraphs Buttons Frame
-pg_int_paragraph_buttons_frame = LabelFrame(pg_main_buttons_frame, height=pg_main_frame_height, width=pg_sub_frame_width)
+pg_int_paragraph_buttons_frame = Frame(pg_main_buttons_frame)
 pg_int_paragraph_buttons_frame.pack(fill="both", side=LEFT)
 
 # Paragraphs Buttons Frame
-pg_paragraphs_buttons_frame = LabelFrame(pg_main_buttons_frame, height=pg_main_frame_height, width=pg_sub_frame_width)
+pg_paragraphs_buttons_frame = Frame(pg_main_buttons_frame)
 pg_paragraphs_buttons_frame.pack(fill="both", side=LEFT)
 
 # Choices Buttons Frame
-pg_choices_buttons_frame = LabelFrame(pg_main_buttons_frame, height=pg_main_frame_height, width=pg_sub_frame_width)
+pg_choices_buttons_frame = Frame(pg_main_buttons_frame)
 pg_choices_buttons_frame.pack(fill="both", side=LEFT)
 
 # Story Frame
-pg_main_story_frame = LabelFrame(pg_left_frame, height=window_x - pg_main_frame_height)
+pg_main_story_frame = LabelFrame(pg_left_frame)
 pg_main_story_frame.pack(fill="both", expand=True)
 
 pg_button_width = 22
@@ -332,8 +384,31 @@ ch_main_buttons_frame = LabelFrame(ch_main_frame, height=ch_main_frame_height, w
 ch_main_buttons_frame.pack(fill="both")
 
 # Characters Frame
-ch_main_characters_frame = LabelFrame(ch_main_frame, height=window_x - ch_main_frame_height)
+ch_main_characters_frame = LabelFrame(ch_main_frame)
 ch_main_characters_frame.pack(fill="both", expand=True)
+
+# Scroll Bar stuff
+ch_main_frame_1 = Frame(ch_main_characters_frame)
+ch_main_frame_1.pack(fill="both", expand=True)
+
+# Create Canvas
+ch_canvas = Canvas(ch_main_frame_1)
+
+# Create ScrollBar
+ch_y_scrollbar = Scrollbar(ch_main_frame_1, orient="vertical", command=ch_canvas.yview)
+ch_y_scrollbar.pack(side="right", fill="y")
+ch_x_scrollbar = Scrollbar(ch_main_frame_1, orient="horizontal", command=ch_canvas.xview)
+ch_x_scrollbar.pack(side="bottom", fill="x")
+
+# Frame To Put Objects in
+ch_main_frame_2 = Frame(ch_canvas)
+ch_main_frame_2.bind("<Configure>", lambda e: ch_canvas.configure(scrollregion=ch_canvas.bbox("all")))
+
+# Canvas Config
+ch_canvas.create_window((0, 0), window=ch_main_frame_2, anchor="nw")
+ch_canvas.configure(yscrollcommand=ch_y_scrollbar.set)
+ch_canvas.configure(xscrollcommand=ch_x_scrollbar.set)
+ch_canvas.pack(side="left", fill="both", expand=True)
 
 ch_button_width = 22
 ch_buttons_width = 30
@@ -370,8 +445,31 @@ npc_main_buttons_frame = LabelFrame(npc_main_frame, height=npc_main_frame_height
 npc_main_buttons_frame.pack(fill="both")
 
 # NPC Frame
-npc_main_npc_frame = LabelFrame(npc_main_frame, height=window_x - npc_main_frame_height)
+npc_main_npc_frame = LabelFrame(npc_main_frame)
 npc_main_npc_frame.pack(fill="both", expand=True)
+
+# Scroll Bar stuff
+npc_main_frame_1 = Frame(npc_main_npc_frame)
+npc_main_frame_1.pack(fill="both", expand=True)
+
+# Create Canvas
+npc_canvas = Canvas(npc_main_frame_1)
+
+# Create ScrollBar
+npc_y_scrollbar = Scrollbar(npc_main_frame_1, orient="vertical", command=npc_canvas.yview)
+npc_y_scrollbar.pack(side="right", fill="y")
+npc_x_scrollbar = Scrollbar(npc_main_frame_1, orient="horizontal", command=npc_canvas.xview)
+npc_x_scrollbar.pack(side="bottom", fill="x")
+
+# Frame To Put Objects in
+npc_main_frame_2 = Frame(npc_canvas)
+npc_main_frame_2.bind("<Configure>", lambda e: npc_canvas.configure(scrollregion=npc_canvas.bbox("all")))
+
+# Canvas Config
+npc_canvas.create_window((0, 0), window=npc_main_frame_2, anchor="nw")
+npc_canvas.configure(yscrollcommand=npc_y_scrollbar.set)
+npc_canvas.configure(xscrollcommand=npc_x_scrollbar.set)
+npc_canvas.pack(side="left", fill="both", expand=True)
 
 npc_button_width = 22
 npc_buttons_width = 30
@@ -408,8 +506,32 @@ mst_main_buttons_frame = LabelFrame(mst_main_frame, height=mst_main_frame_height
 mst_main_buttons_frame.pack(fill="both")
 
 # MONSTER / ENEMY Frame
-mst_main_mst_frame = LabelFrame(mst_main_frame, height=window_x - mst_main_frame_height)
+mst_main_mst_frame = LabelFrame(mst_main_frame)
 mst_main_mst_frame.pack(fill="both", expand=True)
+
+# Scroll Bar stuff
+mst_main_frame_1 = Frame(mst_main_mst_frame)
+mst_main_frame_1.pack(fill="both", expand=True)
+
+# Create Canvas
+mst_canvas = Canvas(mst_main_frame_1)
+
+# Create ScrollBar
+mst_y_scrollbar = Scrollbar(mst_main_frame_1, orient="vertical", command=mst_canvas.yview)
+mst_y_scrollbar.pack(side="right", fill="y")
+mst_x_scrollbar = Scrollbar(mst_main_frame_1, orient="horizontal", command=mst_canvas.xview)
+mst_x_scrollbar.pack(side="bottom", fill="x")
+
+# Frame To Put Objects in
+mst_main_frame_2 = Frame(mst_canvas)
+mst_main_frame_2.bind("<Configure>", lambda e: mst_canvas.configure(scrollregion=mst_canvas.bbox("all")))
+
+# Canvas Config
+mst_canvas.create_window((0, 0), window=mst_main_frame_2, anchor="nw")
+mst_canvas.configure(yscrollcommand=mst_y_scrollbar.set)
+mst_canvas.configure(xscrollcommand=mst_x_scrollbar.set)
+mst_canvas.pack(side="left", fill="both", expand=True)
+
 
 mst_button_width = 22
 mst_buttons_width = 30
@@ -446,8 +568,31 @@ obj_main_buttons_frame = LabelFrame(obj_main_frame, height=obj_main_frame_height
 obj_main_buttons_frame.pack(fill="both")
 
 # OBJECT Frame
-obj_frame = LabelFrame(obj_main_frame, height=window_x - obj_main_frame_height)
-obj_frame.pack(fill="both", expand=True)
+obj_frame_0 = LabelFrame(obj_main_frame)
+obj_frame_0.pack(fill="both", expand=True)
+
+# Scroll Bar stuff
+obj_main_frame_1 = Frame(obj_frame_0)
+obj_main_frame_1.pack(fill="both", expand=True)
+
+# Create Canvas
+obj_canvas = Canvas(obj_main_frame_1)
+
+# Create ScrollBar
+obj_y_scrollbar = Scrollbar(obj_main_frame_1, orient="vertical", command=obj_canvas.yview)
+obj_y_scrollbar.pack(side="right", fill="y")
+obj_x_scrollbar = Scrollbar(obj_main_frame_1, orient="horizontal", command=obj_canvas.xview)
+obj_x_scrollbar.pack(side="bottom", fill="x")
+
+# Frame To Put Objects in
+obj_main_frame_2 = Frame(obj_canvas)
+obj_main_frame_2.bind("<Configure>", lambda e: obj_canvas.configure(scrollregion=obj_canvas.bbox("all")))
+
+# Canvas Config
+obj_canvas.create_window((0, 0), window=obj_main_frame_2, anchor="nw")
+obj_canvas.configure(yscrollcommand=obj_y_scrollbar.set)
+obj_canvas.configure(xscrollcommand=obj_x_scrollbar.set)
+obj_canvas.pack(side="left", fill="both", expand=True)
 
 obj_button_width = 22
 obj_buttons_width = 30
@@ -484,28 +629,31 @@ test_main_buttons_frame = LabelFrame(test_main_frame, height=test_main_frame_hei
 test_main_buttons_frame.pack(fill="both")
 
 # Errors Frame
-test_main_error_frame = LabelFrame(test_main_frame, height=window_x - test_main_frame_height)
-test_main_error_frame.pack(fill="both", expand=True)
+test_main_frame_0 = LabelFrame(test_main_frame)
+test_main_frame_0.pack(fill="both", expand=True)
 
 # Scroll Bar stuff
-test_main_error_frame_1 = Frame(test_main_error_frame, height=window_x - test_main_frame_height)
-test_main_error_frame_1.pack(fill="both", expand=True)
+test_main_frame_1 = Frame(test_main_frame_0)
+test_main_frame_1.pack(fill="both", expand=True)
 
 # Create Canvas
-canvas = Canvas(test_main_error_frame_1)
+test_canvas = Canvas(test_main_frame_1)
 
 # Create ScrollBar
-scrollbar = Scrollbar(test_main_error_frame_1, orient="vertical", command=canvas.yview)
-scrollbar.pack(side="right", fill="y")
+test_y_scrollbar = Scrollbar(test_main_frame_1, orient="vertical", command=test_canvas.yview)
+test_y_scrollbar.pack(side="right", fill="y")
+test_x_scrollbar = Scrollbar(test_main_frame_1, orient="horizontal", command=test_canvas.xview)
+test_x_scrollbar.pack(side="bottom", fill="x")
 
 # Frame To Put Objects in
-test_main_error_frame_2 = Frame(canvas, height=window_x - test_main_frame_height)
-test_main_error_frame_2.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+test_main_frame_2 = Frame(test_canvas)
+test_main_frame_2.bind("<Configure>", lambda e: test_canvas.configure(scrollregion=test_canvas.bbox("all")))
 
 # Canvas Config
-canvas.create_window((0, 0), window=test_main_error_frame_2, anchor="nw")
-canvas.configure(yscrollcommand=scrollbar.set)
-canvas.pack(side="left", fill="both", expand=True)
+test_canvas.create_window((0, 0), window=test_main_frame_2, anchor="nw")
+test_canvas.configure(yscrollcommand=test_y_scrollbar.set)
+test_canvas.configure(xscrollcommand=test_x_scrollbar.set)
+test_canvas.pack(side="left", fill="both", expand=True)
 
 test_button_width = 22
 test_buttons_width = 30

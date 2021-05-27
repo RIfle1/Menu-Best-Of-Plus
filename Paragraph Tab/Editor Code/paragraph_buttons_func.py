@@ -215,7 +215,7 @@ def p_new_window():
         conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
-        c.execute("""SELECT s_id FROM choices UNION SELECT s_id FROM choices""")
+        c.execute("""SELECT s_id FROM choices UNION SELECT s_id FROM choices ORDER BY s_id""")
         p_new_s_id_list_raw = c.fetchall()
 
         p_new_s_id_list = []
@@ -244,7 +244,7 @@ def p_new_window():
         conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
-        c.execute(f"""SELECT c_id FROM choices""")
+        c.execute(f"""SELECT c_id FROM choices ORDER BY c_id""")
         p_new_c_id_ist_raw = c.fetchall()
         # Get Only c_id's with no paragraphs assigned to them
         p_new_c_id_list = id.c_id_sorter(id.raw_conv(p_new_c_id_ist_raw))
@@ -311,7 +311,6 @@ def p_edt_save_enemy():
     conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
-    p_edt_s_id = p_edt_s_id_variable.get()
     p_edt_p_id = p_edt_p_id_variable.get()
 
     p_edt_npc_name = p_edt_npc_name_variable.get()
@@ -722,7 +721,7 @@ def p_edt_window():
         conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
-        c.execute("""SELECT s_id FROM paragraphs_list UNION SELECT s_id FROM paragraphs_list""")
+        c.execute("""SELECT s_id FROM paragraphs_list UNION SELECT s_id FROM paragraphs_list ORDER BY s_id""")
         p_edt_s_id_list_raw = c.fetchall()
         p_edt_s_id_list = id.raw_conv(p_edt_s_id_list_raw)
 

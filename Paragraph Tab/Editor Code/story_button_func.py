@@ -308,33 +308,7 @@ def s_edt_window():
         conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
-        c.execute("""SELECT s_id FROM stories""")
-        s_edt_s_id_list_raw = c.fetchall()
-        s_edt_s_id_list = []
-        for tp in s_edt_s_id_list_raw:
-            for item in tp:
-                s_edt_s_id_list.append(item)
-
-        if s_edt_s_id_list:
-            global s_edt_s_id_variable
-            s_edt_s_id_variable = StringVar()
-            s_edt_s_id_variable.set(s_edt_s_id_list[0])
-            s_edt_s_id_opt_menu_var = OptionMenu(s_edt_info_frame_1, s_edt_s_id_variable, *s_edt_s_id_list)
-            s_edt_s_id_opt_menu_var.config(width=s_edt_width-2)
-            s_edt_s_id_opt_menu_var.grid(row=0, column=1, ipadx=s_edt_pad, pady=s_edt_pad, stick="w")
-
-        else:
-            messagebox.showerror("Index Error", "No Existing Stories Found")
-            s_edt_wd.destroy()
-
-        conn.commit()
-
-    def s_edt_ch_id_opt_menu():
-        # Options Menu For all existing stories
-        conn = sqlite3.connect(database, uri=True)
-        c = conn.cursor()
-
-        c.execute("""SELECT character_name FROM characters""")
+        c.execute("""SELECT s_id FROM stories ORDER BY s_id""")
         s_edt_s_id_list_raw = c.fetchall()
         s_edt_s_id_list = []
         for tp in s_edt_s_id_list_raw:

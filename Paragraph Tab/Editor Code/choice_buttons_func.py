@@ -266,7 +266,7 @@ def c_new_window():
         conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
-        c.execute("""SELECT s_id FROM paragraphs_list UNION SELECT s_id FROM paragraphs_list UNION SELECT s_id FROM initial_paragraphs""")
+        c.execute("""SELECT s_id FROM paragraphs_list UNION SELECT s_id FROM paragraphs_list UNION SELECT s_id FROM initial_paragraphs ORDER BY s_id""")
         c_new_s_id_list_raw = c.fetchall()
         c_new_s_id_list = id.raw_conv(c_new_s_id_list_raw)
 
@@ -278,19 +278,19 @@ def c_new_window():
             c_new_s_id_opt_menu_var.config(width=c_new_width)
             c_new_s_id_opt_menu_var.grid(row=0, column=1, pady=c_new_pad, padx=c_new_pad, stick="ew")
 
+            c_new_from_p_id_opt_menu()
+
         else:
             messagebox.showerror("Index Error", "No Existing Stories Found")
             c_new_wd.destroy()
 
         conn.commit()
 
-    c_new_s_id_opt_menu()
-
     def c_new_from_p_id_opt_menu():
         conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
-        c.execute(f"""SELECT pl_id FROM paragraphs_list UNION SELECT ip_id FROM initial_paragraphs EXCEPT SELECT pl_id FROM paragraphs_list WHERE end_bool = {1}""")
+        c.execute(f"""SELECT pl_id FROM paragraphs_list UNION SELECT ip_id FROM initial_paragraphs EXCEPT SELECT pl_id FROM paragraphs_list WHERE end_bool = {1} ORDER BY pl_id""")
         c_new_from_p_id_list_raw = c.fetchall()
         c_new_from_p_id_list = id.raw_conv(c_new_from_p_id_list_raw)
 
@@ -301,19 +301,21 @@ def c_new_window():
             c_new_from_p_id_opt_menu_var = OptionMenu(c_new_info_frame_1, c_new_from_p_id_variable, *c_new_from_p_id_list)
             c_new_from_p_id_opt_menu_var.config(width=c_new_width)
             c_new_from_p_id_opt_menu_var.grid(row=1, column=1, pady=c_new_pad, padx=c_new_pad, stick="ew")
+
+            c_new_to_p_id_opt_menu()
+
         else:
             messagebox.showerror("Index Error", "No Existing 'From Paragraphs' Found")
             c_new_wd.destroy()
 
         conn.commit()
 
-    c_new_from_p_id_opt_menu()
 
     def c_new_to_p_id_opt_menu():
         conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
-        c.execute(f"""SELECT pl_id FROM paragraphs_list EXCEPT SELECT pl_id FROM paragraphs_list WHERE end_bool = {1}""")
+        c.execute(f"""SELECT pl_id FROM paragraphs_list EXCEPT SELECT pl_id FROM paragraphs_list WHERE end_bool = {1} ORDER BY pl_id""")
         c_new_to_p_id_list_raw = c.fetchall()
         c_new_to_p_id_list = id.raw_conv(c_new_to_p_id_list_raw)
 
@@ -327,7 +329,7 @@ def c_new_window():
 
         conn.commit()
 
-    c_new_to_p_id_opt_menu()
+    c_new_s_id_opt_menu()
 
     c_new_wd.mainloop()
 
@@ -738,7 +740,7 @@ def c_edt_window():
         conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
-        c.execute("""SELECT s_id FROM choices UNION SELECT s_id FROM choices""")
+        c.execute("""SELECT s_id FROM choices UNION SELECT s_id FROM choices ORDER BY s_id""")
         c_edt_s_id_list_raw = c.fetchall()
         c_edt_s_id_list = id.raw_conv(c_edt_s_id_list_raw)
 
@@ -749,6 +751,8 @@ def c_edt_window():
             c_edt_s_id_opt_menu_var = OptionMenu(c_edt_select_info_frame_1, c_edt_s_id_variable, *c_edt_s_id_list)
             c_edt_s_id_opt_menu_var.config(width=c_edt_width+1)
             c_edt_s_id_opt_menu_var.grid(row=0, column=1, pady=c_edt_pad, padx=c_edt_pad, stick="ew")
+
+            c_edt_c_id_opt_menu()
 
         else:
             messagebox.showerror("Index Error", "No Existing Stories Found")
@@ -772,9 +776,11 @@ def c_edt_window():
             c_edt_c_id_opt_menu_var.config(width=c_edt_width+1)
             c_edt_c_id_opt_menu_var.grid(row=1, column=1, pady=c_edt_pad, padx=c_edt_pad, stick="ew")
 
+            c_edt_pl_id_opt_menu()
+
         else:
             messagebox.showerror("Index Error", "No Existing Choices Found")
-            c_new_wd.destroy()
+            c_edt_wd.destroy()
 
         conn.commit()
 
@@ -782,7 +788,7 @@ def c_edt_window():
         conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
-        c.execute(f"""SELECT pl_id FROM paragraphs_list""")
+        c.execute(f"""SELECT pl_id FROM paragraphs_list ORDER BY pl_id""")
         c_edt_pl_id_list_raw = c.fetchall()
         c_edt_pl_id_list = id.raw_conv(c_edt_pl_id_list_raw)
 
@@ -821,7 +827,5 @@ def c_edt_window():
 
     c_edt_obj_id_opt_menu()
     c_edt_s_id_opt_menu()
-    c_edt_c_id_opt_menu()
-    c_edt_pl_id_opt_menu()
 
     c_edt_wd.mainloop()

@@ -135,14 +135,14 @@ def ip_new_window():
         conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
-        c.execute("""SELECT s_id FROM stories""")
+        c.execute("""SELECT s_id FROM stories ORDER BY s_id""")
         ip_new_s_id_list_stories_raw = c.fetchall()
         ip_new_s_id_stories_list = []
         for tp in ip_new_s_id_list_stories_raw:
             for item in tp:
                 ip_new_s_id_stories_list.append(item)
 
-        c.execute("""SELECT s_id FROM initial_paragraphs""")
+        c.execute("""SELECT s_id FROM initial_paragraphs ORDER BY s_id""")
         s_id_list_int_pg_raw = c.fetchall()
         s_id_int_pg_list = []
         for tp in s_id_list_int_pg_raw:
@@ -351,7 +351,7 @@ def ip_edt_window():
         conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
-        c.execute("""SELECT ip_id FROM initial_paragraphs""")
+        c.execute("""SELECT ip_id FROM initial_paragraphs ORDER BY ip_id""")
         ip_new_ip_id_list_raw = c.fetchall()
         ip_new_ip_id_list = []
         for tp in ip_new_ip_id_list_raw:
