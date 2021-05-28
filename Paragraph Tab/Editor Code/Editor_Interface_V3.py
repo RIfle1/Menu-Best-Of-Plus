@@ -55,6 +55,26 @@ def errors_print():
         row += 1
 
 
+# Function To Print Info in Info List
+def info_list():
+    global database
+    database = editor_settings.database_module.database
+
+    # Get All Info From Characters
+    c.execute(f"""SELECT ch_name, ch_breed, ch_life, ch_speed, ch_defense, ch_attack, ch_background""")
+    characters_list_info = c.fetchall()
+
+
+
+
+
+
+
+
+
+    conn.commit()
+
+
 # Class to set tab number in new_tab function
 class NewTab(Frame):
     def __init__(self, root, name):
@@ -208,9 +228,9 @@ def close_window():
 
 editor.title("Game Editor")
 
-window_x = editor.winfo_screenwidth()
-window_y = editor.winfo_screenheight()
-editor.geometry(f"{window_x}x{window_y}")
+window_x = editor.winfo_screenwidth()-30
+window_y = editor.winfo_screenheight()-110
+editor.geometry(f"{window_x}x{window_y}+{10}+{10}")
 
 # Adding the Menus
 main_menu = tkinter.Menu(editor)
@@ -312,57 +332,57 @@ pg_choices_buttons_frame.pack(fill="both", side=LEFT)
 pg_main_story_frame = LabelFrame(pg_left_frame)
 pg_main_story_frame.pack(fill="both", expand=True)
 
-pg_button_width = 22
-pg_buttons_width = 30
+pg_buttons_width = 22
+pg_buttons_length = 30
 pg_buttons_height = 1
 pg_button_x_space = 2
 pg_button_y_space = 4
 pg_font_size = 18
 # NEW STORY Button
 pg_new_story_button = Button(pg_story_buttons_frame, text="New Story", bg="#5fafde", fg="White", padx=pg_buttons_width,
-                             pady=pg_buttons_height, font=("Times New Roman", pg_font_size), relief=FLAT, width=pg_button_width,
+                             pady=pg_buttons_height, font=("Times New Roman", pg_font_size), relief=FLAT, width=pg_buttons_width,
                              command=story_button_func.s_new_window)
 pg_new_story_button.grid(row=0, column=0, stick="w", padx=pg_button_x_space, pady=pg_button_y_space)
 
 # EDIT STORY  Button
 pg_edit_story_button = Button(pg_story_buttons_frame, text="Edit Story", bg="#5fafde", fg="White", padx=pg_buttons_width,
-                              pady=pg_buttons_height, font=("Times New Roman", pg_font_size), relief=FLAT, width=pg_button_width,
+                              pady=pg_buttons_height, font=("Times New Roman", pg_font_size), relief=FLAT, width=pg_buttons_width,
                               command=story_button_func.s_edt_window)
 pg_edit_story_button.grid(row=1, column=0, stick="w", padx=pg_button_x_space, pady=pg_button_y_space)
 
 # ADD INITIAL PARAGRAPH Button
 pg_new_int_par_button = Button(pg_int_paragraph_buttons_frame, text="New Initial Paragraph", bg="#5fafde", fg="White",
                                padx=pg_buttons_width, pady=pg_buttons_height, font=("Times New Roman", pg_font_size), relief=FLAT,
-                               width=pg_button_width, command=initial_paragraph_buttons_func.ip_new_window)
+                               width=pg_buttons_width, command=initial_paragraph_buttons_func.ip_new_window)
 pg_new_int_par_button.grid(row=0, column=0, stick="w", padx=pg_button_x_space, pady=pg_button_y_space)
 
 # EDIT INITIAL PARAGRAPH  Button
 pg_edit_int_par_button = Button(pg_int_paragraph_buttons_frame, text="Edit Initial Paragraph", bg="#5fafde", fg="White",
                                 padx=pg_buttons_width, pady=pg_buttons_height, font=("Times New Roman", pg_font_size), relief=FLAT,
-                                width=pg_button_width, command=initial_paragraph_buttons_func.ip_edt_window)
+                                width=pg_buttons_width, command=initial_paragraph_buttons_func.ip_edt_window)
 pg_edit_int_par_button.grid(row=1, column=0, stick="w", padx=pg_button_x_space, pady=pg_button_y_space)
 
 # NEW PARAGRAPH Button
 pg_new_paragraph_button = Button(pg_paragraphs_buttons_frame, text="New Paragraph", bg="#5fafde", fg="White",
                                  padx=pg_buttons_width, pady=pg_buttons_height, font=("Times New Roman", pg_font_size), relief=FLAT,
-                                 width=pg_button_width, command=paragraph_buttons_func.p_new_window)
+                                 width=pg_buttons_width, command=paragraph_buttons_func.p_new_window)
 pg_new_paragraph_button.grid(row=0, column=0, stick="w", padx=pg_button_x_space, pady=pg_button_y_space)
 
 # EDIT PARAGRAPH  Button
 edit_paragraph_button = Button(pg_paragraphs_buttons_frame, text="Edit Paragraph", bg="#5fafde", fg="White", padx=pg_buttons_width,
-                               pady=pg_buttons_height, font=("Times New Roman", pg_font_size), relief=FLAT, width=pg_button_width,
+                               pady=pg_buttons_height, font=("Times New Roman", pg_font_size), relief=FLAT, width=pg_buttons_width,
                                command=paragraph_buttons_func.p_edt_window)
 edit_paragraph_button.grid(row=1, column=0, stick="w", padx=pg_button_x_space, pady=pg_button_y_space)
 
 # ADD CHOICE Button
 new_choice_button = Button(pg_choices_buttons_frame, text="New Choice", bg="#5fafde", fg="White", padx=pg_buttons_width,
-                           pady=pg_buttons_height, font=("Times New Roman", pg_font_size), relief=FLAT, width=pg_button_width,
+                           pady=pg_buttons_height, font=("Times New Roman", pg_font_size), relief=FLAT, width=pg_buttons_width,
                            command=choice_buttons_func.c_new_window)
 new_choice_button.grid(row=0, column=0, stick="w", padx=pg_button_x_space, pady=pg_button_y_space)
 
 # EDIT CHOICE  Button
 edit_choice_button = Button(pg_choices_buttons_frame, text="Edit Choice", bg="#5fafde", fg="White", padx=pg_buttons_width,
-                            pady=pg_buttons_height, font=("Times New Roman", pg_font_size), relief=FLAT, width=pg_button_width,
+                            pady=pg_buttons_height, font=("Times New Roman", pg_font_size), relief=FLAT, width=pg_buttons_width,
                             command=choice_buttons_func.c_edt_window)
 edit_choice_button.grid(row=1, column=0, stick="w", padx=pg_button_x_space, pady=pg_button_y_space)
 

@@ -1,19 +1,43 @@
-# Scroll Bar stuff
-obj_main_error_frame_1 = Frame(test_main_error_frame, height=window_x - test_main_frame_height)
-obj_main_error_frame_1.pack(fill="both", expand=True)
+import tkinter as tk
+from tkinter import ttk
 
-# Create Canvas
-obj_canvas = Canvas(obj_main_error_frame_1)
 
-# Create ScrollBar
-obj_scrollbar = Scrollbar(obj_main_error_frame_1, orient="vertical", command=obj_canvas.yview)
-obj_scrollbar.pack(side="right", fill="y")
+class App(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.geometry("320x80")
+        self.title('Tkinter OptionMenu Widget')
 
-# Frame To Put Objects in
-obj_main_error_frame_2 = Frame(obj_canvas, height=window_x - test_main_frame_height)
-obj_main_error_frame_2.bind("<Configure>", lambda e: obj_canvas.configure(scrollregion=obj_canvas.bbox("all")))
+        # initialize data
+        self.languages = ('Python', 'JavaScript', 'Java',
+                        'Swift', 'GoLang', 'C#', 'C++', 'Scala')
 
-# Canvas Config
-obj_canvas.create_window((0, 0), window=obj_main_error_frame_2, anchor="nw")
-obj_canvas.configure(yscrollcommand=obj_scrollbar.set)
-obj_canvas.pack(side="left", fill="both", expand=True)
+        # set up variable
+        self.option_var = tk.StringVar(self)
+
+        # create widget
+        self.create_wigets()
+
+    def create_wigets(self):
+        # padding for widgets using the grid layout
+        paddings = {'padx': 5, 'pady': 5}
+
+        # label
+        label = ttk.Label(self,  text='Select your most favorite language:')
+        label.grid(column=0, row=0, sticky=tk.W, **paddings)
+
+        # option menu
+        option_menu = ttk.OptionMenu(self, self.option_var, self.languages[0], *self.languages,command=self.option_changed)
+        option_menu.grid(column=1, row=0, sticky=tk.W, **paddings)
+
+        # output label
+        self.output_label = ttk.Label(self, foreground='red')
+        self.output_label.grid(column=0, row=1, sticky=tk.W, **paddings)
+
+    def option_changed(self, *args):
+        self.output_label['text'] = f'You selected: {self.option_var.get()}'
+
+
+if __name__ == "__main__":
+    app = App()
+    app.mainloop()

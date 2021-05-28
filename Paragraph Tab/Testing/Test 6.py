@@ -1,7 +1,9 @@
-warning = ''
+import tkinter
+from tkinter import *
+from tkinter import messagebox
+from tkinter import ttk
+import tkinter.font as font
+import sqlite3
 
-if warning:
-    print('True')
 
-if not warning:
-    print("False")
+

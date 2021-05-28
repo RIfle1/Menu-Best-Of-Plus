@@ -10,6 +10,14 @@ import id
 import editor_settings
 
 
+def style_func():
+    ip_font_size = 11
+    ip_style = ttk.Style()
+    ip_style.configure("TMenubutton", background="#c2c2c2", font=('Times New Roman', ip_font_size))
+    ip_style.configure("TButton", font=('Times New Roman', ip_font_size))
+    ip_style.configure("TLabel", font=('Times New Roman', ip_font_size))
+
+
 def ip_new_save():
     conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
@@ -79,10 +87,6 @@ def ip_new_window():
     ip_new_info_frame_1 = LabelFrame(ip_new_wd, width=window_x_2, height=ip_new_frame_height)
     ip_new_info_frame_1.pack(fill="both", side=TOP)
 
-    # Info Frame 2
-    ip_new_info_frame_2 = LabelFrame(ip_new_wd, width=window_x_2, height=ip_new_frame_height)
-    ip_new_info_frame_2.pack(fill="both", side=TOP, expand=True)
-
     # Top Button Frame
     ip_new_button_frame_1 = LabelFrame(ip_new_wd, height=ip_new_rest / 2, width=window_x_2)
     ip_new_button_frame_1.pack(fill="both")
@@ -99,13 +103,13 @@ def ip_new_window():
     ip_new_pad = 10
 
     # Labels
-    ip_new_get_story_id_label = Label(ip_new_info_frame_1, text="Story Number ID:", width=int(ip_new_width / 2), anchor=W)
+    ip_new_get_story_id_label = ttk.Label(ip_new_info_frame_1, text="Story Number ID:", width=int(ip_new_width / 2), anchor=W)
     ip_new_get_story_id_label.grid(row=0, column=0, padx=(ip_new_pad, 11), pady=ip_new_pad, stick="w")
 
-    ip_new_story_text_label = Label(ip_new_info_frame_2, text="Story Text:", width=int(ip_new_width / 2), anchor=NW)
+    ip_new_story_text_label = ttk.Label(ip_new_info_frame_1, text="Story Text:", width=int(ip_new_width / 2), anchor=NW)
     ip_new_story_text_label.grid(row=1, column=0, padx=(ip_new_pad, 13), pady=ip_new_pad, stick="nw")
 
-    ip_new_paragraph_text_label = Label(ip_new_entry_frame, text="Initial Paragraph Text:", width=int(ip_new_width / 2), anchor=NW)
+    ip_new_paragraph_text_label = ttk.Label(ip_new_entry_frame, text="Initial Paragraph Text:", width=int(ip_new_width / 2), anchor=NW)
     ip_new_paragraph_text_label.grid(row=0, column=0, padx=(ip_new_pad, 13), pady=ip_new_pad, stick="nw")
 
     # Entries
@@ -115,18 +119,18 @@ def ip_new_window():
 
     # Message Box
     global ip_new_show_story_message
-    ip_new_show_story_message = Text(ip_new_info_frame_2, width=37, height=20)
+    ip_new_show_story_message = Text(ip_new_info_frame_1, width=37, height=20)
     ip_new_show_story_message.bind("<Key>", lambda a: "break")
     ip_new_show_story_message.grid(row=1, column=1, padx=ip_new_pad, pady=ip_new_pad, stick="w")
 
     # Buttons
-    ip_new_submit_button = Button(ip_new_button_frame_1, text="Submit", width=int(ip_new_width / 2), command=ip_new_insert)
+    ip_new_submit_button = ttk.Button(ip_new_button_frame_1, text="Submit", width=int(ip_new_width / 2), command=ip_new_insert)
     ip_new_submit_button.grid(row=0, column=0, padx=ip_new_pad, pady=ip_new_pad, ipadx=160)
 
-    ip_new_save_story_button = Button(ip_new_button_frame_2, text="Save Initial Paragraph", width=int(ip_new_width / 2), command=ip_new_save)
+    ip_new_save_story_button = ttk.Button(ip_new_button_frame_2, text="Save Initial Paragraph", width=int(ip_new_width / 2), command=ip_new_save)
     ip_new_save_story_button.grid(row=2, column=0, padx=ip_new_pad, pady=ip_new_pad, stick="w")
 
-    ip_new_cancel_button = Button(ip_new_button_frame_2, text="Cancel", width=ip_new_width, command=ip_new_wd.destroy)
+    ip_new_cancel_button = ttk.Button(ip_new_button_frame_2, text="Cancel", width=ip_new_width, command=ip_new_wd.destroy)
     ip_new_cancel_button.grid(row=2, column=1, padx=ip_new_pad, pady=ip_new_pad, stick="w")
     global ip_new_s_id_opt_menu
 
@@ -157,9 +161,7 @@ def ip_new_window():
         if s_id_list:
             global ip_new_ip_id_variable
             ip_new_ip_id_variable = StringVar()
-            ip_new_ip_id_variable.set(s_id_list[0])
-            ip_new_s_id_opt_menu_var = OptionMenu(ip_new_info_frame_1, ip_new_ip_id_variable, *s_id_list)
-            ip_new_s_id_opt_menu_var.config(width=ip_new_width+1)
+            ip_new_s_id_opt_menu_var = ttk.OptionMenu(ip_new_info_frame_1, ip_new_ip_id_variable, s_id_list[0], *s_id_list)
             ip_new_s_id_opt_menu_var.grid(row=0, column=1, pady=ip_new_pad, padx=ip_new_pad, stick="ew")
 
         else:
@@ -169,6 +171,8 @@ def ip_new_window():
         conn.commit()
 
     ip_new_s_id_opt_menu()
+
+    style_func()
 
     ip_new_wd.mainloop()
 
@@ -267,8 +271,8 @@ def ip_edt_window():
     ip_edt_wd.title("Edit Initial Paragraph")
     screen_x_2 = ip_edt_wd.winfo_screenwidth()
     screen_y_2 = ip_edt_wd.winfo_screenheight()
-    window_x_2 = 500
-    window_y_2 = 612
+    window_x_2 = 510
+    window_y_2 = 641
     ip_edt_wd.minsize(window_x_2, window_y_2)
     ip_edt_wd.maxsize(window_x_2, window_y_2)
     pos_x_2 = int((screen_x_2 - window_x_2) / 2)
@@ -278,71 +282,79 @@ def ip_edt_window():
     ip_edt_frame_height = 400
     ip_edt_info_frame_height = 57
 
+    # Top Frame
+    ip_edt_top_frame = LabelFrame(ip_edt_wd, height=ip_edt_info_frame_height, width=window_x_2)
+    ip_edt_top_frame.pack(fill="both")
+
     # Info Frame 1
-    ip_edt_info_frame_1 = LabelFrame(ip_edt_wd, height=ip_edt_info_frame_height, width=window_x_2)
-    ip_edt_info_frame_1.pack(fill="both", side=TOP)
+    ip_edt_info_frame_1 = Frame(ip_edt_top_frame, height=ip_edt_info_frame_height, width=window_x_2)
+    ip_edt_info_frame_1.pack(fill="both")
 
     # Info Frame 2
-    ip_edt_info_frame_2 = LabelFrame(ip_edt_wd, height=ip_edt_info_frame_height, width=window_x_2)
-    ip_edt_info_frame_2.pack(fill="both", side=TOP)
+    ip_edt_info_frame_2 = Frame(ip_edt_top_frame, height=ip_edt_info_frame_height, width=window_x_2)
+    ip_edt_info_frame_2.pack(fill="both")
+
+    # Bottom Frame
+    ip_edt_bottom_frame = LabelFrame(ip_edt_wd, height=ip_edt_info_frame_height, width=window_x_2)
+    ip_edt_bottom_frame.pack(fill="both")
 
     # Info Frame 3
-    ip_edt_info_frame_3 = LabelFrame(ip_edt_wd, height=ip_edt_info_frame_height, width=window_x_2)
-    ip_edt_info_frame_3.pack(fill="both", side=TOP)
+    ip_edt_info_frame_3 = Frame(ip_edt_bottom_frame, height=ip_edt_frame_height, width=window_x_2)
+    ip_edt_info_frame_3.pack(fill="both")
 
-    # Info Frame 4
-    ip_edt_info_frame_4 = LabelFrame(ip_edt_wd, height=ip_edt_frame_height, width=window_x_2)
-    ip_edt_info_frame_4.pack(fill="both", side=TOP)
+    # Buttons Frame 1
+    ip_edt_button_frame_1 = Frame(ip_edt_bottom_frame, height=window_y_2 - ip_edt_frame_height, width=window_x_2)
+    ip_edt_button_frame_1.pack(fill="both")
 
-    # Buttons Frame
-    ip_edt_button_frame = LabelFrame(ip_edt_wd, height=window_y_2 - ip_edt_frame_height, width=window_x_2)
-    ip_edt_button_frame.pack(fill="both", side=BOTTOM, expand=True)
+    # Buttons Frame 2
+    ip_edt_button_frame_2 = Frame(ip_edt_bottom_frame, height=window_y_2 - ip_edt_frame_height, width=window_x_2)
+    ip_edt_button_frame_2.pack(fill="both")
 
     ip_edt_entry_width = 37
-    ip_edt_width = 42
+    ip_edt_width = 23
     ip_edt_pad = 10
 
     # Labels
-    ip_edt_ip_id_label = Label(ip_edt_info_frame_1, text="Select Initial Paragraph ID:", width=int(ip_edt_width / 2), anchor=W)
-    ip_edt_ip_id_label.grid(row=0, column=0, padx=(ip_edt_pad, ip_edt_pad+1), pady=ip_edt_pad, stick="w")
+    ip_edt_ip_id_label = ttk.Label(ip_edt_info_frame_1, text="Select Initial Paragraph ID:", width=ip_edt_width, anchor=W)
+    ip_edt_ip_id_label.grid(row=0, column=0, padx=ip_edt_pad, pady=ip_edt_pad, stick="w")
 
-    ip_edt_decode_id_label_text = Label(ip_edt_info_frame_2, text="Decoded ID:", width=int(ip_edt_width / 2), anchor=NW)
-    ip_edt_decode_id_label_text.grid(row=0, column=0, padx=(ip_edt_pad, ip_edt_pad-5), pady=ip_edt_pad, stick="nw")
+    ip_edt_decode_id_label_text = ttk.Label(ip_edt_info_frame_1, text="Decoded ID:", width=ip_edt_width, anchor=NW)
+    ip_edt_decode_id_label_text.grid(row=1, column=0, padx=ip_edt_pad, pady=ip_edt_pad, stick="nw")
 
-    ip_edt_edit_ip_label = Label(ip_edt_info_frame_4, text="Edit Initial Paragraph:", width=int(ip_edt_width / 2) - 1, anchor=NW)
+    ip_edt_edit_ip_label = ttk.Label(ip_edt_info_frame_3, text="Edit Initial Paragraph:", width=ip_edt_width, anchor=NW)
     ip_edt_edit_ip_label.grid(row=0, column=0, padx=ip_edt_pad, pady=ip_edt_pad, stick="nw")
 
     # Decode ID Message
     global ip_edt_decode_id_text
-    ip_edt_decode_id_text = Text(ip_edt_info_frame_2, width=ip_edt_entry_width, height=5)
+    ip_edt_decode_id_text = Text(ip_edt_info_frame_1, width=ip_edt_entry_width, height=5)
     ip_edt_decode_id_text.bind("<Key>", lambda a: "break")
-    ip_edt_decode_id_text.grid(row=0, column=1, padx=ip_edt_pad, pady=ip_edt_pad, stick="w")
+    ip_edt_decode_id_text.grid(row=1, column=1, padx=ip_edt_pad, pady=ip_edt_pad, stick="w")
 
     # Text Entry
     global ip_edt_ip_text_entry
-    ip_edt_ip_text_entry = Text(ip_edt_info_frame_4, width=ip_edt_entry_width, height=20)
+    ip_edt_ip_text_entry = Text(ip_edt_info_frame_3, width=ip_edt_entry_width, height=20)
     ip_edt_ip_text_entry.grid(row=0, column=1, padx=ip_edt_pad, pady=ip_edt_pad, stick="w")
 
     # Buttons
-    ip_edt_submit_id_button = Button(ip_edt_info_frame_3, text="Decode ID", width=int(ip_edt_width / 2), command=ip_edt_decode_id)
+    ip_edt_submit_id_button = ttk.Button(ip_edt_info_frame_2, text="Decode ID", width=ip_edt_width, command=ip_edt_decode_id)
     ip_edt_submit_id_button.grid(row=0, column=0, padx=ip_edt_pad, pady=ip_edt_pad, stick="w", ipadx=157)
 
-    ip_edt_width_buttons = 13
-    ip_edt_save_story_button = Button(ip_edt_button_frame, text="Save Changes", width=ip_edt_width_buttons,
+    ip_edt_width_buttons = 19
+    ip_edt_save_story_button = ttk.Button(ip_edt_button_frame_1, text="Save Changes", width=ip_edt_width_buttons,
                                      command=ip_edt_edit)
-    ip_edt_save_story_button.grid(row=0, column=0, padx=(ip_edt_pad + 3, ip_edt_pad), pady=ip_edt_pad, stick="w")
+    ip_edt_save_story_button.grid(row=0, column=0, padx=(ip_edt_pad, ip_edt_pad+8), pady=ip_edt_pad, stick="w")
 
-    ip_edt_load_text_button = Button(ip_edt_button_frame, text="Load Paragraph", width=ip_edt_width_buttons,
+    ip_edt_load_text_button = ttk.Button(ip_edt_button_frame_1, text="Load Paragraph", width=ip_edt_width_buttons,
                                     command=ip_edt_insert)
-    ip_edt_load_text_button.grid(row=0, column=1, padx=ip_edt_pad, pady=ip_edt_pad, stick="w")
+    ip_edt_load_text_button.grid(row=0, column=1, padx=(ip_edt_pad, ip_edt_pad+7), pady=ip_edt_pad, stick="w")
 
-    ip_edt_delete_text_button = Button(ip_edt_button_frame, text="Delete Paragraph", width=ip_edt_width_buttons,
+    ip_edt_delete_text_button = ttk.Button(ip_edt_button_frame_1, text="Delete Paragraph", width=ip_edt_width_buttons,
                                       command=ip_del_delete)
     ip_edt_delete_text_button.grid(row=0, column=2, padx=ip_edt_pad, pady=ip_edt_pad, stick="w")
 
-    ip_edt_cancel_button = Button(ip_edt_button_frame, text="Cancel", width=ip_edt_width_buttons,
+    ip_edt_cancel_button = ttk.Button(ip_edt_button_frame_2, text="Cancel", width=ip_edt_width,
                                  command=ip_edt_wd.destroy)
-    ip_edt_cancel_button.grid(row=0, column=3, padx=ip_edt_pad, pady=ip_edt_pad, stick="w")
+    ip_edt_cancel_button.grid(row=0, column=3, padx=ip_edt_pad, pady=ip_edt_pad, stick="w", ipadx=157)
 
     global ip_edt_ip_id_opt_menu
 
@@ -361,10 +373,8 @@ def ip_edt_window():
         if ip_new_ip_id_list:
             global ip_edt_ip_id_variable
             ip_edt_ip_id_variable = StringVar()
-            ip_edt_ip_id_variable.set(ip_new_ip_id_list[0])
-            ip_edt_ip_id_opt_menu_var = OptionMenu(ip_edt_info_frame_1, ip_edt_ip_id_variable, *ip_new_ip_id_list)
-            ip_edt_ip_id_opt_menu_var.config(width=ip_edt_width-2)
-            ip_edt_ip_id_opt_menu_var.grid(row=0, column=1, ipadx=ip_edt_pad, pady=ip_edt_pad, stick="w")
+            ip_edt_ip_id_opt_menu_var = ttk.OptionMenu(ip_edt_info_frame_1, ip_edt_ip_id_variable, ip_new_ip_id_list[0], *ip_new_ip_id_list)
+            ip_edt_ip_id_opt_menu_var.grid(row=0, column=1, padx=ip_edt_pad, pady=ip_edt_pad, stick="ew")
 
         else:
             messagebox.showerror("Index Error", "No Existing Initial Paragraphs Found")
@@ -373,5 +383,7 @@ def ip_edt_window():
         conn.commit()
 
     ip_edt_ip_id_opt_menu()
+
+    style_func()
 
     ip_edt_wd.mainloop()

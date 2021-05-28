@@ -10,6 +10,14 @@ import id
 import editor_settings
 
 
+def style_func():
+    s_font_size = 11
+    s_style = ttk.Style()
+    s_style.configure("TMenubutton", background="#c2c2c2", font=('Times New Roman', s_font_size))
+    s_style.configure("TButton", font=('Times New Roman', s_font_size))
+    s_style.configure("TLabel", font=('Times New Roman', s_font_size))
+
+
 # Function to save new stories
 def s_new_save():
     # Create a connection to the database
@@ -92,7 +100,7 @@ def s_new_window():
     screen_x_2 = s_new_wd.winfo_screenwidth()
     screen_y_2 = s_new_wd.winfo_screenheight()
     window_x_2 = 505
-    window_y_2 = 550
+    window_y_2 = 545
     s_new_wd.minsize(window_x_2, window_y_2)
     s_new_wd.maxsize(window_x_2, window_y_2)
     pos_x_2 = int((screen_x_2 - window_x_2) / 2)
@@ -103,34 +111,30 @@ def s_new_window():
     s_new_info_frame_1 = LabelFrame(s_new_wd, height=window_y_2, width=window_x_2)
     s_new_info_frame_1.pack(fill="both", expand=True)
 
-    # Info Frame 2
-    s_new_info_frame_2 = LabelFrame(s_new_wd, height=window_y_2, width=window_x_2)
-    s_new_info_frame_2.pack(fill="both", expand=True)
-
     s_new_button_frame = LabelFrame(s_new_wd, height=window_y_2, width=window_x_2)
     s_new_button_frame.pack(fill="both")
 
+    s_new_entry_width = 37
     s_new_width = 21
     s_new_pad = 10
     # Labels
-    s_new_story_id_label = Label(s_new_info_frame_1, text="Select Character Who\n Will Play This Story:", width=s_new_width, anchor=W)
+    s_new_story_id_label = ttk.Label(s_new_info_frame_1, text="Select Character Who\n Will Play This Story:", width=s_new_width, anchor=W)
     s_new_story_id_label.grid(row=0, column=0, padx=(s_new_pad, s_new_pad+9), pady=s_new_pad, stick="w")
 
-    s_new_beginning_label = Label(s_new_info_frame_2, text="Beginning Text:", width=s_new_width, anchor=NW)
+    s_new_beginning_label = ttk.Label(s_new_info_frame_1, text="Beginning Text:", width=s_new_width, anchor=NW)
     s_new_beginning_label.grid(row=1, column=0, padx=(s_new_pad, s_new_pad+3), pady=s_new_pad, stick="nw")
 
     # Entries
     global s_new_beginning_story_entry
-
-    s_new_beginning_story_entry = Text(s_new_info_frame_2, width=36)
+    s_new_beginning_story_entry = Text(s_new_info_frame_1, width=s_new_entry_width)
     s_new_beginning_story_entry.grid(row=1, column=1, padx=s_new_pad, pady=s_new_pad)
 
     # Buttons
     s_new_button_width = 21
-    s_new_save_story_button = Button(s_new_button_frame, text="Save Story", width=s_new_button_width, command=s_new_save)
+    s_new_save_story_button = ttk.Button(s_new_button_frame, text="Save Story", width=s_new_button_width, command=s_new_save)
     s_new_save_story_button.grid(row=0, column=0, padx=s_new_pad, pady=s_new_pad, stick="w")
 
-    s_new_cancel_button = Button(s_new_button_frame, text="Cancel", width=s_new_button_width, command=s_new_wd.destroy)
+    s_new_cancel_button = ttk.Button(s_new_button_frame, text="Cancel", width=s_new_button_width, command=s_new_wd.destroy)
     s_new_cancel_button.grid(row=0, column=1, padx=s_new_pad, pady=s_new_pad, ipadx=70, stick="w")
 
     global s_new_ch_id_opt_menu
@@ -153,10 +157,8 @@ def s_new_window():
         if s_new_ch_name_list:
             global s_new_ch_name_variable
             s_new_ch_name_variable = StringVar()
-            s_new_ch_name_variable.set(s_new_ch_name_list[0])
-            s_new_ch_id_opt_menu_var = OptionMenu(s_new_info_frame_1, s_new_ch_name_variable, *s_new_ch_name_list)
-            s_new_ch_id_opt_menu_var.config(width=s_new_width+18)
-            s_new_ch_id_opt_menu_var.grid(row=0, column=1, ipadx=s_new_pad, pady=s_new_pad, stick="w")
+            s_new_ch_id_opt_menu_var = ttk.OptionMenu(s_new_info_frame_1, s_new_ch_name_variable, s_new_ch_name_list[0], *s_new_ch_name_list)
+            s_new_ch_id_opt_menu_var.grid(row=0, column=1, padx=s_new_pad, pady=s_new_pad, stick="ew")
 
         else:
             messagebox.showerror("Index Error", "No Available Characters Found")
@@ -165,6 +167,8 @@ def s_new_window():
         conn.commit()
 
     s_new_ch_id_opt_menu()
+
+    style_func()
 
     s_new_wd.mainloop()
 
@@ -250,7 +254,7 @@ def s_edt_window():
     screen_x_2 = s_edt_wd.winfo_screenwidth()
     screen_y_2 = s_edt_wd.winfo_screenheight()
     window_x_2 = 500
-    window_y_2 = 450
+    window_y_2 = 444
     s_edt_wd.minsize(window_x_2, window_y_2)
     s_edt_wd.maxsize(window_x_2, window_y_2)
     pos_x_2 = int((screen_x_2 - window_x_2) / 2)
@@ -264,41 +268,38 @@ def s_edt_window():
     s_edt_info_frame_1 = LabelFrame(s_edt_wd, height=info_frame_height, width=window_x_2)
     s_edt_info_frame_1.pack(fill="both", side=TOP)
 
-    # Info Frame
-    s_edt_info_frame_2 = LabelFrame(s_edt_wd, height=frame_height, width=window_x_2)
-    s_edt_info_frame_2.pack(fill="both", side=TOP, expand=True)
-
     # Buttons Frame
     s_edt_button_frame = LabelFrame(s_edt_wd, height=window_y_2 - frame_height, width=window_x_2)
     s_edt_button_frame.pack(fill="both", side=BOTTOM)
 
+    s_edt_entry_width = 37
     s_edt_width = 42
     s_edt_pad = 10
 
     # Labels
-    s_edt_story_id_label = Label(s_edt_info_frame_1, text="Select Story ID:", width=int(s_edt_width/2), anchor=W)
+    s_edt_story_id_label = ttk.Label(s_edt_info_frame_1, text="Select Story ID:", width=int(s_edt_width/2), anchor=W)
     s_edt_story_id_label.grid(row=0, column=0, padx=s_edt_pad, pady=s_edt_pad, stick="w")
 
-    s_edt_beginning_label = Label(s_edt_info_frame_2, text="Edit Text:", width=int(s_edt_width/2)-1, anchor=NW)
-    s_edt_beginning_label.grid(row=0, column=0, padx=s_edt_pad, pady=s_edt_pad, stick="nw")
+    s_edt_beginning_label = ttk.Label(s_edt_info_frame_1, text="Edit Text:", width=int(s_edt_width/2)-1, anchor=NW)
+    s_edt_beginning_label.grid(row=1, column=0, padx=s_edt_pad, pady=s_edt_pad, stick="nw")
 
     # Text
     global s_edt_edit_text_entry
-    s_edt_edit_text_entry = Text(s_edt_info_frame_2, width=37, height=20)
-    s_edt_edit_text_entry.grid(row=0, column=1, padx=s_edt_pad, pady=s_edt_pad, stick="w")
+    s_edt_edit_text_entry = Text(s_edt_info_frame_1, width=s_edt_entry_width, height=20)
+    s_edt_edit_text_entry.grid(row=1, column=1, padx=s_edt_pad, pady=s_edt_pad, stick="w")
 
     # Buttons
     s_edt_width_buttons = 13
-    s_edt_save_story_button = Button(s_edt_button_frame, text="Save Changes", width=s_edt_width_buttons, command=s_edt_edit)
+    s_edt_save_story_button = ttk.Button(s_edt_button_frame, text="Save Changes", width=s_edt_width_buttons, command=s_edt_edit)
     s_edt_save_story_button.grid(row=0, column=0, padx=(s_edt_pad+3, s_edt_pad), pady=s_edt_pad, stick="w")
 
-    s_edt_load_text_button = Button(s_edt_button_frame, text="Load Story", width=s_edt_width_buttons, command=s_edt_insert)
+    s_edt_load_text_button = ttk.Button(s_edt_button_frame, text="Load Story", width=s_edt_width_buttons, command=s_edt_insert)
     s_edt_load_text_button.grid(row=0, column=1, padx=s_edt_pad, pady=s_edt_pad, stick="w")
 
-    s_edt_delete_text_button = Button(s_edt_button_frame, text="Delete Story", width=s_edt_width_buttons, command=s_del_delete)
+    s_edt_delete_text_button = ttk.Button(s_edt_button_frame, text="Delete Story", width=s_edt_width_buttons, command=s_del_delete)
     s_edt_delete_text_button.grid(row=0, column=2, padx=s_edt_pad, pady=s_edt_pad, stick="w")
 
-    s_edt_cancel_button = Button(s_edt_button_frame, text="Cancel", width=s_edt_width_buttons, command=s_edt_wd.destroy)
+    s_edt_cancel_button = ttk.Button(s_edt_button_frame, text="Cancel", width=s_edt_width_buttons, command=s_edt_wd.destroy)
     s_edt_cancel_button.grid(row=0, column=3, padx=s_edt_pad, pady=s_edt_pad, stick="w")
 
     global s_edt_s_id_opt_menu
@@ -318,10 +319,8 @@ def s_edt_window():
         if s_edt_s_id_list:
             global s_edt_s_id_variable
             s_edt_s_id_variable = StringVar()
-            s_edt_s_id_variable.set(s_edt_s_id_list[0])
-            s_edt_s_id_opt_menu_var = OptionMenu(s_edt_info_frame_1, s_edt_s_id_variable, *s_edt_s_id_list)
-            s_edt_s_id_opt_menu_var.config(width=s_edt_width-2)
-            s_edt_s_id_opt_menu_var.grid(row=0, column=1, ipadx=s_edt_pad, pady=s_edt_pad, stick="w")
+            s_edt_s_id_opt_menu_var = ttk.OptionMenu(s_edt_info_frame_1, s_edt_s_id_variable, s_edt_s_id_list[0], *s_edt_s_id_list)
+            s_edt_s_id_opt_menu_var.grid(row=0, column=1, padx=s_edt_pad, pady=s_edt_pad, stick="ew")
 
         else:
             messagebox.showerror("Index Error", "No Existing Stories Found")
@@ -330,5 +329,7 @@ def s_edt_window():
         conn.commit()
 
     s_edt_s_id_opt_menu()
+
+    style_func()
 
     s_edt_wd.mainloop()

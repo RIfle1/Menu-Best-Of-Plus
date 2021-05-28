@@ -10,6 +10,14 @@ import id
 import editor_settings
 
 
+def style_func():
+    obj_font_size = 11
+    obj_style = ttk.Style()
+    obj_style.configure("TMenubutton", background="#c2c2c2", font=('Times New Roman', obj_font_size))
+    obj_style.configure("TButton", font=('Times New Roman', obj_font_size))
+    obj_style.configure("TLabel", font=('Times New Roman', obj_font_size))
+
+
 def obj_new_save():
     conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
@@ -65,7 +73,7 @@ def obj_new_window():
     screen_x_2 = obj_new_wd.winfo_screenwidth()
     screen_y_2 = obj_new_wd.winfo_screenheight()
     window_x_2 = 505
-    window_y_2 = 95
+    window_y_2 = 92
     obj_new_wd.minsize(window_x_2, window_y_2)
     obj_new_wd.maxsize(window_x_2, window_y_2)
     pos_x_2 = int((screen_x_2 - window_x_2) / 2)
@@ -79,32 +87,30 @@ def obj_new_window():
     obj_new_info_frame_1 = LabelFrame(obj_new_wd, width=window_x_2, height=obj_new_frame_height)
     obj_new_info_frame_1.pack(fill="both", side=TOP)
 
-    # Top Button Frame
-    obj_new_button_frame = LabelFrame(obj_new_wd, height=obj_new_rest / 2, width=window_x_2)
-    obj_new_button_frame.pack(fill="both")
-
     obj_new_width = 42
     obj_new_pad = 10
     obj_new_entry_width = 49
     obj_new_text_width = 37
 
     # Labels
-    obj_new_name_label = Label(obj_new_info_frame_1, text="Object Name:", width=int(obj_new_width / 2), anchor=W)
+    obj_new_name_label = ttk.Label(obj_new_info_frame_1, text="Object Name:", width=int(obj_new_width / 2), anchor=W)
     obj_new_name_label.grid(row=0, column=0, padx=(obj_new_pad, obj_new_pad+4), pady=obj_new_pad, stick="w")
 
     # Short Entries
     global obj_new_name_entry_var, obj_new_name_entry
     obj_new_name_entry_var = StringVar()
-    obj_new_name_entry = Entry(obj_new_info_frame_1, textvariable=obj_new_name_entry_var, width=obj_new_entry_width)
+    obj_new_name_entry = ttk.Entry(obj_new_info_frame_1, textvariable=obj_new_name_entry_var, width=obj_new_entry_width)
     obj_new_name_entry.grid(row=0, column=1, padx=obj_new_pad, pady=obj_new_pad, stick="nw")
 
     # Buttons
-    obj_new_save_obj_button = Button(obj_new_button_frame, text="Save Object", width=int(obj_new_width / 2),
+    obj_new_save_obj_button = ttk.Button(obj_new_info_frame_1, text="Save Object", width=int(obj_new_width / 2),
                                           command=obj_new_save)
-    obj_new_save_obj_button.grid(row=0, column=0, padx=obj_new_pad, pady=obj_new_pad, stick="w")
+    obj_new_save_obj_button.grid(row=1, column=0, padx=obj_new_pad, pady=obj_new_pad, stick="w")
 
-    obj_new_cancel_button = Button(obj_new_button_frame, text="Cancel", width=obj_new_width-1, command=obj_new_wd.destroy)
-    obj_new_cancel_button.grid(row=0, column=1, padx=obj_new_pad, pady=obj_new_pad, stick="w")
+    obj_new_cancel_button = ttk.Button(obj_new_info_frame_1, text="Cancel", width=obj_new_width-1, command=obj_new_wd.destroy)
+    obj_new_cancel_button.grid(row=1, column=1, padx=obj_new_pad, pady=obj_new_pad, stick="w")
+
+    style_func()
 
     obj_new_wd.mainloop()
 
@@ -210,7 +216,7 @@ def obj_edt_window():
     screen_x_2 = obj_edt_wd.winfo_screenwidth()
     screen_y_2 = obj_edt_wd.winfo_screenheight()
     window_x_2 = 505
-    window_y_2 = 142
+    window_y_2 = 137
     obj_edt_wd.minsize(window_x_2, window_y_2)
     obj_edt_wd.maxsize(window_x_2, window_y_2)
     pos_x_2 = int((screen_x_2 - window_x_2) / 2)
@@ -228,10 +234,6 @@ def obj_edt_window():
     obj_edt_info_frame_0 = Frame(obj_edt_main_frame, width=window_x_2, height=obj_edt_frame_height)
     obj_edt_info_frame_0.pack(fill="both")
 
-    # Info Frame 1
-    obj_edt_info_frame_1 = Frame(obj_edt_main_frame, width=window_x_2, height=obj_edt_frame_height)
-    obj_edt_info_frame_1.pack(fill="both")
-
     # Button Frame
     obj_edt_button_frame = Frame(obj_edt_main_frame, height=obj_edt_rest / 2, width=window_x_2)
     obj_edt_button_frame.pack(fill="both")
@@ -242,33 +244,33 @@ def obj_edt_window():
     obj_edt_text_width = 37
 
     # Labels
-    obj_edt_select_obj_label = Label(obj_edt_info_frame_0, text="Select Object:", width=int(obj_edt_width / 2), anchor=W)
+    obj_edt_select_obj_label = ttk.Label(obj_edt_info_frame_0, text="Select Object:", width=int(obj_edt_width / 2), anchor=W)
     obj_edt_select_obj_label.grid(row=0, column=0, padx=(obj_edt_pad, obj_edt_pad - 3), pady=obj_edt_pad, stick="w")
 
-    obj_edt_name_label = Label(obj_edt_info_frame_1, text="Rename:", width=int(obj_edt_width / 2), anchor=W)
-    obj_edt_name_label.grid(row=0, column=0, padx=obj_edt_pad, pady=obj_edt_pad, stick="w")
+    obj_edt_name_label = ttk.Label(obj_edt_info_frame_0, text="Rename:", width=int(obj_edt_width / 2), anchor=W)
+    obj_edt_name_label.grid(row=1, column=0, padx=obj_edt_pad, pady=obj_edt_pad, stick="w")
 
     # Short Entries
     global obj_edt_name_entry_var, obj_edt_name_entry
     obj_edt_name_entry_var = StringVar()
-    obj_edt_name_entry = Entry(obj_edt_info_frame_1, textvariable=obj_edt_name_entry_var, width=obj_edt_entry_width)
-    obj_edt_name_entry.grid(row=0, column=1, padx=obj_edt_pad, pady=obj_edt_pad, stick="nw")
+    obj_edt_name_entry = Entry(obj_edt_info_frame_0, textvariable=obj_edt_name_entry_var, width=obj_edt_entry_width)
+    obj_edt_name_entry.grid(row=1, column=1, padx=obj_edt_pad, pady=obj_edt_pad, stick="nw")
 
     # Buttons
     obj_edt_width_buttons = 13
-    obj_edt_save_changes_button = Button(obj_edt_button_frame, text="Save Changes", width=obj_edt_width_buttons,
+    obj_edt_save_changes_button = ttk.Button(obj_edt_button_frame, text="Save Changes", width=obj_edt_width_buttons,
                                          command=obj_edt_edit)
     obj_edt_save_changes_button.grid(row=0, column=0, padx=(obj_edt_pad + 9, obj_edt_pad), pady=obj_edt_pad, stick="w")
 
-    obj_edt_load_obj_button = Button(obj_edt_button_frame, text="Load Object", width=obj_edt_width_buttons,
+    obj_edt_load_obj_button = ttk.Button(obj_edt_button_frame, text="Load Object", width=obj_edt_width_buttons,
                                      command=obj_edt_insert)
     obj_edt_load_obj_button.grid(row=0, column=1, padx=obj_edt_pad, pady=obj_edt_pad, stick="w")
 
-    obj_edt_delete_obj_button = Button(obj_edt_button_frame, text="Delete Object", width=obj_edt_width_buttons,
+    obj_edt_delete_obj_button = ttk.Button(obj_edt_button_frame, text="Delete Object", width=obj_edt_width_buttons,
                                             command=obj_edt_delete)
     obj_edt_delete_obj_button.grid(row=0, column=2, padx=obj_edt_pad, pady=obj_edt_pad, stick="w")
 
-    obj_edt_cancel_button = Button(obj_edt_button_frame, text="Cancel", width=obj_edt_width_buttons,
+    obj_edt_cancel_button = ttk.Button(obj_edt_button_frame, text="Cancel", width=obj_edt_width_buttons,
                                    command=obj_edt_wd.destroy)
     obj_edt_cancel_button.grid(row=0, column=3, padx=obj_edt_pad, pady=obj_edt_pad, stick="w")
 
@@ -286,10 +288,7 @@ def obj_edt_window():
         if obj_new_obj_name_list:
             global obj_edt_obj_name_var
             obj_edt_obj_name_var = StringVar()
-            obj_edt_obj_name_var.set(obj_new_obj_name_list[0])
-            obj_edt_obj_name_opt_menu_var = OptionMenu(obj_edt_info_frame_0, obj_edt_obj_name_var,
-                                                       *obj_new_obj_name_list)
-            obj_edt_obj_name_opt_menu_var.config(width=obj_edt_width + 1)
+            obj_edt_obj_name_opt_menu_var = ttk.OptionMenu(obj_edt_info_frame_0, obj_edt_obj_name_var,  obj_new_obj_name_list[0], *obj_new_obj_name_list)
             obj_edt_obj_name_opt_menu_var.grid(row=0, column=1, pady=obj_edt_pad, padx=obj_edt_pad, stick="ew")
 
         else:
@@ -299,6 +298,8 @@ def obj_edt_window():
         conn.commit()
 
     obj_edt_obj_name_opt_menu()
+
+    style_func()
 
     obj_edt_wd.mainloop()
 

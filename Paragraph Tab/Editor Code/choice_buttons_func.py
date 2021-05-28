@@ -9,6 +9,13 @@ import sqlite3
 import id
 import editor_settings
 
+def style_func():
+    c_font_size = 11
+    c_style = ttk.Style()
+    c_style.configure("TMenubutton", background="#c2c2c2", font=('Times New Roman', c_font_size))
+    c_style.configure("TButton", font=('Times New Roman', c_font_size))
+    c_style.configure("TLabel", font=('Times New Roman', c_font_size))
+
 
 def c_new_insert():
     conn = sqlite3.connect(database, uri=True)
@@ -205,33 +212,33 @@ def c_new_window():
     c_new_pad = 10
     c_new_entry_width = 37
     # Labels
-    c_new_get_story_id_label = Label(c_new_info_frame_1, text="Select Story ID:", width=int(c_new_width / 2), anchor=W)
+    c_new_get_story_id_label = ttk.Label(c_new_info_frame_1, text="Select Story ID:", width=int(c_new_width / 2), anchor=W)
     c_new_get_story_id_label.grid(row=0, column=0, padx=c_new_pad, pady=c_new_pad, stick="w")
 
-    c_new_get_p_id_label = Label(c_new_info_frame_1, text="From Paragraph ID:", width=int(c_new_width / 2), anchor=W)
+    c_new_get_p_id_label = ttk.Label(c_new_info_frame_1, text="From Paragraph ID:", width=int(c_new_width / 2), anchor=W)
     c_new_get_p_id_label.grid(row=1, column=0, padx=c_new_pad, pady=c_new_pad, stick="w")
 
-    c_new_get_p_id_label = Label(c_new_info_frame_1, text="To Paragraph ID:", width=int(c_new_width / 2), anchor=W)
+    c_new_get_p_id_label = ttk.Label(c_new_info_frame_1, text="To Paragraph ID:", width=int(c_new_width / 2), anchor=W)
     c_new_get_p_id_label.grid(row=2, column=0, padx=c_new_pad, pady=c_new_pad, stick="w")
 
-    c_new_decode_p_id_label = Label(c_new_info_frame_1, text="Decoded ID:", width=int(c_new_width / 2), anchor=NW)
+    c_new_decode_p_id_label = ttk.Label(c_new_info_frame_1, text="Decoded ID:", width=int(c_new_width / 2), anchor=NW)
     c_new_decode_p_id_label.grid(row=3, column=0, padx=c_new_pad, pady=c_new_pad, stick="nw")
 
-    c_new_choice_counter_label = Label(c_new_info_frame_1, text="The Paragraph From Has:", width=int(c_new_width / 2),anchor=W)
+    c_new_choice_counter_label = ttk.Label(c_new_info_frame_1, text="The 'Paragraph From'\nHas:", width=int(c_new_width / 2),anchor=W)
     c_new_choice_counter_label.grid(row=4, column=0, padx=c_new_pad, pady=c_new_pad, stick="w")
 
-    c_new_p_text_label = Label(c_new_info_frame_2, text="Paragraph Text:", width=int(c_new_width / 2), anchor=NW)
+    c_new_p_text_label = ttk.Label(c_new_info_frame_2, text="Paragraph Text:", width=int(c_new_width / 2), anchor=NW)
     c_new_p_text_label.grid(row=2, column=0, padx=c_new_pad, pady=c_new_pad, stick="nw")
 
-    c_new_get_c_id_label = Label(c_new_choice_create_frame, text="Enter Choice Number:", width=int(c_new_width / 2), anchor=NW)
+    c_new_get_c_id_label = ttk.Label(c_new_choice_create_frame, text="Enter Choice Number:", width=int(c_new_width / 2), anchor=NW)
     c_new_get_c_id_label.grid(row=0, column=0, padx=(c_new_pad, c_new_pad-5), pady=c_new_pad, stick="nw")
 
-    c_new_c_text_label = Label(c_new_choice_create_frame, text="Choice Text:", width=int(c_new_width / 2), anchor=NW)
+    c_new_c_text_label = ttk.Label(c_new_choice_create_frame, text="Choice Text:", width=int(c_new_width / 2), anchor=NW)
     c_new_c_text_label.grid(row=1, column=0, padx=c_new_pad, pady=c_new_pad, stick="nw")
 
     # Entries
     global c_new_choice_text_entry, c_new_p_text_var, c_new_get_choice_id_entry, c_new_decoded_id, c_new_c_id_counter_var
-    c_new_get_choice_id_entry = Entry(c_new_choice_create_frame, width=49)
+    c_new_get_choice_id_entry = ttk.Entry(c_new_choice_create_frame, width=49)
     c_new_get_choice_id_entry.grid(row=0, column=1, padx=c_new_pad, pady=c_new_pad)
 
     c_new_choice_text_entry = Text(c_new_choice_create_frame, width=c_new_entry_width, height=10)
@@ -246,18 +253,18 @@ def c_new_window():
     c_new_decoded_id.bind("<Key>", lambda a: "break")
     c_new_decoded_id.grid(row=3, column=1, padx=c_new_pad, pady=c_new_pad, stick="w")
 
-    c_new_c_id_counter_var = Text(c_new_info_frame_1, width=c_new_entry_width, height=2)
+    c_new_c_id_counter_var = Text(c_new_info_frame_1, width=c_new_entry_width, height=5)
     c_new_c_id_counter_var.bind("<Key>", lambda a: "break")
     c_new_c_id_counter_var.grid(row=4, column=1, padx=c_new_pad, pady=c_new_pad, stick="w")
 
     # Buttons Save choice
-    c_new_submit_button = Button(c_new_button_frame_1, text="Load Information", width=int(c_new_width / 2), command=c_new_insert)
+    c_new_submit_button = ttk.Button(c_new_button_frame_1, text="Load Information", width=int(c_new_width / 2), command=c_new_insert)
     c_new_submit_button.grid(row=0, column=0, padx=c_new_pad, pady=c_new_pad, ipadx=412)
 
-    c_new_save_choice_button = Button(c_new_button_frame_2, text="Save Choice", width=int(c_new_width / 2), command=c_new_save)
+    c_new_save_choice_button = ttk.Button(c_new_button_frame_2, text="Save Choice", width=int(c_new_width / 2), command=c_new_save)
     c_new_save_choice_button.grid(row=2, column=0, padx=c_new_pad, pady=c_new_pad, stick="w")
 
-    c_new_cancel_button = Button(c_new_button_frame_2, text="Cancel", width=c_new_width, command=c_new_wd.destroy)
+    c_new_cancel_button = ttk.Button(c_new_button_frame_2, text="Cancel", width=c_new_width, command=c_new_wd.destroy)
     c_new_cancel_button.grid(row=2, column=1, padx=(c_new_pad-1, c_new_pad), pady=c_new_pad, stick="w")
 
     global c_new_c_id_counter_message_func, c_new_from_p_id_opt_menu, c_new_s_id_opt_menu, c_new_to_p_id_opt_menu
@@ -273,9 +280,7 @@ def c_new_window():
         if c_new_s_id_list:
             global c_new_s_id_variable
             c_new_s_id_variable = StringVar()
-            c_new_s_id_variable.set(c_new_s_id_list[0])
-            c_new_s_id_opt_menu_var = OptionMenu(c_new_info_frame_1, c_new_s_id_variable, *c_new_s_id_list)
-            c_new_s_id_opt_menu_var.config(width=c_new_width)
+            c_new_s_id_opt_menu_var = ttk.OptionMenu(c_new_info_frame_1, c_new_s_id_variable, c_new_s_id_list[0], *c_new_s_id_list)
             c_new_s_id_opt_menu_var.grid(row=0, column=1, pady=c_new_pad, padx=c_new_pad, stick="ew")
 
             c_new_from_p_id_opt_menu()
@@ -297,9 +302,7 @@ def c_new_window():
         if c_new_from_p_id_list:
             global c_new_from_p_id_variable
             c_new_from_p_id_variable = StringVar()
-            c_new_from_p_id_variable.set(c_new_from_p_id_list[0])
-            c_new_from_p_id_opt_menu_var = OptionMenu(c_new_info_frame_1, c_new_from_p_id_variable, *c_new_from_p_id_list)
-            c_new_from_p_id_opt_menu_var.config(width=c_new_width)
+            c_new_from_p_id_opt_menu_var = ttk.OptionMenu(c_new_info_frame_1, c_new_from_p_id_variable, c_new_from_p_id_list[0], *c_new_from_p_id_list)
             c_new_from_p_id_opt_menu_var.grid(row=1, column=1, pady=c_new_pad, padx=c_new_pad, stick="ew")
 
             c_new_to_p_id_opt_menu()
@@ -322,14 +325,14 @@ def c_new_window():
         global c_new_to_p_id_variable
         c_new_to_p_id_variable = StringVar()
         c_new_to_p_id_list.append('Assign No Paragraph')
-        c_new_to_p_id_variable.set(c_new_to_p_id_list[-1])
-        c_new_to_p_id_opt_menu_var = OptionMenu(c_new_info_frame_1, c_new_to_p_id_variable, *c_new_to_p_id_list)
-        c_new_to_p_id_opt_menu_var.config(width=c_new_width)
+        c_new_to_p_id_opt_menu_var = ttk.OptionMenu(c_new_info_frame_1, c_new_to_p_id_variable, c_new_to_p_id_list[-1], *c_new_to_p_id_list)
         c_new_to_p_id_opt_menu_var.grid(row=2, column=1, pady=c_new_pad, padx=c_new_pad, stick="ew")
 
         conn.commit()
 
     c_new_s_id_opt_menu()
+
+    style_func()
 
     c_new_wd.mainloop()
 
@@ -596,15 +599,11 @@ def c_edt_window():
 
     # Select Info Frame 1
     c_edt_select_info_frame_1 = Frame(c_edt_select_info_frame_0, height=c_edt_info_frame_height, width=window_x_2)
-    c_edt_select_info_frame_1.pack(fill="y")
-
-    # Select Info Frame 2
-    c_edt_select_info_frame_2 = Frame(c_edt_select_info_frame_0, height=c_edt_info_frame_height, width=window_x_2)
-    c_edt_select_info_frame_2.pack(fill="y")
+    c_edt_select_info_frame_1.pack(fill="both", expand=True)
 
     # Select Info Frame 3
-    c_edt_select_info_frame_3 = Frame(c_edt_select_info_frame_0, height=c_edt_info_frame_height, width=window_x_2)
-    c_edt_select_info_frame_3.pack(fill="y")
+    c_edt_select_info_frame_2 = Frame(c_edt_select_info_frame_0, height=c_edt_info_frame_height, width=window_x_2)
+    c_edt_select_info_frame_2.pack(fill="y")
 
 
     # Assign Object (Condition) MAIN Frame
@@ -652,87 +651,89 @@ def c_edt_window():
 
     c_edt_entry_width = 37
     c_edt_width = 42
+    c_edt_option_width = 37
     c_edt_pad = 10
 
     # Labels
-    c_edt_story_id_label = Label(c_edt_select_info_frame_1, text="Select Story ID:", width=int(c_edt_width / 2), anchor=W)
-    c_edt_story_id_label.grid(row=0, column=0, padx=c_edt_pad-3, pady=c_edt_pad, stick="w")
+    c_edt_story_id_label = ttk.Label(c_edt_select_info_frame_1, text="Select Story ID:", width=int(c_edt_width / 2), anchor=W)
+    c_edt_story_id_label.grid(row=0, column=0, padx=c_edt_pad, pady=c_edt_pad, stick="w")
 
-    c_edt_choice_id_label = Label(c_edt_select_info_frame_1, text="Select Choice ID:", width=int(c_edt_width / 2), anchor=W)
-    c_edt_choice_id_label.grid(row=1, column=0, padx=c_edt_pad-3, pady=c_edt_pad, stick="w")
+    c_edt_choice_id_label = ttk.Label(c_edt_select_info_frame_1, text="Select Choice ID:", width=int(c_edt_width / 2), anchor=W)
+    c_edt_choice_id_label.grid(row=1, column=0, padx=c_edt_pad, pady=c_edt_pad, stick="w")
 
-    c_edt_decode_id_label = Label(c_edt_select_info_frame_2, text="Decoded Choice ID:", width=int(c_edt_width / 2), anchor=NW)
-    c_edt_decode_id_label.grid(row=0, column=0, padx=c_edt_pad-2, pady=c_edt_pad, stick="nw")
+    c_edt_decode_id_label = ttk.Label(c_edt_select_info_frame_1, text="Decoded Choice ID:", width=int(c_edt_width / 2), anchor=NW)
+    c_edt_decode_id_label.grid(row=2, column=0, padx=c_edt_pad, pady=c_edt_pad, stick="nw")
 
     #
 
-    c_edt_object_id_label = Label(c_edt_assign_object_frame_1, text="Select Object Name:", width=int(c_edt_width / 2), anchor=W)
+    c_edt_object_id_label = ttk.Label(c_edt_assign_object_frame_1, text="Select Object Name:", width=int(c_edt_width / 2), anchor=W)
     c_edt_object_id_label.grid(row=0, column=0, padx=c_edt_pad-3, pady=c_edt_pad, stick="w")
 
     #
 
-    c_edt_edit_c_text_label = Label(c_edt_edit_choice_frame_1, text="Edit Choice:", width=int(c_edt_width / 2) - 1, anchor=NW)
+    c_edt_edit_c_text_label = ttk.Label(c_edt_edit_choice_frame_1, text="Edit Choice:", width=int(c_edt_width / 2) - 1, anchor=NW)
     c_edt_edit_c_text_label.grid(row=0, column=0, padx=(c_edt_pad+4, c_edt_pad), pady=c_edt_pad, stick="nw")
 
     #
 
-    c_edt_to_p_id_label = Label(c_edt_assign_choice_frame_1, text="Select 'To Paragraph' ID:",
+    c_edt_to_p_id_label = ttk.Label(c_edt_assign_choice_frame_1, text="Select 'To Paragraph' id:",
                                 width=int(c_edt_width / 2), anchor=W)
     c_edt_to_p_id_label.grid(row=0, column=0, padx=c_edt_pad, pady=c_edt_pad, stick="w")
 
-    c_edt_edit_c_text_label = Label(c_edt_assign_choice_frame_1, text="'To Paragraph' Text:", width=int(c_edt_width / 2) - 1, anchor=NW)
+    c_edt_edit_c_text_label = ttk.Label(c_edt_assign_choice_frame_1, text="'To Paragraph' Text:", width=int(c_edt_width / 2) - 1, anchor=NW)
     c_edt_edit_c_text_label.grid(row=1, column=0, padx=c_edt_pad, pady=c_edt_pad, stick="nw")
 
     global c_edt_decode_id_variable, c_edt_edit_c_text_entry, c_edt_pl_text_variable
 
     # Message
-    c_edt_decode_id_variable = Text(c_edt_select_info_frame_2, width=c_edt_entry_width, height=5)
+    c_edt_decode_id_variable = Text(c_edt_select_info_frame_1, width=c_edt_entry_width, height=5)
     c_edt_decode_id_variable.bind("<Key>", lambda a: "break")
-    c_edt_decode_id_variable.grid(row=0, column=1, padx=c_edt_pad, pady=c_edt_pad, stick="w")
+    c_edt_decode_id_variable.grid(row=2, column=1, padx=c_edt_pad, pady=c_edt_pad, stick="w")
 
-    c_edt_pl_text_variable = Text(c_edt_assign_choice_frame_1, width=c_edt_entry_width, height=17)
+    c_edt_pl_text_variable = Text(c_edt_assign_choice_frame_1, width=c_edt_entry_width, height=18)
     c_edt_pl_text_variable.bind("<Key>", lambda a: "break")
     c_edt_pl_text_variable.grid(row=1, column=1, padx=c_edt_pad, pady=c_edt_pad, stick="w")
 
     # Text Entry
     c_edt_edit_c_text_entry = Text(c_edt_edit_choice_frame_1, width=c_edt_entry_width, height=20)
-    c_edt_edit_c_text_entry.grid(row=0, column=1, padx=c_edt_pad, pady=(c_edt_pad+2, c_edt_pad), stick="w")
-
-    # Button Submit
-    c_edt_submit_id_button = Button(c_edt_select_info_frame_3, text="Submit Information", width=int(c_edt_width / 2), command=c_edt_decode_id)
-    c_edt_submit_id_button.grid(row=0, column=0, padx=c_edt_pad, pady=c_edt_pad, stick="w", ipadx=157)
+    c_edt_edit_c_text_entry.grid(row=0, column=1, padx=(0, c_edt_pad), pady=(c_edt_pad+2, c_edt_pad), stick="w")
 
     # Buttons Edit Choice
     p_edt_width_buttons = 13
-    p_edt_save_choice_button = Button(c_edt_edit_choice_frame_2, text="Save Changes", width=p_edt_width_buttons,
+    p_edt_save_choice_button = ttk.Button(c_edt_edit_choice_frame_2, text="Save Changes", width=p_edt_width_buttons,
                                      command=c_edt_edit)
-    p_edt_save_choice_button.grid(row=0, column=0, padx=(c_edt_pad + 3, c_edt_pad), pady=c_edt_pad, stick="w")
+    p_edt_save_choice_button.grid(row=0, column=0, padx=(c_edt_pad + 1, c_edt_pad), pady=(c_edt_pad+11, c_edt_pad), stick="w")
 
-    p_edt_load_choice_button = Button(c_edt_edit_choice_frame_2, text="Load Choice", width=p_edt_width_buttons,
+    p_edt_load_choice_button = ttk.Button(c_edt_edit_choice_frame_2, text="Load Choice", width=p_edt_width_buttons,
                                     command=c_edt_insert)
-    p_edt_load_choice_button.grid(row=0, column=1, padx=c_edt_pad, pady=c_edt_pad, stick="w")
+    p_edt_load_choice_button.grid(row=0, column=1, padx=(c_edt_pad + 1, c_edt_pad), pady=(c_edt_pad+11, c_edt_pad), stick="w")
 
-    p_edt_delete_choice_button = Button(c_edt_edit_choice_frame_2, text="Delete Choice", width=p_edt_width_buttons,
+    p_edt_delete_choice_button = ttk.Button(c_edt_edit_choice_frame_2, text="Delete Choice", width=p_edt_width_buttons,
                                       command=c_del_delete)
-    p_edt_delete_choice_button.grid(row=0, column=2, padx=c_edt_pad, pady=c_edt_pad, stick="w")
+    p_edt_delete_choice_button.grid(row=0, column=2, padx=c_edt_pad, pady=(c_edt_pad+11, c_edt_pad), stick="w")
 
-    p_edt_cancel_button = Button(c_edt_edit_choice_frame_2, text="Cancel", width=p_edt_width_buttons,
+    p_edt_cancel_button = ttk.Button(c_edt_edit_choice_frame_2, text="Cancel", width=p_edt_width_buttons,
                                  command=c_edt_wd.destroy)
-    p_edt_cancel_button.grid(row=0, column=3, padx=c_edt_pad, pady=c_edt_pad, stick="w")
+    p_edt_cancel_button.grid(row=0, column=3, padx=(c_edt_pad, c_edt_pad + 1), pady=(c_edt_pad+11, c_edt_pad), stick="w")
 
     # Buttons Assign Choice
     p_edt_width_buttons_2 = 30
-    p_edt_save_p_to_c_button = Button(c_edt_assign_choice_frame_2, text="Assign Choice To Paragraph ", width=p_edt_width_buttons_2, command=c_edt_assign_paragraph_save)
-    p_edt_save_p_to_c_button.grid(row=0, column=0, padx=(c_edt_pad + 3, c_edt_pad+4), pady=c_edt_pad, stick="w")
+    p_edt_save_p_to_c_button = ttk.Button(c_edt_assign_choice_frame_2, text="Assign Choice To Paragraph ", width=p_edt_width_buttons_2, command=c_edt_assign_paragraph_save)
+    p_edt_save_p_to_c_button.pack(padx=(c_edt_pad+10, c_edt_pad), pady=c_edt_pad, side=LEFT)
 
-    p_edt_delete_p_from_c_button = Button(c_edt_assign_choice_frame_2, text="Delete Paragraph From Choice", width=p_edt_width_buttons_2, command=c_del_assign_paragraph_delete)
-    p_edt_delete_p_from_c_button.grid(row=0, column=2, padx=c_edt_pad, pady=c_edt_pad, stick="w")
+    p_edt_delete_p_from_c_button = ttk.Button(c_edt_assign_choice_frame_2, text="Delete Paragraph From Choice", width=p_edt_width_buttons_2, command=c_del_assign_paragraph_delete)
+    p_edt_delete_p_from_c_button.pack(padx=c_edt_pad, pady=c_edt_pad, side=LEFT)
 
     # Buttons Assign Object
     p_edt_width_buttons_3 = 31
-    p_edt_save_p_to_c_button = Button(c_edt_assign_object_frame_2, text="Assign Object To Choice",
+    p_edt_save_p_to_c_button = ttk.Button(c_edt_assign_object_frame_2, text="Assign Object To Choice",
                                       width=p_edt_width_buttons_3, command=c_edt_assign_object_save)
-    p_edt_save_p_to_c_button.grid(row=0, column=0, padx=c_edt_pad, pady=c_edt_pad, stick="w", ipadx=117)
+    p_edt_save_p_to_c_button.grid(row=0, column=0, padx=c_edt_pad, pady=c_edt_pad, stick="w", ipadx=120)
+
+    # Button Submit
+    c_edt_submit_id_button = ttk.Button(c_edt_select_info_frame_2, text="Submit Information",
+                                        width=p_edt_width_buttons_3, command=c_edt_decode_id)
+    c_edt_submit_id_button.grid(row=0, column=0, padx=c_edt_pad, pady=c_edt_pad, stick="w", ipadx=128)
 
     global c_edt_s_id_opt_menu, c_edt_c_id_opt_menu
 
@@ -747,9 +748,7 @@ def c_edt_window():
         if c_edt_s_id_list:
             global c_edt_s_id_variable
             c_edt_s_id_variable = StringVar()
-            c_edt_s_id_variable.set(c_edt_s_id_list[0])
-            c_edt_s_id_opt_menu_var = OptionMenu(c_edt_select_info_frame_1, c_edt_s_id_variable, *c_edt_s_id_list)
-            c_edt_s_id_opt_menu_var.config(width=c_edt_width+1)
+            c_edt_s_id_opt_menu_var = ttk.OptionMenu(c_edt_select_info_frame_1, c_edt_s_id_variable, c_edt_s_id_list[0], *c_edt_s_id_list)
             c_edt_s_id_opt_menu_var.grid(row=0, column=1, pady=c_edt_pad, padx=c_edt_pad, stick="ew")
 
             c_edt_c_id_opt_menu()
@@ -771,9 +770,7 @@ def c_edt_window():
         if c_edt_c_id_list:
             global c_edt_c_id_variable
             c_edt_c_id_variable = StringVar()
-            c_edt_c_id_variable.set(c_edt_c_id_list[0])
-            c_edt_c_id_opt_menu_var = OptionMenu(c_edt_select_info_frame_1, c_edt_c_id_variable, *c_edt_c_id_list)
-            c_edt_c_id_opt_menu_var.config(width=c_edt_width+1)
+            c_edt_c_id_opt_menu_var = ttk.OptionMenu(c_edt_select_info_frame_1, c_edt_c_id_variable, c_edt_c_id_list[0], *c_edt_c_id_list)
             c_edt_c_id_opt_menu_var.grid(row=1, column=1, pady=c_edt_pad, padx=c_edt_pad, stick="ew")
 
             c_edt_pl_id_opt_menu()
@@ -796,14 +793,13 @@ def c_edt_window():
         c_edt_pl_id_variable = StringVar()
 
         if c_edt_pl_id_list:
-            c_edt_pl_id_variable.set(c_edt_pl_id_list[0])
+            default = c_edt_pl_id_list[0]
         else:
             c_edt_pl_id_list.append('Assign No Paragraph')
-            c_edt_pl_id_variable.set(c_edt_pl_id_list[0])
+            default = c_edt_pl_id_list[0]
 
-        c_edt_pl_id_opt_menu_var = OptionMenu(c_edt_assign_choice_frame_1, c_edt_pl_id_variable, *c_edt_pl_id_list)
-        c_edt_pl_id_opt_menu_var.config(width=c_edt_width + 1)
-        c_edt_pl_id_opt_menu_var.grid(row=0, column=1, pady=c_edt_pad, padx=(c_edt_pad-2, c_edt_pad), stick="ew")
+        c_edt_pl_id_opt_menu_var = ttk.OptionMenu(c_edt_assign_choice_frame_1, c_edt_pl_id_variable, default, *c_edt_pl_id_list)
+        c_edt_pl_id_opt_menu_var.grid(row=0, column=1, pady=c_edt_pad, padx=c_edt_pad, stick="ew")
 
         conn.commit()
 
@@ -818,14 +814,15 @@ def c_edt_window():
         global c_edt_obj_name_variable
         c_edt_obj_name_variable = StringVar()
         c_edt_obj_name_list.append('Assign No Object')
-        c_edt_obj_name_variable.set(c_edt_obj_name_list[-1])
-        c_edt_pl_id_opt_menu_var = OptionMenu(c_edt_assign_object_frame_1, c_edt_obj_name_variable, *c_edt_obj_name_list)
-        c_edt_pl_id_opt_menu_var.config(width=c_edt_width + 1)
+        c_edt_pl_id_opt_menu_var = ttk.OptionMenu(c_edt_assign_object_frame_1, c_edt_obj_name_variable, c_edt_obj_name_list[-1], *c_edt_obj_name_list)
+        c_edt_pl_id_opt_menu_var.config(width=c_edt_option_width)
         c_edt_pl_id_opt_menu_var.grid(row=0, column=1, pady=c_edt_pad, padx=c_edt_pad, stick="ew")
 
         conn.commit()
 
     c_edt_obj_id_opt_menu()
     c_edt_s_id_opt_menu()
+
+    style_func()
 
     c_edt_wd.mainloop()

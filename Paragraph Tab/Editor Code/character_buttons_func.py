@@ -10,6 +10,14 @@ import id
 import editor_settings
 
 
+def style_func():
+    ch_font_size = 11
+    ch_style = ttk.Style()
+    ch_style.configure("TMenubutton", background="#c2c2c2", font=('Times New Roman', ch_font_size))
+    ch_style.configure("TButton", font=('Times New Roman', ch_font_size))
+    ch_style.configure("TLabel", font=('Times New Roman', ch_font_size))
+
+
 def ch_new_save():
     # Create a cursor inside the function
     # Create a database or connect to one
@@ -88,7 +96,7 @@ def ch_new_window():
     screen_x_2 = ch_new_wd.winfo_screenwidth()
     screen_y_2 = ch_new_wd.winfo_screenheight()
     window_x_2 = 505
-    window_y_2 = 440
+    window_y_2 = 437
     ch_new_wd.minsize(window_x_2, window_y_2)
     ch_new_wd.maxsize(window_x_2, window_y_2)
     pos_x_2 = int((screen_x_2 - window_x_2) / 2)
@@ -101,10 +109,6 @@ def ch_new_window():
     ch_new_info_frame_1 = LabelFrame(ch_new_wd, width=window_x_2, height=ch_new_frame_height)
     ch_new_info_frame_1.pack(fill="both", side=TOP)
 
-    # Info Frame 2
-    ch_new_info_frame_2 = LabelFrame(ch_new_wd, width=window_x_2, height=ch_new_frame_height)
-    ch_new_info_frame_2.pack(fill="both", side=TOP)
-
     # Top Button Frame
     ch_new_button_frame = LabelFrame(ch_new_wd, height=ch_new_rest / 2, width=window_x_2)
     ch_new_button_frame.pack(fill="both")
@@ -115,69 +119,71 @@ def ch_new_window():
     ch_new_text_width = 37
 
     # Labels
-    ch_new_name_label = Label(ch_new_info_frame_1, text="Name:", width=int(ch_new_width / 2), anchor=W)
+    ch_new_name_label = ttk.Label(ch_new_info_frame_1, text="Name:", width=int(ch_new_width / 2), anchor=W)
     ch_new_name_label.grid(row=0, column=0, padx=ch_new_pad, pady=ch_new_pad, stick="w")
 
-    ch_new_breed_label = Label(ch_new_info_frame_1, text="Breed:", width=int(ch_new_width / 2),
+    ch_new_breed_label = ttk.Label(ch_new_info_frame_1, text="Breed:", width=int(ch_new_width / 2),
                                       anchor=W)
     ch_new_breed_label.grid(row=1, column=0, padx=ch_new_pad, pady=ch_new_pad, stick="w")
 
-    ch_new_life_label = Label(ch_new_info_frame_1, text="Life:", width=int(ch_new_width / 2), anchor=NW)
+    ch_new_life_label = ttk.Label(ch_new_info_frame_1, text="Life:", width=int(ch_new_width / 2), anchor=NW)
     ch_new_life_label.grid(row=2, column=0, padx=ch_new_pad, pady=ch_new_pad, stick="nw")
 
-    ch_new_speed_label = Label(ch_new_info_frame_1, text="Speed:", width=int(ch_new_width / 2), anchor=NW)
+    ch_new_speed_label = ttk.Label(ch_new_info_frame_1, text="Speed:", width=int(ch_new_width / 2), anchor=NW)
     ch_new_speed_label.grid(row=3, column=0, padx=ch_new_pad, pady=ch_new_pad, stick="nw")
 
-    ch_new_attack_label = Label(ch_new_info_frame_1, text="Attack:", width=int(ch_new_width / 2),
+    ch_new_attack_label = ttk.Label(ch_new_info_frame_1, text="Attack:", width=int(ch_new_width / 2),
                                        anchor=NW)
     ch_new_attack_label.grid(row=4, column=0, padx=ch_new_pad, pady=ch_new_pad, stick="nw")
 
-    ch_new_defense_label = Label(ch_new_info_frame_1, text="Defense:", width=int(ch_new_width / 2),
+    ch_new_defense_label = ttk.Label(ch_new_info_frame_1, text="Defense:", width=int(ch_new_width / 2),
                                 anchor=NW)
     ch_new_defense_label.grid(row=5, column=0, padx=ch_new_pad, pady=ch_new_pad, stick="nw")
 
-    ch_new_background_label = Label(ch_new_info_frame_2, text="Background:", width=int(ch_new_width / 2),
+    ch_new_background_label = ttk.Label(ch_new_info_frame_1, text="Background:", width=int(ch_new_width / 2),
                                 anchor=NW)
-    ch_new_background_label.grid(row=0, column=0, padx=ch_new_pad, pady=ch_new_pad, stick="nw")
+    ch_new_background_label.grid(row=6, column=0, padx=ch_new_pad, pady=ch_new_pad, stick="nw")
 
     # Short Entries
     global ch_new_name_entry_var, ch_new_breed_entry_var, ch_new_life_entry_var, ch_new_speed_entry_var, ch_new_attack_entry_var, ch_new_defense_entry_var, ch_new_background_text_entry
     global ch_new_name_entry, ch_new_breed_entry, ch_new_life_entry, ch_new_speed_entry, ch_new_attack_entry, ch_new_defense_entry
     ch_new_name_entry_var = StringVar()
-    ch_new_name_entry = Entry(ch_new_info_frame_1, textvariable=ch_new_name_entry_var, width=ch_new_entry_width)
+    ch_new_name_entry = ttk.Entry(ch_new_info_frame_1, textvariable=ch_new_name_entry_var, width=ch_new_entry_width)
     ch_new_name_entry.grid(row=0, column=1, padx=ch_new_pad, pady=ch_new_pad, stick="nw")
 
     ch_new_breed_entry_var = StringVar()
-    ch_new_breed_entry = Entry(ch_new_info_frame_1, textvariable=ch_new_breed_entry_var, width=ch_new_entry_width)
+    ch_new_breed_entry = ttk.Entry(ch_new_info_frame_1, textvariable=ch_new_breed_entry_var, width=ch_new_entry_width)
     ch_new_breed_entry.grid(row=1, column=1, padx=ch_new_pad, pady=ch_new_pad, stick="nw")
 
     ch_new_life_entry_var = StringVar()
-    ch_new_life_entry = Entry(ch_new_info_frame_1, textvariable=ch_new_life_entry_var, width=ch_new_entry_width)
+    ch_new_life_entry = ttk.Entry(ch_new_info_frame_1, textvariable=ch_new_life_entry_var, width=ch_new_entry_width)
     ch_new_life_entry.grid(row=2, column=1, padx=ch_new_pad, pady=ch_new_pad, stick="nw")
 
     ch_new_speed_entry_var = StringVar()
-    ch_new_speed_entry = Entry(ch_new_info_frame_1, textvariable=ch_new_speed_entry_var, width=ch_new_entry_width)
+    ch_new_speed_entry = ttk.Entry(ch_new_info_frame_1, textvariable=ch_new_speed_entry_var, width=ch_new_entry_width)
     ch_new_speed_entry.grid(row=3, column=1, padx=ch_new_pad, pady=ch_new_pad, stick="nw")
 
     ch_new_attack_entry_var = StringVar()
-    ch_new_attack_entry = Entry(ch_new_info_frame_1, textvariable=ch_new_attack_entry_var, width=ch_new_entry_width)
+    ch_new_attack_entry = ttk.Entry(ch_new_info_frame_1, textvariable=ch_new_attack_entry_var, width=ch_new_entry_width)
     ch_new_attack_entry.grid(row=4, column=1, padx=ch_new_pad, pady=ch_new_pad, stick="nw")
 
     ch_new_defense_entry_var = StringVar()
-    ch_new_defense_entry = Entry(ch_new_info_frame_1, textvariable=ch_new_defense_entry_var, width=ch_new_entry_width)
+    ch_new_defense_entry = ttk.Entry(ch_new_info_frame_1, textvariable=ch_new_defense_entry_var, width=ch_new_entry_width)
     ch_new_defense_entry.grid(row=5, column=1, padx=ch_new_pad, pady=ch_new_pad, stick="nw")
 
     # Text Entry
-    ch_new_background_text_entry = Text(ch_new_info_frame_2, width=ch_new_text_width, height=7)
-    ch_new_background_text_entry.grid(row=0, column=1, padx=ch_new_pad, pady=ch_new_pad)
+    ch_new_background_text_entry = Text(ch_new_info_frame_1, width=ch_new_text_width, height=7)
+    ch_new_background_text_entry.grid(row=6, column=1, padx=ch_new_pad, pady=ch_new_pad)
 
     # Buttons
-    ch_new_save_character_button = Button(ch_new_button_frame, text="Save Character", width=int(ch_new_width / 2),
+    ch_new_save_character_button = ttk.Button(ch_new_button_frame, text="Save Character", width=int(ch_new_width / 2),
                                       command=ch_new_save)
     ch_new_save_character_button.grid(row=0, column=0, padx=ch_new_pad, pady=ch_new_pad, stick="w")
 
-    ch_new_cancel_button = Button(ch_new_button_frame, text="Cancel", width=ch_new_width, command=ch_new_wd.destroy)
+    ch_new_cancel_button = ttk.Button(ch_new_button_frame, text="Cancel", width=ch_new_width, command=ch_new_wd.destroy)
     ch_new_cancel_button.grid(row=0, column=1, padx=ch_new_pad, pady=ch_new_pad, stick="w")
+
+    style_func()
 
     ch_new_wd.mainloop()
 
@@ -342,7 +348,7 @@ def ch_edt_window():
     screen_x_2 = ch_edt_wd.winfo_screenwidth()
     screen_y_2 = ch_edt_wd.winfo_screenheight()
     window_x_2 = 505
-    window_y_2 = 495
+    window_y_2 = 482
     ch_edt_wd.minsize(window_x_2, window_y_2)
     ch_edt_wd.maxsize(window_x_2, window_y_2)
     pos_x_2 = int((screen_x_2 - window_x_2) / 2)
@@ -355,14 +361,6 @@ def ch_edt_window():
     ch_edt_info_frame_0 = LabelFrame(ch_edt_wd, width=window_x_2, height=ch_edt_frame_height)
     ch_edt_info_frame_0.pack(fill="both", side=TOP)
 
-    # Info Frame 1
-    ch_edt_info_frame_1 = LabelFrame(ch_edt_wd, width=window_x_2, height=ch_edt_frame_height)
-    ch_edt_info_frame_1.pack(fill="both", side=TOP)
-
-    # Info Frame 2
-    ch_edt_info_frame_2 = LabelFrame(ch_edt_wd, width=window_x_2, height=ch_edt_frame_height)
-    ch_edt_info_frame_2.pack(fill="both", side=TOP)
-
     # Button Frame
     ch_edt_button_frame = LabelFrame(ch_edt_wd, height=ch_edt_rest / 2, width=window_x_2)
     ch_edt_button_frame.pack(fill="both")
@@ -373,80 +371,80 @@ def ch_edt_window():
     ch_edt_text_width = 37
 
     # Labels
-    ch_edt_select_ch_label = Label(ch_edt_info_frame_0, text="Select Character:", width=int(ch_edt_width / 2), anchor=W)
+    ch_edt_select_ch_label = ttk.Label(ch_edt_info_frame_0, text="Select Character:", width=int(ch_edt_width / 2), anchor=W)
     ch_edt_select_ch_label.grid(row=0, column=0, padx=(ch_edt_pad, ch_edt_pad-3), pady=ch_edt_pad, stick="w")
 
-    ch_edt_name_label = Label(ch_edt_info_frame_1, text="Name:", width=int(ch_edt_width / 2), anchor=W)
-    ch_edt_name_label.grid(row=0, column=0, padx=ch_edt_pad, pady=ch_edt_pad, stick="w")
+    ch_edt_name_label = ttk.Label(ch_edt_info_frame_0, text="Name:", width=int(ch_edt_width / 2), anchor=W)
+    ch_edt_name_label.grid(row=1, column=0, padx=ch_edt_pad, pady=ch_edt_pad, stick="w")
 
-    ch_edt_breed_label = Label(ch_edt_info_frame_1, text="Breed:", width=int(ch_edt_width / 2),
+    ch_edt_breed_label = ttk.Label(ch_edt_info_frame_0, text="Breed:", width=int(ch_edt_width / 2),
                                       anchor=W)
-    ch_edt_breed_label.grid(row=1, column=0, padx=ch_edt_pad, pady=ch_edt_pad, stick="w")
+    ch_edt_breed_label.grid(row=2, column=0, padx=ch_edt_pad, pady=ch_edt_pad, stick="w")
 
-    ch_edt_life_label = Label(ch_edt_info_frame_1, text="Life:", width=int(ch_edt_width / 2), anchor=NW)
-    ch_edt_life_label.grid(row=2, column=0, padx=ch_edt_pad, pady=ch_edt_pad, stick="nw")
+    ch_edt_life_label = ttk.Label(ch_edt_info_frame_0, text="Life:", width=int(ch_edt_width / 2), anchor=NW)
+    ch_edt_life_label.grid(row=3, column=0, padx=ch_edt_pad, pady=ch_edt_pad, stick="nw")
 
-    ch_edt_speed_label = Label(ch_edt_info_frame_1, text="Speed:", width=int(ch_edt_width / 2), anchor=NW)
-    ch_edt_speed_label.grid(row=3, column=0, padx=ch_edt_pad, pady=ch_edt_pad, stick="nw")
+    ch_edt_speed_label = ttk.Label(ch_edt_info_frame_0, text="Speed:", width=int(ch_edt_width / 2), anchor=NW)
+    ch_edt_speed_label.grid(row=4, column=0, padx=ch_edt_pad, pady=ch_edt_pad, stick="nw")
 
-    ch_edt_attack_label = Label(ch_edt_info_frame_1, text="Attack:", width=int(ch_edt_width / 2),
+    ch_edt_attack_label = ttk.Label(ch_edt_info_frame_0, text="Attack:", width=int(ch_edt_width / 2),
                                        anchor=NW)
-    ch_edt_attack_label.grid(row=4, column=0, padx=ch_edt_pad, pady=ch_edt_pad, stick="nw")
+    ch_edt_attack_label.grid(row=5, column=0, padx=ch_edt_pad, pady=ch_edt_pad, stick="nw")
 
-    ch_edt_defense_label = Label(ch_edt_info_frame_1, text="Defense:", width=int(ch_edt_width / 2),
+    ch_edt_defense_label = ttk.Label(ch_edt_info_frame_0, text="Defense:", width=int(ch_edt_width / 2),
                                 anchor=NW)
-    ch_edt_defense_label.grid(row=5, column=0, padx=ch_edt_pad, pady=ch_edt_pad, stick="nw")
+    ch_edt_defense_label.grid(row=6, column=0, padx=ch_edt_pad, pady=ch_edt_pad, stick="nw")
 
-    ch_edt_background_label = Label(ch_edt_info_frame_2, text="Background:", width=int(ch_edt_width / 2),
+    ch_edt_background_label = ttk.Label(ch_edt_info_frame_0, text="Background:", width=int(ch_edt_width / 2),
                                 anchor=NW)
-    ch_edt_background_label.grid(row=0, column=0, padx=ch_edt_pad, pady=ch_edt_pad, stick="nw")
+    ch_edt_background_label.grid(row=7, column=0, padx=ch_edt_pad, pady=ch_edt_pad, stick="nw")
 
     # Short Entries
     global ch_edt_name_entry_var, ch_edt_breed_entry_var, ch_edt_life_entry_var, ch_edt_speed_entry_var, ch_edt_attack_entry_var, ch_edt_defense_entry_var, ch_edt_background_text_entry
     global ch_edt_name_entry, ch_edt_breed_entry, ch_edt_life_entry, ch_edt_speed_entry, ch_edt_attack_entry, ch_edt_defense_entry
     ch_edt_name_entry_var = StringVar()
-    ch_edt_name_entry = Entry(ch_edt_info_frame_1, textvariable=ch_edt_name_entry_var, width=ch_edt_entry_width)
-    ch_edt_name_entry.grid(row=0, column=1, padx=ch_edt_pad, pady=ch_edt_pad, stick="nw")
+    ch_edt_name_entry = ttk.Entry(ch_edt_info_frame_0, textvariable=ch_edt_name_entry_var, width=ch_edt_entry_width)
+    ch_edt_name_entry.grid(row=1, column=1, padx=ch_edt_pad, pady=ch_edt_pad, stick="nw")
 
     ch_edt_breed_entry_var = StringVar()
-    ch_edt_breed_entry = Entry(ch_edt_info_frame_1, textvariable=ch_edt_breed_entry_var, width=ch_edt_entry_width)
-    ch_edt_breed_entry.grid(row=1, column=1, padx=ch_edt_pad, pady=ch_edt_pad, stick="nw")
+    ch_edt_breed_entry = ttk.Entry(ch_edt_info_frame_0, textvariable=ch_edt_breed_entry_var, width=ch_edt_entry_width)
+    ch_edt_breed_entry.grid(row=2, column=1, padx=ch_edt_pad, pady=ch_edt_pad, stick="nw")
 
     ch_edt_life_entry_var = StringVar()
-    ch_edt_life_entry = Entry(ch_edt_info_frame_1, textvariable=ch_edt_life_entry_var, width=ch_edt_entry_width)
-    ch_edt_life_entry.grid(row=2, column=1, padx=ch_edt_pad, pady=ch_edt_pad, stick="nw")
+    ch_edt_life_entry = ttk.Entry(ch_edt_info_frame_0, textvariable=ch_edt_life_entry_var, width=ch_edt_entry_width)
+    ch_edt_life_entry.grid(row=3, column=1, padx=ch_edt_pad, pady=ch_edt_pad, stick="nw")
 
     ch_edt_speed_entry_var = StringVar()
-    ch_edt_speed_entry = Entry(ch_edt_info_frame_1, textvariable=ch_edt_speed_entry_var, width=ch_edt_entry_width)
-    ch_edt_speed_entry.grid(row=3, column=1, padx=ch_edt_pad, pady=ch_edt_pad, stick="nw")
+    ch_edt_speed_entry = ttk.Entry(ch_edt_info_frame_0, textvariable=ch_edt_speed_entry_var, width=ch_edt_entry_width)
+    ch_edt_speed_entry.grid(row=4, column=1, padx=ch_edt_pad, pady=ch_edt_pad, stick="nw")
 
     ch_edt_attack_entry_var = StringVar()
-    ch_edt_attack_entry = Entry(ch_edt_info_frame_1, textvariable=ch_edt_attack_entry_var, width=ch_edt_entry_width)
-    ch_edt_attack_entry.grid(row=4, column=1, padx=ch_edt_pad, pady=ch_edt_pad, stick="nw")
+    ch_edt_attack_entry = ttk.Entry(ch_edt_info_frame_0, textvariable=ch_edt_attack_entry_var, width=ch_edt_entry_width)
+    ch_edt_attack_entry.grid(row=5, column=1, padx=ch_edt_pad, pady=ch_edt_pad, stick="nw")
 
     ch_edt_defense_entry_var = StringVar()
-    ch_edt_defense_entry = Entry(ch_edt_info_frame_1, textvariable=ch_edt_defense_entry_var, width=ch_edt_entry_width)
-    ch_edt_defense_entry.grid(row=5, column=1, padx=ch_edt_pad, pady=ch_edt_pad, stick="nw")
+    ch_edt_defense_entry = ttk.Entry(ch_edt_info_frame_0, textvariable=ch_edt_defense_entry_var, width=ch_edt_entry_width)
+    ch_edt_defense_entry.grid(row=6, column=1, padx=ch_edt_pad, pady=ch_edt_pad, stick="nw")
 
     # Text Entry
-    ch_edt_background_text_entry = Text(ch_edt_info_frame_2, width=ch_edt_text_width, height=7)
-    ch_edt_background_text_entry.grid(row=0, column=1, padx=ch_edt_pad, pady=ch_edt_pad)
+    ch_edt_background_text_entry = Text(ch_edt_info_frame_0, width=ch_edt_text_width, height=7)
+    ch_edt_background_text_entry.grid(row=7, column=1, padx=ch_edt_pad, pady=ch_edt_pad)
 
     # Buttons
     ch_edt_width_buttons = 13
-    ch_edt_save_changes_button = Button(ch_edt_button_frame, text="Save Changes", width=ch_edt_width_buttons,
+    ch_edt_save_changes_button = ttk.Button(ch_edt_button_frame, text="Save Changes", width=ch_edt_width_buttons,
                                       command=ch_edt_edit)
     ch_edt_save_changes_button.grid(row=0, column=0, padx=(ch_edt_pad + 9, ch_edt_pad), pady=ch_edt_pad, stick="w")
 
-    ch_edt_load_character_button = Button(ch_edt_button_frame, text="Load Character", width=ch_edt_width_buttons,
+    ch_edt_load_character_button = ttk.Button(ch_edt_button_frame, text="Load Character", width=ch_edt_width_buttons,
                                           command=ch_edt_insert)
     ch_edt_load_character_button.grid(row=0, column=1, padx=ch_edt_pad, pady=ch_edt_pad, stick="w")
 
-    ch_edt_delete_character_button = Button(ch_edt_button_frame, text="Delete Character", width=ch_edt_width_buttons,
+    ch_edt_delete_character_button = ttk.Button(ch_edt_button_frame, text="Delete Character", width=ch_edt_width_buttons,
                                        command=ch_edt_delete)
     ch_edt_delete_character_button.grid(row=0, column=2, padx=ch_edt_pad, pady=ch_edt_pad, stick="w")
 
-    ch_edt_cancel_button = Button(ch_edt_button_frame, text="Cancel", width=ch_edt_width_buttons,
+    ch_edt_cancel_button = ttk.Button(ch_edt_button_frame, text="Cancel", width=ch_edt_width_buttons,
                                   command=ch_edt_wd.destroy)
     ch_edt_cancel_button.grid(row=0, column=3, padx=ch_edt_pad, pady=ch_edt_pad, stick="w")
 
@@ -464,9 +462,7 @@ def ch_edt_window():
         if ch_new_ch_name_id_list:
             global ch_edt_ch_name_id_var
             ch_edt_ch_name_id_var = StringVar()
-            ch_edt_ch_name_id_var.set(ch_new_ch_name_id_list[0])
-            ch_edt_ch_name_id_opt_menu_var = OptionMenu(ch_edt_info_frame_0, ch_edt_ch_name_id_var, *ch_new_ch_name_id_list)
-            ch_edt_ch_name_id_opt_menu_var.config(width=ch_edt_width+1)
+            ch_edt_ch_name_id_opt_menu_var = ttk.OptionMenu(ch_edt_info_frame_0, ch_edt_ch_name_id_var, ch_new_ch_name_id_list[0], *ch_new_ch_name_id_list)
             ch_edt_ch_name_id_opt_menu_var.grid(row=0, column=1, pady=ch_edt_pad, padx=ch_edt_pad, stick="ew")
 
         else:
@@ -476,6 +472,8 @@ def ch_edt_window():
         conn.commit()
 
     ch_edt_ch_name_opt_menu()
+
+    style_func()
 
     ch_edt_wd.mainloop()
 

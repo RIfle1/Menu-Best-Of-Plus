@@ -10,6 +10,14 @@ import id
 import editor_settings
 
 
+def style_func():
+    mst_font_size = 11
+    mst_style = ttk.Style()
+    mst_style.configure("TMenubutton", background="#c2c2c2", font=('Times New Roman', mst_font_size))
+    mst_style.configure("TButton", font=('Times New Roman', mst_font_size))
+    mst_style.configure("TLabel", font=('Times New Roman', mst_font_size))
+
+
 def mst_new_save():
     conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
@@ -69,7 +77,7 @@ def mst_new_window():
     screen_x_2 = mst_new_wd.winfo_screenwidth()
     screen_y_2 = mst_new_wd.winfo_screenheight()
     window_x_2 = 505
-    window_y_2 = 145
+    window_y_2 = 141
     mst_new_wd.minsize(window_x_2, window_y_2)
     mst_new_wd.maxsize(window_x_2, window_y_2)
     pos_x_2 = int((screen_x_2 - window_x_2) / 2)
@@ -92,34 +100,34 @@ def mst_new_window():
     mst_new_text_width = 37
 
     # Labels
-    npc_new_type_label = Label(mst_new_info_frame_1, text="Select Enemy Type:", width=int(mst_new_width / 2), anchor=W)
+    npc_new_type_label = ttk.Label(mst_new_info_frame_1, text="Select Enemy Type:", width=int(mst_new_width / 2), anchor=W)
     npc_new_type_label.grid(row=0, column=0, padx=(mst_new_pad, mst_new_pad + 4), pady=mst_new_pad, stick="w")
     
-    npc_new_name_label = Label(mst_new_info_frame_1, text="Enemy Name:", width=int(mst_new_width / 2), anchor=W)
+    npc_new_name_label = ttk.Label(mst_new_info_frame_1, text="Enemy Name:", width=int(mst_new_width / 2), anchor=W)
     npc_new_name_label.grid(row=1, column=0, padx=(mst_new_pad, mst_new_pad+4), pady=mst_new_pad, stick="w")
 
     # Short Entries
     global mst_new_name_entry_var, mst_new_name_entry
     mst_new_name_entry_var = StringVar()
-    mst_new_name_entry = Entry(mst_new_info_frame_1, textvariable=mst_new_name_entry_var, width=mst_new_entry_width)
+    mst_new_name_entry = ttk.Entry(mst_new_info_frame_1, textvariable=mst_new_name_entry_var, width=mst_new_entry_width)
     mst_new_name_entry.grid(row=1, column=1, padx=mst_new_pad, pady=mst_new_pad, stick="nw")
     
     # Option Enemy Type Menu
     mst_new_mst_type_list = ['Human', 'Monster']
     global mst_new_mst_type_var
     mst_new_mst_type_var = StringVar()
-    mst_new_mst_type_var.set(mst_new_mst_type_list[0])
-    mst_new_mst_type_opt_menu_var = OptionMenu(mst_new_info_frame_1, mst_new_mst_type_var, *mst_new_mst_type_list)
-    mst_new_mst_type_opt_menu_var.config(width=mst_new_text_width + 1)
+    mst_new_mst_type_opt_menu_var = ttk.OptionMenu(mst_new_info_frame_1, mst_new_mst_type_var, mst_new_mst_type_list[0], *mst_new_mst_type_list)
     mst_new_mst_type_opt_menu_var.grid(row=0, column=1, pady=mst_new_pad, padx=mst_new_pad, stick="ew")
 
     # Buttons
-    npc_new_save_npc_button = Button(mst_new_button_frame, text="Save Enemy", width=int(mst_new_width / 2),
+    npc_new_save_npc_button = ttk.Button(mst_new_button_frame, text="Save Enemy", width=int(mst_new_width / 2),
                                           command=mst_new_save)
     npc_new_save_npc_button.grid(row=0, column=0, padx=mst_new_pad, pady=mst_new_pad, stick="w")
 
-    npc_new_cancel_button = Button(mst_new_button_frame, text="Cancel", width=mst_new_width-1, command=mst_new_wd.destroy)
+    npc_new_cancel_button = ttk.Button(mst_new_button_frame, text="Cancel", width=mst_new_width-1, command=mst_new_wd.destroy)
     npc_new_cancel_button.grid(row=0, column=1, padx=mst_new_pad, pady=mst_new_pad, stick="w")
+
+    style_func()
 
     mst_new_wd.mainloop()
 
@@ -225,7 +233,7 @@ def mst_edt_window():
     screen_x_2 = mst_edt_wd.winfo_screenwidth()
     screen_y_2 = mst_edt_wd.winfo_screenheight()
     window_x_2 = 505
-    window_y_2 = 150
+    window_y_2 = 141
     mst_edt_wd.minsize(window_x_2, window_y_2)
     mst_edt_wd.maxsize(window_x_2, window_y_2)
     pos_x_2 = int((screen_x_2 - window_x_2) / 2)
@@ -238,10 +246,6 @@ def mst_edt_window():
     mst_edt_info_frame_0 = LabelFrame(mst_edt_wd, width=window_x_2, height=mst_edt_frame_height)
     mst_edt_info_frame_0.pack(fill="both", side=TOP)
 
-    # Info Frame 1
-    mst_edt_info_frame_1 = LabelFrame(mst_edt_wd, width=window_x_2, height=mst_edt_frame_height)
-    mst_edt_info_frame_1.pack(fill="both", side=TOP)
-
     # Button Frame
     mst_edt_button_frame = LabelFrame(mst_edt_wd, height=mst_edt_rest / 2, width=window_x_2)
     mst_edt_button_frame.pack(fill="both")
@@ -251,33 +255,33 @@ def mst_edt_window():
     mst_edt_entry_width = 49
 
     # Labels
-    mst_edt_select_mst_label = Label(mst_edt_info_frame_0, text="Select Enemy:", width=int(mst_edt_width / 2), anchor=W)
+    mst_edt_select_mst_label = ttk.Label(mst_edt_info_frame_0, text="Select Enemy:", width=int(mst_edt_width / 2), anchor=W)
     mst_edt_select_mst_label.grid(row=0, column=0, padx=(mst_edt_pad, mst_edt_pad - 3), pady=mst_edt_pad, stick="w")
 
-    mst_edt_name_label = Label(mst_edt_info_frame_1, text="Name:", width=int(mst_edt_width / 2), anchor=W)
-    mst_edt_name_label.grid(row=0, column=0, padx=mst_edt_pad, pady=mst_edt_pad, stick="w")
+    mst_edt_name_label = ttk.Label(mst_edt_info_frame_0, text="Name:", width=int(mst_edt_width / 2), anchor=W)
+    mst_edt_name_label.grid(row=1, column=0, padx=mst_edt_pad, pady=mst_edt_pad, stick="w")
 
     # Short Entries
     global mst_edt_name_entry_var, mst_edt_name_entry
     mst_edt_name_entry_var = StringVar()
-    mst_edt_name_entry = Entry(mst_edt_info_frame_1, textvariable=mst_edt_name_entry_var, width=mst_edt_entry_width)
-    mst_edt_name_entry.grid(row=0, column=1, padx=mst_edt_pad, pady=mst_edt_pad, stick="nw")
+    mst_edt_name_entry = ttk.Entry(mst_edt_info_frame_0, textvariable=mst_edt_name_entry_var, width=mst_edt_entry_width)
+    mst_edt_name_entry.grid(row=1, column=1, padx=mst_edt_pad, pady=mst_edt_pad, stick="nw")
 
     # Buttons
     mst_edt_width_buttons = 13
-    mst_edt_save_changes_button = Button(mst_edt_button_frame, text="Save Changes", width=mst_edt_width_buttons,
+    mst_edt_save_changes_button = ttk.Button(mst_edt_button_frame, text="Save Changes", width=mst_edt_width_buttons,
                                          command=mst_edt_edit)
     mst_edt_save_changes_button.grid(row=0, column=0, padx=(mst_edt_pad + 9, mst_edt_pad), pady=mst_edt_pad, stick="w")
 
-    mst_edt_load_mst_button = Button(mst_edt_button_frame, text="Load Enemy", width=mst_edt_width_buttons,
+    mst_edt_load_mst_button = ttk.Button(mst_edt_button_frame, text="Load Enemy", width=mst_edt_width_buttons,
                                      command=mst_edt_insert)
     mst_edt_load_mst_button.grid(row=0, column=1, padx=mst_edt_pad, pady=mst_edt_pad, stick="w")
 
-    mst_edt_delete_mst_button = Button(mst_edt_button_frame, text="Delete Enemy", width=mst_edt_width_buttons,
+    mst_edt_delete_mst_button = ttk.Button(mst_edt_button_frame, text="Delete Enemy", width=mst_edt_width_buttons,
                                       command=mst_edt_delete)
     mst_edt_delete_mst_button.grid(row=0, column=2, padx=mst_edt_pad, pady=mst_edt_pad, stick="w")
 
-    mst_edt_cancel_button = Button(mst_edt_button_frame, text="Cancel", width=mst_edt_width_buttons,
+    mst_edt_cancel_button = ttk.Button(mst_edt_button_frame, text="Cancel", width=mst_edt_width_buttons,
                                    command=mst_edt_wd.destroy)
     mst_edt_cancel_button.grid(row=0, column=3, padx=mst_edt_pad, pady=mst_edt_pad, stick="w")
 
@@ -295,10 +299,7 @@ def mst_edt_window():
         if mst_new_mst_name_id_list:
             global mst_new_mst_name_id_var
             mst_new_mst_name_id_var = StringVar()
-            mst_new_mst_name_id_var.set(mst_new_mst_name_id_list[0])
-            mst_edt_mst_name_id_opt_menu_var = OptionMenu(mst_edt_info_frame_0, mst_new_mst_name_id_var,
-                                                          *mst_new_mst_name_id_list)
-            mst_edt_mst_name_id_opt_menu_var.config(width=mst_edt_width + 1)
+            mst_edt_mst_name_id_opt_menu_var = ttk.OptionMenu(mst_edt_info_frame_0, mst_new_mst_name_id_var, mst_new_mst_name_id_list[0], *mst_new_mst_name_id_list)
             mst_edt_mst_name_id_opt_menu_var.grid(row=0, column=1, pady=mst_edt_pad, padx=mst_edt_pad, stick="ew")
 
         else:
@@ -308,6 +309,8 @@ def mst_edt_window():
         conn.commit()
 
     mst_edt_mst_name_opt_menu()
+
+    style_func()
 
     mst_edt_wd.mainloop()
 

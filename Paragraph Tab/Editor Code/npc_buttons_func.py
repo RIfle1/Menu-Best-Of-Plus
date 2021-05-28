@@ -10,6 +10,14 @@ import id
 import editor_settings
 
 
+def style_func():
+    ch_font_size = 11
+    ch_style = ttk.Style()
+    ch_style.configure("TMenubutton", background="#c2c2c2", font=('Times New Roman', ch_font_size))
+    ch_style.configure("TButton", font=('Times New Roman', ch_font_size))
+    ch_style.configure("TLabel", font=('Times New Roman', ch_font_size))
+
+
 def npc_new_save():
     conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
@@ -65,7 +73,7 @@ def npc_new_window():
     screen_x_2 = npc_new_wd.winfo_screenwidth()
     screen_y_2 = npc_new_wd.winfo_screenheight()
     window_x_2 = 505
-    window_y_2 = 95
+    window_y_2 = 92
     npc_new_wd.minsize(window_x_2, window_y_2)
     npc_new_wd.maxsize(window_x_2, window_y_2)
     pos_x_2 = int((screen_x_2 - window_x_2) / 2)
@@ -74,36 +82,33 @@ def npc_new_window():
 
     npc_new_frame_height = 200
     npc_new_rest = window_y_2 - npc_new_frame_height * 2
-    # Info Frame 1
+    # Frame
     npc_new_info_frame_1 = LabelFrame(npc_new_wd, width=window_x_2, height=npc_new_frame_height)
     npc_new_info_frame_1.pack(fill="both", side=TOP)
 
-    # Top Button Frame
-    npc_new_button_frame = LabelFrame(npc_new_wd, height=npc_new_rest / 2, width=window_x_2)
-    npc_new_button_frame.pack(fill="both")
-
     npc_new_width = 42
     npc_new_pad = 10
-    npc_new_entry_width = 49
-    npc_new_text_width = 37
+    npc_new_text_width = 48
 
     # Labels
-    npc_new_name_label = Label(npc_new_info_frame_1, text="Name:", width=int(npc_new_width / 2), anchor=W)
+    npc_new_name_label = ttk.Label(npc_new_info_frame_1, text="Name:", width=int(npc_new_width / 2), anchor=W)
     npc_new_name_label.grid(row=0, column=0, padx=(npc_new_pad, npc_new_pad+4), pady=npc_new_pad, stick="w")
 
     # Short Entries
     global npc_new_name_entry_var, npc_new_name_entry
     npc_new_name_entry_var = StringVar()
-    npc_new_name_entry = Entry(npc_new_info_frame_1, textvariable=npc_new_name_entry_var, width=npc_new_entry_width)
+    npc_new_name_entry = ttk.Entry(npc_new_info_frame_1, textvariable=npc_new_name_entry_var, width=npc_new_text_width)
     npc_new_name_entry.grid(row=0, column=1, padx=npc_new_pad, pady=npc_new_pad, stick="nw")
 
     # Buttons
-    npc_new_save_npc_button = Button(npc_new_button_frame, text="Save NPC", width=int(npc_new_width / 2),
+    npc_new_save_npc_button = ttk.Button(npc_new_info_frame_1, text="Save NPC", width=int(npc_new_width / 2),
                                           command=npc_new_save)
-    npc_new_save_npc_button.grid(row=0, column=0, padx=npc_new_pad, pady=npc_new_pad, stick="w")
+    npc_new_save_npc_button.grid(row=1, column=0, padx=npc_new_pad, pady=npc_new_pad, stick="w")
 
-    npc_new_cancel_button = Button(npc_new_button_frame, text="Cancel", width=npc_new_width-1, command=npc_new_wd.destroy)
-    npc_new_cancel_button.grid(row=0, column=1, padx=npc_new_pad, pady=npc_new_pad, stick="w")
+    npc_new_cancel_button = ttk.Button(npc_new_info_frame_1, text="Cancel", width=npc_new_width-1, command=npc_new_wd.destroy)
+    npc_new_cancel_button.grid(row=1, column=1, padx=npc_new_pad, pady=npc_new_pad, stick="w")
+
+    style_func()
 
     npc_new_wd.mainloop()
 
@@ -209,7 +214,7 @@ def npc_edt_window():
     screen_x_2 = npc_edt_wd.winfo_screenwidth()
     screen_y_2 = npc_edt_wd.winfo_screenheight()
     window_x_2 = 505
-    window_y_2 = 150
+    window_y_2 = 140
     npc_edt_wd.minsize(window_x_2, window_y_2)
     npc_edt_wd.maxsize(window_x_2, window_y_2)
     pos_x_2 = int((screen_x_2 - window_x_2) / 2)
@@ -222,10 +227,6 @@ def npc_edt_window():
     npc_edt_info_frame_0 = LabelFrame(npc_edt_wd, width=window_x_2, height=npc_edt_frame_height)
     npc_edt_info_frame_0.pack(fill="both", side=TOP)
 
-    # Info Frame 1
-    npc_edt_info_frame_1 = LabelFrame(npc_edt_wd, width=window_x_2, height=npc_edt_frame_height)
-    npc_edt_info_frame_1.pack(fill="both", side=TOP)
-
     # Button Frame
     npc_edt_button_frame = LabelFrame(npc_edt_wd, height=npc_edt_rest / 2, width=window_x_2)
     npc_edt_button_frame.pack(fill="both")
@@ -235,33 +236,33 @@ def npc_edt_window():
     npc_edt_entry_width = 49
 
     # Labels
-    npc_edt_select_npc_label = Label(npc_edt_info_frame_0, text="Select NPC:", width=int(npc_edt_width / 2), anchor=W)
+    npc_edt_select_npc_label = ttk.Label(npc_edt_info_frame_0, text="Select NPC:", width=int(npc_edt_width / 2), anchor=W)
     npc_edt_select_npc_label.grid(row=0, column=0, padx=(npc_edt_pad, npc_edt_pad - 3), pady=npc_edt_pad, stick="w")
 
-    npc_edt_name_label = Label(npc_edt_info_frame_1, text="Rename:", width=int(npc_edt_width / 2), anchor=W)
-    npc_edt_name_label.grid(row=0, column=0, padx=npc_edt_pad, pady=npc_edt_pad, stick="w")
+    npc_edt_name_label = ttk.Label(npc_edt_info_frame_0, text="Rename:", width=int(npc_edt_width / 2), anchor=W)
+    npc_edt_name_label.grid(row=1, column=0, padx=npc_edt_pad, pady=npc_edt_pad, stick="w")
 
     # Short Entries
     global npc_edt_name_entry_var, npc_edt_name_entry
     npc_edt_name_entry_var = StringVar()
-    npc_edt_name_entry = Entry(npc_edt_info_frame_1, textvariable=npc_edt_name_entry_var, width=npc_edt_entry_width)
-    npc_edt_name_entry.grid(row=0, column=1, padx=npc_edt_pad, pady=npc_edt_pad, stick="nw")
+    npc_edt_name_entry = Entry(npc_edt_info_frame_0, textvariable=npc_edt_name_entry_var, width=npc_edt_entry_width)
+    npc_edt_name_entry.grid(row=1, column=1, padx=npc_edt_pad, pady=npc_edt_pad, stick="nw")
 
     # Buttons
     npc_edt_width_buttons = 13
-    npc_edt_save_changes_button = Button(npc_edt_button_frame, text="Save Changes", width=npc_edt_width_buttons,
+    npc_edt_save_changes_button = ttk.Button(npc_edt_button_frame, text="Save Changes", width=npc_edt_width_buttons,
                                         command=npc_edt_edit)
     npc_edt_save_changes_button.grid(row=0, column=0, padx=(npc_edt_pad + 9, npc_edt_pad), pady=npc_edt_pad, stick="w")
 
-    npc_edt_load_npc_button = Button(npc_edt_button_frame, text="Load NPC", width=npc_edt_width_buttons,
+    npc_edt_load_npc_button = ttk.Button(npc_edt_button_frame, text="Load NPC", width=npc_edt_width_buttons,
                                           command=npc_edt_insert)
     npc_edt_load_npc_button.grid(row=0, column=1, padx=npc_edt_pad, pady=npc_edt_pad, stick="w")
 
-    npc_edt_delete_npc_button = Button(npc_edt_button_frame, text="Delete NPC", width=npc_edt_width_buttons,
+    npc_edt_delete_npc_button = ttk.Button(npc_edt_button_frame, text="Delete NPC", width=npc_edt_width_buttons,
                                             command=npc_edt_delete)
     npc_edt_delete_npc_button.grid(row=0, column=2, padx=npc_edt_pad, pady=npc_edt_pad, stick="w")
 
-    npc_edt_cancel_button = Button(npc_edt_button_frame, text="Cancel", width=npc_edt_width_buttons,
+    npc_edt_cancel_button = ttk.Button(npc_edt_button_frame, text="Cancel", width=npc_edt_width_buttons,
                                   command=npc_edt_wd.destroy)
     npc_edt_cancel_button.grid(row=0, column=3, padx=npc_edt_pad, pady=npc_edt_pad, stick="w")
 
@@ -279,10 +280,7 @@ def npc_edt_window():
         if npc_new_npc_name_list:
             global npc_edt_npc_name_var
             npc_edt_npc_name_var = StringVar()
-            npc_edt_npc_name_var.set(npc_new_npc_name_list[0])
-            npc_edt_npc_name_opt_menu_var = OptionMenu(npc_edt_info_frame_0, npc_edt_npc_name_var,
-                                                          *npc_new_npc_name_list)
-            npc_edt_npc_name_opt_menu_var.config(width=npc_edt_width + 1)
+            npc_edt_npc_name_opt_menu_var = ttk.OptionMenu(npc_edt_info_frame_0, npc_edt_npc_name_var, npc_new_npc_name_list[0], *npc_new_npc_name_list)
             npc_edt_npc_name_opt_menu_var.grid(row=0, column=1, pady=npc_edt_pad, padx=npc_edt_pad, stick="ew")
 
         else:
@@ -292,5 +290,7 @@ def npc_edt_window():
         conn.commit()
 
     npc_edt_npc_name_opt_menu()
+
+    style_func()
 
     npc_edt_wd.mainloop()
