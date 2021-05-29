@@ -666,7 +666,7 @@ def c_edt_window():
 
     #
 
-    c_edt_object_id_label = ttk.Label(c_edt_assign_object_frame_1, text="Select Object Name:", width=int(c_edt_width / 2), anchor=W)
+    c_edt_object_id_label = ttk.Label(c_edt_assign_object_frame_1, text="Select Condition Name:", width=int(c_edt_width / 2), anchor=W)
     c_edt_object_id_label.grid(row=0, column=0, padx=c_edt_pad-3, pady=c_edt_pad, stick="w")
 
     #

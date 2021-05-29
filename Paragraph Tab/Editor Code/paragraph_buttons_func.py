@@ -40,7 +40,7 @@ def p_new_save():
     p_new_text_length = len(p_new_paragraph_text_entry.get("1.0", "end"))
 
     # Script to create a new paragraph number and to replace a number if a paragraph has been deleted
-    c.execute("""SELECT pl_id FROM paragraphs_list ORDER BY pl_id""")
+    c.execute(f"""SELECT pl_id FROM paragraphs_list WHERE s_id='{p_new_s_id}' ORDER BY pl_id""")
     p_new_p_id_list_raw = c.fetchall()
     p_new_p_id_list = id.raw_conv(p_new_p_id_list_raw)
 

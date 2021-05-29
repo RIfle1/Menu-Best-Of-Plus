@@ -1,0 +1,43 @@
+Story Number 2 Has No Ending Paragraphs Assigned
+
+In Story N.1
+From Paragraph N.1 Has No NPC or Enemy Assigned
+
+In Story N.1
+From Paragraph N.2 Has No NPC or Enemy Assigned
+
+In Story N.2
+From Paragraph N.1 Has No NPC or Enemy Assigned
+
+In Story N.1
+From Paragraph N.3 Has No NPC or Enemy Assigned
+
+###NPC 'ertertert' Has No Assigned Paragraph
+
+NPC 'ertter' Has No Assigned Paragraph
+
+Enemy 'dssgvertg' Has No Assigned Paragraph
+
+Enemy 'ertertr' Has No Assigned Paragraph
+
+###Object 'sword' Has No Assigned Paragraph
+
+Object 'axe' Has No Assigned Paragraph
+
+###In Story N.1
+From Initial Paragraph
+Choice N.2 Has No Assigned Paragraph
+
+In Story N.1
+From Initial Paragraph
+Choice N.3 Has No Assigned Paragraph
+
+In Story N.1
+From Initial Paragraph
+Choice N.4 Has No Assigned Paragraph
+
+In Story N.2
+From Initial Paragraph
+Choice N.2 Has No Assigned Paragraph
+
+###

@@ -20,11 +20,29 @@ import id
 
 database = editor_settings.database_module.database
 
+main_font = ("Times New Roman", 12)
+
 
 # Functions That Refresh Button calls
 def refresh():
-    new_tab()
+    global database
+    database = editor_settings.database_module.database
+
+    # Delete Previous Info
+    for widget in pg_2_main_frame_2.winfo_children():
+        widget.destroy()
+
+    # Delete previous paragraphs in the frame
+    for widgets in pg_main_story_frame.winfo_children():
+        widgets.destroy()
+
+    # Call All Info
+    new_story_print()
     errors_print()
+    character_list()
+    npc_list()
+    mst_list()
+    obj_list()
 
 
 # Function to print Errors
@@ -50,27 +68,159 @@ def errors_print():
         error_frame = LabelFrame(column_frame, height=100)
         error_frame.pack(fill="both")
 
-        error_message = Message(error_frame, text=errors, width=400)
+        error_message = Message(error_frame, text=errors, width=400, font=main_font)
         error_message.grid(column=0, row=0, padx=padding, pady=(padding, 0), stick="w")
         row += 1
 
 
 # Function To Print Info in Info List
-def info_list():
-    global database
-    database = editor_settings.database_module.database
+def character_list():
+    conn = sqlite3.connect(database, uri=True)
+    c = conn.cursor()
 
     # Get All Info From Characters
-    c.execute(f"""SELECT ch_name, ch_breed, ch_life, ch_speed, ch_defense, ch_attack, ch_background""")
+    c.execute(f"""SELECT ch_name, ch_breed, ch_life, ch_speed, ch_defense, ch_attack, ch_background FROM characters""")
     characters_list_info = c.fetchall()
 
+    labels_width = 10
+    messages_width = 200
+    padding = 10
+
+    if characters_list_info:
+        # Frame For All characters
+        ch_main_list_frame = LabelFrame(pg_2_main_frame_2, text=f'CHARACTERS LIST', font=main_font)
+        ch_main_list_frame.pack(fill="both", side=LEFT)
+    else:
+        ch_main_list_frame = None
+
+    for ch in characters_list_info:
+        # Frame For each character
+        ch_info_frame = LabelFrame(ch_main_list_frame, text=f'{ch[0]}', font=main_font)
+        ch_info_frame.pack(fill="both")
+
+        # Label Frame
+        ch_info_label_frame = Frame(ch_info_frame)
+        ch_info_label_frame.pack(fill="both", side=LEFT)
+
+        # Labels
+        breed_label = Label(ch_info_label_frame, text="Breed:", width=labels_width, font=main_font, anchor=W)
+        breed_label.grid(row=1, column=0, padx=padding, pady=padding, stick="w")
+
+        life_label = Label(ch_info_label_frame, text="Life:", width=labels_width, font=main_font, anchor=NW)
+        life_label.grid(row=2, column=0, padx=padding, pady=padding, stick="nw")
+
+        speed_label = Label(ch_info_label_frame, text="Speed:", width=labels_width, font=main_font, anchor=NW)
+        speed_label.grid(row=3, column=0, padx=padding, pady=padding, stick="nw")
+
+        attack_label = Label(ch_info_label_frame, text="Attack:", width=labels_width, font=main_font, anchor=NW)
+        attack_label.grid(row=4, column=0, padx=padding, pady=padding, stick="nw")
+
+        defense_label = Label(ch_info_label_frame, text="Defense:", width=labels_width, font=main_font, anchor=NW)
+        defense_label.grid(row=5, column=0, padx=padding, pady=padding, stick="nw")
+
+        background_label = Label(ch_info_label_frame, text="Background:", width=labels_width, font=main_font, anchor=NW)
+        background_label.grid(row=6, column=0, padx=padding, pady=padding, stick="nw")
+
+        # Character Info Frame
+        ch_info_frame = Frame(ch_info_frame)
+        ch_info_frame.pack(fill="both", side=RIGHT)
+
+        # Labels
+        breed_info = Label(ch_info_frame, text=str(ch[1]), width=labels_width, font=main_font, anchor=W)
+        breed_info.grid(row=1, column=0, padx=padding, pady=padding, stick="w")
+
+        life_info = Label(ch_info_frame, text=str(ch[2]), width=labels_width, font=main_font, anchor=NW)
+        life_info.grid(row=2, column=0, padx=padding, pady=padding, stick="nw")
+
+        speed_info = Label(ch_info_frame, text=str(ch[3]), width=labels_width, font=main_font, anchor=NW)
+        speed_info.grid(row=3, column=0, padx=padding, pady=padding, stick="nw")
+
+        attack_info = Label(ch_info_frame, text=str(ch[4]), width=labels_width, font=main_font, anchor=NW)
+        attack_info.grid(row=4, column=0, padx=padding, pady=padding, stick="nw")
+
+        defense_info = Label(ch_info_frame, text=str(ch[5]), width=labels_width, font=main_font, anchor=NW)
+        defense_info.grid(row=5, column=0, padx=padding, pady=padding, stick="nw")
+
+        background_message = Message(ch_info_frame, text=str(ch[6]), width=messages_width, font=main_font, anchor=NW)
+        background_message.grid(row=6, column=0, padx=padding, pady=padding, stick="nw")
+
+    conn.commit()
 
 
+def npc_list():
+    conn = sqlite3.connect(database, uri=True)
+    c = conn.cursor()
+
+    # Get All NPC Names
+    c.execute(f"""SELECT npc_name FROM npcs""")
+    npc_name_list_raw = c.fetchall()
+    npc_name_list = id.raw_conv(npc_name_list_raw)
+
+    messages_width = 200
+    padding = 10
+
+    if npc_name_list:
+        # Frame For All characters
+        npc_main_list_frame = LabelFrame(pg_2_main_frame_2, text=f'NPC LIST', font=main_font)
+        npc_main_list_frame.pack(fill="both", side=LEFT)
+    else:
+        npc_main_list_frame = None
+
+    for npc_name in npc_name_list:
+        npc_name_message = Message(npc_main_list_frame, text=str(npc_name), width=messages_width, font=main_font, anchor=NW)
+        npc_name_message.pack(padx=padding, pady=padding)
+
+    conn.commit()
 
 
+def mst_list():
+    conn = sqlite3.connect(database, uri=True)
+    c = conn.cursor()
+
+    # Get All NPC Names
+    c.execute(f"""SELECT mst_name FROM monsters""")
+    mst_name_list_raw = c.fetchall()
+    mst_name_list = id.raw_conv(mst_name_list_raw)
+
+    messages_width = 200
+    padding = 10
+
+    if mst_name_list:
+        # Frame For All characters
+        mst_main_list_frame = LabelFrame(pg_2_main_frame_2, text=f'ENEMIES LIST', font=main_font)
+        mst_main_list_frame.pack(fill="both", side=LEFT)
+    else:
+        mst_main_list_frame = None
+
+    for mst_name in mst_name_list:
+        mst_name_message = Message(mst_main_list_frame, text=str(mst_name), width=messages_width, font=main_font, anchor=NW)
+        mst_name_message.pack(padx=padding, pady=padding)
+
+    conn.commit()
 
 
+def obj_list():
+    conn = sqlite3.connect(database, uri=True)
+    c = conn.cursor()
 
+    # Get All NPC Names
+    c.execute(f"""SELECT obj_name FROM objects""")
+    obj_name_list_raw = c.fetchall()
+    obj_name_list = id.raw_conv(obj_name_list_raw)
+
+    messages_width = 200
+    padding = 10
+
+    if obj_name_list:
+        # Frame For All characters
+        obj_main_list_frame = LabelFrame(pg_2_main_frame_2, text=f'OBJECTS LIST', font=main_font)
+        obj_main_list_frame.pack(fill="both", side=LEFT)
+    else:
+        obj_main_list_frame = None
+
+    for obj_name in obj_name_list:
+        obj_name_message = Message(obj_main_list_frame, text=str(obj_name), width=messages_width, font=main_font, anchor=NW)
+        obj_name_message.pack(padx=padding, pady=padding)
 
     conn.commit()
 
@@ -85,15 +235,13 @@ class NewTab(Frame):
 
 
 # Function to print all created stories as tabs
-def new_tab():
-    global database
-    database = editor_settings.database_module.database
-    # Delete previous paragraphs in the frame
-    for widgets in pg_main_story_frame.winfo_children():
-        widgets.destroy()
-
+def new_story_print():
     conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
+
+    messages_width = 300
+    labels_width = 20
+    padding = 10
 
     c.execute(f"SELECT s_id FROM stories ORDER BY s_id")
     story_id_list_raw = c.fetchall()
@@ -102,106 +250,290 @@ def new_tab():
         for item in tp:
             story_id_list.append(item)
 
-    notebook = ttk.Notebook(pg_main_story_frame)
+    # Create Canvas
+    tab_canvas = Canvas(pg_main_story_frame)
 
-    tab_id_dict = {}
-    tab_id_list = []
+    # Create ScrollBar
+    tab_y_scrollbar = Scrollbar(pg_main_story_frame, orient="vertical", command=tab_canvas.yview)
+    tab_y_scrollbar.pack(side="right", fill="y")
+    tab_x_scrollbar = Scrollbar(pg_main_story_frame, orient="horizontal", command=tab_canvas.xview)
+    tab_x_scrollbar.pack(side="bottom", fill="x")
+
+    # Frame To Put Objects in
+    tab_main_frame_2 = Frame(tab_canvas)
+    tab_main_frame_2.bind("<Configure>", lambda e: tab_canvas.configure(scrollregion=tab_canvas.bbox("all")))
+
+    # Canvas Config
+    tab_canvas.create_window((0, 0), window=tab_main_frame_2, anchor="nw")
+    tab_canvas.configure(yscrollcommand=tab_y_scrollbar.set)
+    tab_canvas.configure(xscrollcommand=tab_x_scrollbar.set)
+    tab_canvas.pack(side="left", fill="both", expand=True)
 
     for s_id in story_id_list:
-        # Tab Control
-        tab_name = f"Story {s_id}"
+        main_story_info_frame = LabelFrame(tab_main_frame_2, text=f'STORY NUMBER {id.id_int(s_id)}', font=main_font)
+        main_story_info_frame.pack(fill="both")
 
-        tab_id = NewTab(notebook, tab_name)
+        # Display All initial Paragraphs With Their Info
+        c.execute(
+            f"""SELECT ip_id, ip_text FROM initial_paragraphs WHERE s_id = '{s_id}'""")
+        initial_paragraphs_info_list = c.fetchall()
 
-        # Save the TAB variables in a list
-        tab_id_list.append(tab_id)
+        if initial_paragraphs_info_list:
+            main_initial_paragraph_info_frame = LabelFrame(main_story_info_frame, text=f'INITIAL PARAGRAPH', font=main_font)
+            main_initial_paragraph_info_frame.pack(fill="both", side=LEFT)
+        else:
+            main_initial_paragraph_info_frame = None
 
-        # Save the TAB variables in a dict
-        tab_id_dict["tab_id_" + str(s_id)] = tab_id
+        for paragraph in initial_paragraphs_info_list:
 
-        # Adding Tab
-        notebook.add(tab_id, text=f"Story {id.id_int(s_id)}")
+            ip_id = paragraph[0]
+            ip_text = paragraph[1]
 
-        # Scroll Bar stuff
-        pg_main_frame_1 = Frame(tab_id)
-        pg_main_frame_1.pack(fill="both", expand=True)
+            initial_paragraph_info_frame = Frame(main_initial_paragraph_info_frame)
+            initial_paragraph_info_frame.pack(fill="both", side=LEFT)
 
-        # Create Canvas
-        pg_canvas = Canvas(pg_main_frame_1)
+            initial_paragraph_text_frame = LabelFrame(initial_paragraph_info_frame, text='Initial Paragaph Text',
+                                                      font=main_font, labelanchor="n")
+            initial_paragraph_text_frame.pack(fill="both")
 
-        # Create ScrollBar
-        pg_y_scrollbar = Scrollbar(pg_main_frame_1, orient="vertical", command=pg_canvas.yview)
-        pg_y_scrollbar.pack(side="right", fill="y")
-        pg_x_scrollbar = Scrollbar(pg_main_frame_1, orient="horizontal", command=pg_canvas.xview)
-        pg_x_scrollbar.pack(side="bottom", fill="x")
+            initial_paragraph_message = Message(initial_paragraph_text_frame, text=ip_text, width=messages_width, font=main_font,
+                                        anchor=NW)
+            initial_paragraph_message.pack(padx=padding, pady=padding)
 
-        # Frame To Put Objects in
-        pg_main_frame_2 = Frame(pg_canvas)
-        pg_main_frame_2.bind("<Configure>", lambda e: pg_canvas.configure(scrollregion=pg_canvas.bbox("all")))
+            c.execute(f"""SELECT c_id, c_text, obj_id FROM choices WHERE c_id LIKE '{ip_id}%'""")
+            choices_info_list = c.fetchall()
 
-        # Canvas Config
-        pg_canvas.create_window((0, 0), window=pg_main_frame_2, anchor="nw")
-        pg_canvas.configure(yscrollcommand=pg_y_scrollbar.set)
-        pg_canvas.configure(xscrollcommand=pg_x_scrollbar.set)
-        pg_canvas.pack(side="left", fill="both", expand=True)
+            if choices_info_list:
+                initial_paragraph_choices_frame = LabelFrame(initial_paragraph_info_frame, text='Initial Paragraph Choices', font=main_font,
+                                                     labelanchor="n")
+                initial_paragraph_choices_frame.pack(fill="both")
+            else:
+                initial_paragraph_choices_frame = None
 
-        # Add stuff here
+            for choice in choices_info_list:
+                c_id = choice[0]
+                c_text = choice[1]
+                obj_id = choice[2]
 
-        # Position
-        notebook.pack(side=TOP, expand=True, fill="both")
+                c.execute(f"""SELECT obj_name FROM objects WHERE obj_id = '{obj_id}'""")
+                obj_name_raw = c.fetchall()
+                obj_name = id.raw_conv(obj_name_raw)
+
+                if not obj_name:
+                    obj = "No Condition"
+                else:
+                    obj = obj_name[0]
+
+                if len(id.decoder_2(c_id)) == 3:
+                    choice_number = id.int_list(id.decoder_2(c_id))[-1]
+                    to_paragraph = "Unassigned"
+                else:
+                    choice_number = id.int_list(id.decoder_2(c_id))[-2]
+                    to_paragraph = f"To {id.decoder_5(id.decoder_2(c_id)[-1])}"
+
+                int_pg_choice_frame = LabelFrame(initial_paragraph_choices_frame, text=f'Choice N.{choice_number}\t {to_paragraph}', font=main_font, labelanchor="n")
+                int_pg_choice_frame.pack(fill="both")
+
+                # Labels Inside each Choice Frame
+                int_pg_choice_text_label = Label(int_pg_choice_frame, text='Choice Text:', width=labels_width, font=main_font, anchor=NW)
+                int_pg_choice_text_label.grid(column=0, row=0, stick="w", padx=padding, pady=padding)
+
+                int_pg_choice_condition_label = Label(int_pg_choice_frame, text='Choice Condition:', width=labels_width, font=main_font, anchor=NW)
+                int_pg_choice_condition_label.grid(column=0, row=1, stick="w", padx=padding, pady=padding)
+
+                # Messages To display in each choice frame
+                int_pg_choice_text_message = Message(int_pg_choice_frame, text=f'{c_text}', width=messages_width, font=main_font, anchor=NW)
+                int_pg_choice_text_message.grid(column=1, row=0, stick="nw", padx=padding, pady=padding)
+
+                int_pg_choice_condition_message = Message(int_pg_choice_frame, text=f'{obj}', width=messages_width, font=main_font, anchor=NW)
+                int_pg_choice_condition_message.grid(column=1, row=1, stick="nw", padx=padding, pady=padding)
+
+        # Display All Paragraphs With Their Info
+        c.execute(f"""SELECT pl_id, p_text, npc_id, mst_id, obj_id FROM paragraphs_list WHERE s_id = '{s_id}' 
+        EXCEPT SELECT pl_id, p_text, npc_id, mst_id, obj_id FROM paragraphs_list WHERE end_bool = {1}""")
+        paragraphs_info_list = c.fetchall()
+
+        if paragraphs_info_list:
+            main_paragraph_info_frame = LabelFrame(main_story_info_frame, text=f'PARAGRAPHS LIST', font=main_font)
+            main_paragraph_info_frame.pack(fill="both", side=LEFT)
+        else:
+            main_paragraph_info_frame = None
+
+        for paragraph in paragraphs_info_list:
+
+            pl_id = paragraph[0]
+            p_text = paragraph[1]
+            npc_id = paragraph[2]
+            mst_id = paragraph[3]
+            obj_id = paragraph[4]
+
+            c.execute(f"""SELECT obj_name from objects WHERE obj_id = '{obj_id}'""")
+            obj_name_raw = c.fetchall()
+            obj_name = id.raw_conv(obj_name_raw)
+
+            if not obj_name:
+                obj = "No Drop Assigned"
+            else:
+                obj = obj_name
+
+            if npc_id == 'None' and mst_id == "None":
+                enemy = "Unassigned NPC"
+            elif npc_id == "None":
+                enemy = mst_id
+            else:
+                enemy = npc_id
+
+            paragraph_info_frame = LabelFrame(main_paragraph_info_frame, text=f'{id.decoder_5(pl_id)}\t{enemy}', font=main_font, labelanchor="n")
+            paragraph_info_frame.pack(fill="both", side=LEFT)
+
+            paragraph_object_frame = LabelFrame(paragraph_info_frame, text='Paragraph Object', font=main_font, labelanchor="n")
+            paragraph_object_frame.pack(fill="both")
+
+            paragraph_object_message = Message(paragraph_object_frame, text=obj, width=messages_width, font=main_font, anchor=NW)
+            paragraph_object_message.pack(padx=padding, pady=padding)
+
+            paragraph_text_frame = LabelFrame(paragraph_info_frame, text='Paragraph Text', font=main_font, labelanchor="n")
+            paragraph_text_frame.pack(fill="both")
+
+            paragraph_text_message = Message(paragraph_text_frame, text=p_text, width=messages_width, font=main_font, anchor=NW)
+            paragraph_text_message.pack(padx=padding, pady=padding)
+
+            c.execute(f"""SELECT c_id, c_text, obj_id FROM choices WHERE c_id LIKE '{pl_id}%'""")
+            choices_info_list = c.fetchall()
+
+            if choices_info_list:
+                paragraph_choices_frame = LabelFrame(paragraph_info_frame, text='Paragraph Choices', font=main_font, labelanchor="n")
+                paragraph_choices_frame.pack(fill="both")
+            else:
+                paragraph_choices_frame = None
+
+            for choice in choices_info_list:
+                c_id = choice[0]
+                c_text = choice[1]
+                obj_id = choice[2]
+
+                c.execute(f"""SELECT obj_name FROM objects WHERE obj_id = '{obj_id}'""")
+                obj_name_raw = c.fetchall()
+                obj_name = id.raw_conv(obj_name_raw)
+
+                if not obj_name:
+                    obj = "No Condition"
+                else:
+                    obj = obj_name[0]
+
+                if len(id.decoder_2(c_id)) == 3:
+                    choice_number = id.int_list(id.decoder_2(c_id))[-1]
+                    to_paragraph = "Unassigned"
+                else:
+                    choice_number = id.int_list(id.decoder_2(c_id))[-2]
+                    to_paragraph = f'To {id.decoder_5(id.decoder_2(c_id)[-1])}'
+
+                pg_choice_frame = LabelFrame(paragraph_choices_frame, text=f'Choice N.{choice_number}\t {to_paragraph}', font=main_font, labelanchor="n")
+                pg_choice_frame.pack(fill="both")
+
+                # Labels Inside each Choice Frame
+                pg_choice_text_label = Label(pg_choice_frame, text='Choice Text:', width=labels_width, font=main_font, anchor=NW)
+                pg_choice_text_label.grid(column=0, row=0, stick="w", padx=padding, pady=padding)
+
+                pg_choice_condition_label = Label(pg_choice_frame, text='Choice Condition:', width=labels_width, font=main_font, anchor=NW)
+                pg_choice_condition_label.grid(column=0, row=1, stick="w", padx=padding, pady=padding)
+
+                # Messages To display in each choice frame
+                pg_choice_text_message = Message(pg_choice_frame, text=f'{c_text}', width=messages_width, font=main_font, anchor=NW)
+                pg_choice_text_message.grid(column=1, row=0, stick="nw", padx=padding, pady=padding)
+
+                pg_choice_condition_message = Message(pg_choice_frame, text=f'{obj}', width=messages_width, font=main_font, anchor=NW)
+                pg_choice_condition_message.grid(column=1, row=1, stick="nw", padx=padding, pady=padding)
+
+        # Display All Ending Paragraphs With Their Info
+        c.execute(f"""SELECT pl_id, p_text, npc_id, mst_id FROM paragraphs_list WHERE s_id = '{s_id}' 
+                        EXCEPT SELECT pl_id, p_text, npc_id, mst_id FROM paragraphs_list WHERE end_bool = {0}""")
+        end_paragraphs_info_list = c.fetchall()
+
+        if end_paragraphs_info_list:
+            main_end_paragraph_info_frame = LabelFrame(main_story_info_frame, text=f'ENDING PARAGRAPHS LIST',
+                                                       font=main_font)
+            main_end_paragraph_info_frame.pack(fill="both", side=LEFT)
+        else:
+            main_end_paragraph_info_frame = None
+
+        for end_paragraph in end_paragraphs_info_list:
+
+            pl_id = end_paragraph[0]
+            p_text = end_paragraph[1]
+            npc_id = end_paragraph[2]
+            mst_id = end_paragraph[3]
+
+            if npc_id == 'None' and mst_id == "None":
+                enemy = "Unassigned NPC"
+            elif npc_id == "None":
+                enemy = mst_id
+            else:
+                enemy = npc_id
+
+            paragraph_info_frame = LabelFrame(main_end_paragraph_info_frame, text=f'{id.decoder_5(pl_id)}\t{enemy}',
+                                              font=main_font, labelanchor="n")
+            paragraph_info_frame.pack(fill="both", side=LEFT)
+
+            paragraph_text_frame = LabelFrame(paragraph_info_frame, text='Paragraph Text', font=main_font,
+                                              labelanchor="n")
+            paragraph_text_frame.pack(fill="both")
+
+            paragraph_text_message = Message(paragraph_text_frame, text=p_text, width=messages_width,
+                                             font=main_font, anchor=NW)
+            paragraph_text_message.pack(padx=padding, pady=padding)
 
     conn.commit()
 
 
-# Function to create ALL necessary tables in the database
-conn = sqlite3.connect(database, uri=True)
-c = conn.cursor()
-c.execute("""CREATE TABLE IF NOT EXISTS stories 
-                                       (s_id text, 
-                                       s_text text,
-                                       ch_id text)""")
-c.execute("""CREATE TABLE IF NOT EXISTS initial_paragraphs
-                                           (s_id text, 
-                                           ip_id text,
-                                           ip_text text)""")
-c.execute("""CREATE TABLE IF NOT EXISTS paragraphs_list
-                                               (s_id text,
-                                               pl_id text,
-                                               p_text text,
-                                               npc_id text,
-                                               mst_id text,
-                                               npc_bool integer,
-                                               mst_bool integer,
-                                               obj_id text,
-                                               end_bool integer)""")
-c.execute("""CREATE TABLE IF NOT EXISTS choices
-                                           (s_id text,
-                                           ip_id text,
-                                           c_id text,
-                                           obj_id text,
-                                           c_text text)""")
-c.execute("""CREATE TABLE IF NOT EXISTS characters
-                                                    (ch_id text,
-                                                    ch_name text, 
-                                                    ch_breed text,
-                                                    ch_life integer,
-                                                    ch_speed integer,
-                                                    ch_defense integer,
-                                                    ch_attack integer,
-                                                    ch_background text)""")
-c.execute("""CREATE TABLE IF NOT EXISTS npcs
-                                                    (npc_id text,
-                                                    npc_name text)""")
-c.execute("""CREATE TABLE IF NOT EXISTS monsters
-                                                    (mst_id text,
-                                                    mst_name text,
-                                                    mst_type text)""")
-c.execute("""CREATE TABLE IF NOT EXISTS objects
-                                                        (obj_id text,
-                                                        obj_name text)""")
+# Create ALL necessary tables in the database
+connection = sqlite3.connect(database, uri=True)
+cursor = connection.cursor()
+cursor.execute("""CREATE TABLE IF NOT EXISTS stories 
+                                                   (s_id text, 
+                                                   s_text text,
+                                                   ch_id text)""")
+cursor.execute("""CREATE TABLE IF NOT EXISTS initial_paragraphs
+                                                       (s_id text, 
+                                                       ip_id text,
+                                                       ip_text text)""")
+cursor.execute("""CREATE TABLE IF NOT EXISTS paragraphs_list
+                                                           (s_id text,
+                                                           pl_id text,
+                                                           p_text text,
+                                                           npc_id text,
+                                                           mst_id text,
+                                                           npc_bool integer,
+                                                           mst_bool integer,
+                                                           obj_id text,
+                                                           end_bool integer)""")
+cursor.execute("""CREATE TABLE IF NOT EXISTS choices
+                                                       (s_id text,
+                                                       ip_id text,
+                                                       c_id text,
+                                                       obj_id text,
+                                                       c_text text)""")
+cursor.execute("""CREATE TABLE IF NOT EXISTS characters
+                                                                (ch_id text,
+                                                                ch_name text, 
+                                                                ch_breed text,
+                                                                ch_life integer,
+                                                                ch_speed integer,
+                                                                ch_defense integer,
+                                                                ch_attack integer,
+                                                                ch_background text)""")
+cursor.execute("""CREATE TABLE IF NOT EXISTS npcs
+                                                                (npc_id text,
+                                                                npc_name text)""")
+cursor.execute("""CREATE TABLE IF NOT EXISTS monsters
+                                                                (mst_id text,
+                                                                mst_name text,
+                                                                mst_type text)""")
+cursor.execute("""CREATE TABLE IF NOT EXISTS objects
+                                                                    (obj_id text,
+                                                                    obj_name text)""")
 
-conn.commit()
-
+connection.commit()
 
 # Main App
 editor = Tk()
@@ -251,21 +583,11 @@ main_menu.add_cascade(label="Options", menu=options_menu)
 tabControl = ttk.Notebook(editor)
 
 # Creating Tabs
-paragraphs_tab = ttk.Frame(tabControl)
-characters_tab = ttk.Frame(tabControl)
-npc_tab = ttk.Frame(tabControl)
-mst_tab = ttk.Frame(tabControl)
-objects_tab = ttk.Frame(tabControl)
-game_settings_tab = ttk.Frame(tabControl)
+story_tab = ttk.Frame(tabControl)
 test_tab = ttk.Frame(tabControl)
 
 # Adding Tabs
-tabControl.add(paragraphs_tab, text="Paragraphs")
-tabControl.add(characters_tab, text="Characters")
-tabControl.add(npc_tab, text="Npc's")
-tabControl.add(mst_tab, text="Monsters / Enemies")
-tabControl.add(objects_tab, text="Objects")
-tabControl.add(game_settings_tab, text="Game Settings")
+tabControl.add(story_tab, text="Create a Story")
 tabControl.add(test_tab, text="Test / Compile")
 
 # Positioning the Tabs
@@ -278,11 +600,11 @@ tabControl.pack(expand=1, fill="both")
 
 # Left Frame
 pg_left_frame_width = int(0.65 * window_x)
-pg_left_frame = Frame(paragraphs_tab)
+pg_left_frame = Frame(story_tab)
 pg_left_frame.pack(fill="both", side=LEFT)
 
 # List Frame
-pg_right_frame = LabelFrame(paragraphs_tab, height=window_y)
+pg_right_frame = LabelFrame(story_tab, height=window_y)
 pg_right_frame.pack(fill="both", expand=True, side=RIGHT)
 
 # Scroll Bar stuff
@@ -309,330 +631,115 @@ pg_2_canvas.configure(xscrollcommand=pg_2_x_scrollbar.set)
 pg_2_canvas.pack(side="left", fill="both", expand=True)
 
 # Main Buttons Frame
-pg_main_buttons_frame = Frame(pg_left_frame)
-pg_main_buttons_frame.pack(fill="both")
+pg_main_buttons_frame = LabelFrame(pg_left_frame)
+pg_main_buttons_frame.pack(fill="both", ipadx=500)
 
-# Story Buttons Frame
-pg_story_buttons_frame = Frame(pg_main_buttons_frame)
-pg_story_buttons_frame.pack(fill="both", side=LEFT)
+# Scroll Bar stuff
+button_main_frame_1 = Frame(pg_main_buttons_frame)
+button_main_frame_1.pack(fill="both", expand=True)
 
-# Initial Paragraphs Buttons Frame
-pg_int_paragraph_buttons_frame = Frame(pg_main_buttons_frame)
-pg_int_paragraph_buttons_frame.pack(fill="both", side=LEFT)
+# Create Canvas
+button_canvas = Canvas(button_main_frame_1)
 
-# Paragraphs Buttons Frame
-pg_paragraphs_buttons_frame = Frame(pg_main_buttons_frame)
-pg_paragraphs_buttons_frame.pack(fill="both", side=LEFT)
+# Create ScrollBar
+button_y_scrollbar = Scrollbar(button_main_frame_1, orient="vertical", command=button_canvas.yview)
+button_y_scrollbar.pack(side="right", fill="y")
+button_x_scrollbar = Scrollbar(button_main_frame_1, orient="horizontal", command=button_canvas.xview)
+button_x_scrollbar.pack(side="bottom", fill="x")
 
-# Choices Buttons Frame
-pg_choices_buttons_frame = Frame(pg_main_buttons_frame)
-pg_choices_buttons_frame.pack(fill="both", side=LEFT)
+# Frame To Put Objects in
+button_main_frame_2 = Frame(button_canvas)
+button_main_frame_2.bind("<Configure>", lambda e: button_canvas.configure(scrollregion=button_canvas.bbox("all")))
+
+# Canvas Config
+button_canvas.create_window((0, 0), window=button_main_frame_2, anchor="nw")
+button_canvas.configure(yscrollcommand=button_y_scrollbar.set)
+button_canvas.configure(xscrollcommand=button_x_scrollbar.set)
+button_canvas.pack(side="left", fill="both", expand=True)
 
 # Story Frame
 pg_main_story_frame = LabelFrame(pg_left_frame)
 pg_main_story_frame.pack(fill="both", expand=True)
 
-pg_buttons_width = 22
-pg_buttons_length = 30
-pg_buttons_height = 1
-pg_button_x_space = 2
-pg_button_y_space = 4
-pg_font_size = 18
+main_pad_x = 15
+main_pad_y = 15
+main_buttons_height = 1
+main_buttons_width = 20
+main_font_size = 18
+
+# Button Pictures
+new_ch_image, edit_ch_image = PhotoImage(file='Illustrations/New Character.png'), PhotoImage(file='Illustrations/Edit Character.png')
+new_npc_image, edit_npc_image = PhotoImage(file='Illustrations/New  NPC.png'), PhotoImage(file='Illustrations/Edit NPC.png')
+new_monster_image, edit_monster_image = PhotoImage(file='Illustrations/New  Monster.png'), PhotoImage(file='Illustrations/Edit Monster.png')
+new_object_image, edit_object_image = PhotoImage(file='Illustrations/New  Object.png'), PhotoImage(file='Illustrations/Edit Object.png')
+
+
 # NEW STORY Button
-pg_new_story_button = Button(pg_story_buttons_frame, text="New Story", bg="#5fafde", fg="White", padx=pg_buttons_width,
-                             pady=pg_buttons_height, font=("Times New Roman", pg_font_size), relief=FLAT, width=pg_buttons_width,
+pg_new_story_button = Button(button_main_frame_2, text="New Story", bg="#5fafde", fg="White", font=("Times New Roman", main_font_size), relief=FLAT, width=main_buttons_width, height=main_buttons_height,
                              command=story_button_func.s_new_window)
-pg_new_story_button.grid(row=0, column=0, stick="w", padx=pg_button_x_space, pady=pg_button_y_space)
+pg_new_story_button.grid(row=0, column=0, stick="w", padx=main_pad_x, pady=main_pad_y)
 
 # EDIT STORY  Button
-pg_edit_story_button = Button(pg_story_buttons_frame, text="Edit Story", bg="#5fafde", fg="White", padx=pg_buttons_width,
-                              pady=pg_buttons_height, font=("Times New Roman", pg_font_size), relief=FLAT, width=pg_buttons_width,
+pg_edit_story_button = Button(button_main_frame_2, text="Edit Story", bg="#5fafde", fg="White", font=("Times New Roman", main_font_size), relief=FLAT, width=main_buttons_width, height=main_buttons_height,
                               command=story_button_func.s_edt_window)
-pg_edit_story_button.grid(row=1, column=0, stick="w", padx=pg_button_x_space, pady=pg_button_y_space)
+pg_edit_story_button.grid(row=1, column=0, stick="w", padx=main_pad_x, pady=main_pad_y)
 
 # ADD INITIAL PARAGRAPH Button
-pg_new_int_par_button = Button(pg_int_paragraph_buttons_frame, text="New Initial Paragraph", bg="#5fafde", fg="White",
-                               padx=pg_buttons_width, pady=pg_buttons_height, font=("Times New Roman", pg_font_size), relief=FLAT,
-                               width=pg_buttons_width, command=initial_paragraph_buttons_func.ip_new_window)
-pg_new_int_par_button.grid(row=0, column=0, stick="w", padx=pg_button_x_space, pady=pg_button_y_space)
+pg_new_int_par_button = Button(button_main_frame_2, text="New Initial Paragraph", bg="#5fafde", fg="White", font=("Times New Roman", main_font_size), relief=FLAT, height=main_buttons_height,
+                               width=main_buttons_width, command=initial_paragraph_buttons_func.ip_new_window)
+pg_new_int_par_button.grid(row=0, column=1, stick="w", padx=main_pad_x, pady=main_pad_y)
 
 # EDIT INITIAL PARAGRAPH  Button
-pg_edit_int_par_button = Button(pg_int_paragraph_buttons_frame, text="Edit Initial Paragraph", bg="#5fafde", fg="White",
-                                padx=pg_buttons_width, pady=pg_buttons_height, font=("Times New Roman", pg_font_size), relief=FLAT,
-                                width=pg_buttons_width, command=initial_paragraph_buttons_func.ip_edt_window)
-pg_edit_int_par_button.grid(row=1, column=0, stick="w", padx=pg_button_x_space, pady=pg_button_y_space)
+pg_edit_int_par_button = Button(button_main_frame_2, text="Edit Initial Paragraph", bg="#5fafde", fg="White", font=("Times New Roman", main_font_size), relief=FLAT, height=main_buttons_height,
+                                width=main_buttons_width, command=initial_paragraph_buttons_func.ip_edt_window)
+pg_edit_int_par_button.grid(row=1, column=1, stick="w", padx=main_pad_x, pady=main_pad_y)
 
 # NEW PARAGRAPH Button
-pg_new_paragraph_button = Button(pg_paragraphs_buttons_frame, text="New Paragraph", bg="#5fafde", fg="White",
-                                 padx=pg_buttons_width, pady=pg_buttons_height, font=("Times New Roman", pg_font_size), relief=FLAT,
-                                 width=pg_buttons_width, command=paragraph_buttons_func.p_new_window)
-pg_new_paragraph_button.grid(row=0, column=0, stick="w", padx=pg_button_x_space, pady=pg_button_y_space)
+pg_new_paragraph_button = Button(button_main_frame_2, text="New Paragraph", bg="#5fafde", fg="White", font=("Times New Roman", main_font_size), relief=FLAT, height=main_buttons_height,
+                                 width=main_buttons_width, command=paragraph_buttons_func.p_new_window)
+pg_new_paragraph_button.grid(row=0, column=2, stick="w", padx=main_pad_x, pady=main_pad_y)
 
 # EDIT PARAGRAPH  Button
-edit_paragraph_button = Button(pg_paragraphs_buttons_frame, text="Edit Paragraph", bg="#5fafde", fg="White", padx=pg_buttons_width,
-                               pady=pg_buttons_height, font=("Times New Roman", pg_font_size), relief=FLAT, width=pg_buttons_width,
+edit_paragraph_button = Button(button_main_frame_2, text="Edit Paragraph", bg="#5fafde", fg="White", font=("Times New Roman", main_font_size), relief=FLAT, width=main_buttons_width, height=main_buttons_height,
                                command=paragraph_buttons_func.p_edt_window)
-edit_paragraph_button.grid(row=1, column=0, stick="w", padx=pg_button_x_space, pady=pg_button_y_space)
+edit_paragraph_button.grid(row=1, column=2, stick="w", padx=main_pad_x, pady=main_pad_y)
 
 # ADD CHOICE Button
-new_choice_button = Button(pg_choices_buttons_frame, text="New Choice", bg="#5fafde", fg="White", padx=pg_buttons_width,
-                           pady=pg_buttons_height, font=("Times New Roman", pg_font_size), relief=FLAT, width=pg_buttons_width,
+new_choice_button = Button(button_main_frame_2, text="New Choice", bg="#5fafde", fg="White", font=("Times New Roman", main_font_size), relief=FLAT, width=main_buttons_width, height=main_buttons_height,
                            command=choice_buttons_func.c_new_window)
-new_choice_button.grid(row=0, column=0, stick="w", padx=pg_button_x_space, pady=pg_button_y_space)
+new_choice_button.grid(row=0, column=3, stick="w", padx=main_pad_x, pady=main_pad_y)
 
 # EDIT CHOICE  Button
-edit_choice_button = Button(pg_choices_buttons_frame, text="Edit Choice", bg="#5fafde", fg="White", padx=pg_buttons_width,
-                            pady=pg_buttons_height, font=("Times New Roman", pg_font_size), relief=FLAT, width=pg_buttons_width,
+edit_choice_button = Button(button_main_frame_2, text="Edit Choice", bg="#5fafde", fg="White", font=("Times New Roman", main_font_size), relief=FLAT, width=main_buttons_width, height=main_buttons_height,
                             command=choice_buttons_func.c_edt_window)
-edit_choice_button.grid(row=1, column=0, stick="w", padx=pg_button_x_space, pady=pg_button_y_space)
+edit_choice_button.grid(row=1, column=3, stick="w", padx=main_pad_x, pady=main_pad_y)
+
+# NEW CHARACTER & EDIT CHARACTER Button
+new_ch_button = Button(button_main_frame_2, image=new_ch_image, border=0, command=character_buttons_func.ch_new_window)
+new_ch_button.grid(column=4, row=0, padx=main_pad_x, pady=main_pad_y)
+edit_ch_button = Button(button_main_frame_2, image=edit_ch_image, border=0, command=character_buttons_func.ch_edt_window)
+edit_ch_button.grid(column=4, row=1, padx=main_pad_x, pady=main_pad_y)
+
+# NEW NPC & EDIT NPC Button
+new_npc_button = Button(button_main_frame_2, image=new_npc_image, border=0, command=npc_buttons_func.npc_new_window)
+new_npc_button.grid(column=5, row=0, padx=main_pad_x, pady=main_pad_y)
+edit_npc_button = Button(button_main_frame_2, image=edit_npc_image, border=0, command=npc_buttons_func.npc_edt_window)
+edit_npc_button.grid(column=5, row=1, padx=main_pad_x, pady=main_pad_y)
+
+# NEW MONSTER & EDIT MONSTER Button
+new_mst_button = Button(button_main_frame_2, image=new_monster_image, border=0, command=monster_enemy_buttons_func.mst_new_window)
+new_mst_button.grid(column=6, row=0, padx=main_pad_x, pady=main_pad_y)
+new_mst_button = Button(button_main_frame_2, image=edit_monster_image, border=0, command=monster_enemy_buttons_func.mst_edt_window)
+new_mst_button.grid(column=6, row=1, padx=main_pad_x, pady=main_pad_y)
+
+# NEW OBJECT & EDIT OBJECT Button
+new_obj_button = Button(button_main_frame_2, image=new_object_image, border=0, command=object_buttons_func.obj_new_window)
+new_obj_button.grid(column=7, row=0, padx=main_pad_x, pady=main_pad_y)
+new_obj_button = Button(button_main_frame_2, image=edit_object_image, border=0, command=object_buttons_func.obj_edt_window)
+new_obj_button.grid(column=7, row=1, padx=main_pad_x, pady=main_pad_y)
 
 # -------------------------------------------
 # THIS IS THE END OF THE "PARAGRAPH" TAB CODE
-# -------------------------------------------
-# -------------------------------------------
-# THIS FOLLOWING CODE IS FOR "CHARACTERS" TAB
-# -------------------------------------------
-# ALL MAIN FRAMES
-# MAIN Frame
-ch_left_frame_width = int(0.75 * window_x)
-ch_main_frame = LabelFrame(characters_tab, width=ch_left_frame_width, height=window_y)
-ch_main_frame.pack(fill="both", expand=True)
-
-# Main Buttons Frame
-ch_main_frame_height = int(window_y / 4.8)
-ch_main_buttons_frame = LabelFrame(ch_main_frame, height=ch_main_frame_height, width=ch_left_frame_width)
-ch_main_buttons_frame.pack(fill="both")
-
-# Characters Frame
-ch_main_characters_frame = LabelFrame(ch_main_frame)
-ch_main_characters_frame.pack(fill="both", expand=True)
-
-# Scroll Bar stuff
-ch_main_frame_1 = Frame(ch_main_characters_frame)
-ch_main_frame_1.pack(fill="both", expand=True)
-
-# Create Canvas
-ch_canvas = Canvas(ch_main_frame_1)
-
-# Create ScrollBar
-ch_y_scrollbar = Scrollbar(ch_main_frame_1, orient="vertical", command=ch_canvas.yview)
-ch_y_scrollbar.pack(side="right", fill="y")
-ch_x_scrollbar = Scrollbar(ch_main_frame_1, orient="horizontal", command=ch_canvas.xview)
-ch_x_scrollbar.pack(side="bottom", fill="x")
-
-# Frame To Put Objects in
-ch_main_frame_2 = Frame(ch_canvas)
-ch_main_frame_2.bind("<Configure>", lambda e: ch_canvas.configure(scrollregion=ch_canvas.bbox("all")))
-
-# Canvas Config
-ch_canvas.create_window((0, 0), window=ch_main_frame_2, anchor="nw")
-ch_canvas.configure(yscrollcommand=ch_y_scrollbar.set)
-ch_canvas.configure(xscrollcommand=ch_x_scrollbar.set)
-ch_canvas.pack(side="left", fill="both", expand=True)
-
-ch_button_width = 22
-ch_buttons_width = 30
-ch_buttons_height = 1
-ch_button_x_space = 2
-ch_button_y_space = 4
-ch_font_size = 18
-# NEW CHARACTER Button
-ch_new_character_button = Button(ch_main_buttons_frame, text="New Character", bg="#5fafde", fg="White", padx=ch_buttons_width,
-                                 pady=ch_buttons_height, font=("Times New Roman", ch_font_size), relief=FLAT, width=ch_button_width,
-                                 command=character_buttons_func.ch_new_window)
-ch_new_character_button.pack(padx=ch_button_x_space, pady=ch_button_y_space)
-
-# EDIT CHARACTER Button
-ch_edit_character_button = Button(ch_main_buttons_frame, text="Edit Character", bg="#5fafde", fg="White", padx=ch_buttons_width,
-                                  pady=ch_buttons_height, font=("Times New Roman", ch_font_size), relief=FLAT, width=ch_button_width,
-                                  command=character_buttons_func.ch_edt_window)
-ch_edit_character_button.pack(padx=ch_button_x_space, pady=ch_button_y_space)
-# -------------------------------------------
-# THIS IS THE END OF THE "CHARACTER" TAB CODE
-# -------------------------------------------
-# -------------------------------------------
-# THIS FOLLOWING CODE IS FOR "NPC" TAB
-# -------------------------------------------
-# ALL MAIN FRAMES
-# MAIN Frame
-npc_left_frame_width = int(0.75 * window_x)
-npc_main_frame = LabelFrame(npc_tab, width=npc_left_frame_width, height=window_y)
-npc_main_frame.pack(fill="both", expand=True)
-
-# Main Buttons Frame
-npc_main_frame_height = int(window_y / 4.8)
-npc_main_buttons_frame = LabelFrame(npc_main_frame, height=npc_main_frame_height, width=npc_left_frame_width)
-npc_main_buttons_frame.pack(fill="both")
-
-# NPC Frame
-npc_main_npc_frame = LabelFrame(npc_main_frame)
-npc_main_npc_frame.pack(fill="both", expand=True)
-
-# Scroll Bar stuff
-npc_main_frame_1 = Frame(npc_main_npc_frame)
-npc_main_frame_1.pack(fill="both", expand=True)
-
-# Create Canvas
-npc_canvas = Canvas(npc_main_frame_1)
-
-# Create ScrollBar
-npc_y_scrollbar = Scrollbar(npc_main_frame_1, orient="vertical", command=npc_canvas.yview)
-npc_y_scrollbar.pack(side="right", fill="y")
-npc_x_scrollbar = Scrollbar(npc_main_frame_1, orient="horizontal", command=npc_canvas.xview)
-npc_x_scrollbar.pack(side="bottom", fill="x")
-
-# Frame To Put Objects in
-npc_main_frame_2 = Frame(npc_canvas)
-npc_main_frame_2.bind("<Configure>", lambda e: npc_canvas.configure(scrollregion=npc_canvas.bbox("all")))
-
-# Canvas Config
-npc_canvas.create_window((0, 0), window=npc_main_frame_2, anchor="nw")
-npc_canvas.configure(yscrollcommand=npc_y_scrollbar.set)
-npc_canvas.configure(xscrollcommand=npc_x_scrollbar.set)
-npc_canvas.pack(side="left", fill="both", expand=True)
-
-npc_button_width = 22
-npc_buttons_width = 30
-npc_buttons_height = 1
-npc_button_x_space = 2
-npc_button_y_space = 4
-npc_font_size = 18
-# NEW NPC Button
-npc_new_npc_button = Button(npc_main_buttons_frame, text="New NPC", bg="#5fafde", fg="White", padx=npc_buttons_width,
-                            pady=npc_buttons_height, font=("Times New Roman", npc_font_size), relief=FLAT, width=npc_button_width,
-                            command=npc_buttons_func.npc_new_window)
-npc_new_npc_button.pack(padx=npc_button_x_space, pady=npc_button_y_space)
-
-# EDIT NPC Button
-npc_edit_npc_button = Button(npc_main_buttons_frame, text="Edit NPC", bg="#5fafde", fg="White", padx=npc_buttons_width,
-                             pady=npc_buttons_height, font=("Times New Roman", npc_font_size), relief=FLAT, width=npc_button_width,
-                             command=npc_buttons_func.npc_edt_window)
-npc_edit_npc_button.pack(padx=npc_button_x_space, pady=npc_button_y_space)
-# -------------------------------------------
-# THIS IS THE END OF THE "NPC" TAB CODE
-# -------------------------------------------
-# -------------------------------------------
-# THIS FOLLOWING CODE IS FOR "MONSTERS / ENEMIES" TAB
-# -------------------------------------------
-# ALL MAIN FRAMES
-# MAIN Frame
-mst_main_frame_width = int(0.75 * window_x)
-mst_main_frame = LabelFrame(mst_tab, width=mst_main_frame_width, height=window_y)
-mst_main_frame.pack(fill="both", expand=True)
-
-# Main Buttons Frame
-mst_main_frame_height = int(window_y / 4.8)
-mst_main_buttons_frame = LabelFrame(mst_main_frame, height=mst_main_frame_height, width=mst_main_frame_width)
-mst_main_buttons_frame.pack(fill="both")
-
-# MONSTER / ENEMY Frame
-mst_main_mst_frame = LabelFrame(mst_main_frame)
-mst_main_mst_frame.pack(fill="both", expand=True)
-
-# Scroll Bar stuff
-mst_main_frame_1 = Frame(mst_main_mst_frame)
-mst_main_frame_1.pack(fill="both", expand=True)
-
-# Create Canvas
-mst_canvas = Canvas(mst_main_frame_1)
-
-# Create ScrollBar
-mst_y_scrollbar = Scrollbar(mst_main_frame_1, orient="vertical", command=mst_canvas.yview)
-mst_y_scrollbar.pack(side="right", fill="y")
-mst_x_scrollbar = Scrollbar(mst_main_frame_1, orient="horizontal", command=mst_canvas.xview)
-mst_x_scrollbar.pack(side="bottom", fill="x")
-
-# Frame To Put Objects in
-mst_main_frame_2 = Frame(mst_canvas)
-mst_main_frame_2.bind("<Configure>", lambda e: mst_canvas.configure(scrollregion=mst_canvas.bbox("all")))
-
-# Canvas Config
-mst_canvas.create_window((0, 0), window=mst_main_frame_2, anchor="nw")
-mst_canvas.configure(yscrollcommand=mst_y_scrollbar.set)
-mst_canvas.configure(xscrollcommand=mst_x_scrollbar.set)
-mst_canvas.pack(side="left", fill="both", expand=True)
-
-
-mst_button_width = 22
-mst_buttons_width = 30
-mst_buttons_height = 1
-mst_button_x_space = 2
-mst_button_y_space = 4
-mst_font_size = 18
-# NEW MONSTER / ENEMY Button
-mst_new_mst_button = Button(mst_main_buttons_frame, text="New Monster Or Enemy", bg="#5fafde", fg="White", padx=mst_buttons_width,
-                            pady=mst_buttons_height, font=("Times New Roman", mst_font_size), relief=FLAT, width=mst_button_width,
-                            command=monster_enemy_buttons_func.mst_new_window)
-mst_new_mst_button.pack(padx=mst_button_x_space, pady=mst_button_y_space)
-
-# EDIT MONSTER / ENEMY Button
-mst_edit_mst_button = Button(mst_main_buttons_frame, text="Edit Monster Or Enemy", bg="#5fafde", fg="White", padx=mst_buttons_width,
-                             pady=mst_buttons_height, font=("Times New Roman", mst_font_size), relief=FLAT, width=mst_button_width,
-                             command=monster_enemy_buttons_func.mst_edt_window)
-mst_edit_mst_button.pack(padx=mst_button_x_space, pady=mst_button_y_space)
-# -------------------------------------------
-# THIS IS THE END OF THE "MONSTERS / ENEMIES" TAB CODE
-# -------------------------------------------
-# -------------------------------------------
-# THIS FOLLOWING CODE IS FOR "OBJECTS" TAB
-# -------------------------------------------
-# ALL MAIN FRAMES
-# MAIN Frame
-obj_main_frame_width = int(0.75 * window_x)
-obj_main_frame = LabelFrame(objects_tab, width=obj_main_frame_width, height=window_y)
-obj_main_frame.pack(fill="both", expand=True)
-
-# Main Buttons Frame
-obj_main_frame_height = int(window_y / 4.8)
-obj_main_buttons_frame = LabelFrame(obj_main_frame, height=obj_main_frame_height, width=obj_main_frame_width)
-obj_main_buttons_frame.pack(fill="both")
-
-# OBJECT Frame
-obj_frame_0 = LabelFrame(obj_main_frame)
-obj_frame_0.pack(fill="both", expand=True)
-
-# Scroll Bar stuff
-obj_main_frame_1 = Frame(obj_frame_0)
-obj_main_frame_1.pack(fill="both", expand=True)
-
-# Create Canvas
-obj_canvas = Canvas(obj_main_frame_1)
-
-# Create ScrollBar
-obj_y_scrollbar = Scrollbar(obj_main_frame_1, orient="vertical", command=obj_canvas.yview)
-obj_y_scrollbar.pack(side="right", fill="y")
-obj_x_scrollbar = Scrollbar(obj_main_frame_1, orient="horizontal", command=obj_canvas.xview)
-obj_x_scrollbar.pack(side="bottom", fill="x")
-
-# Frame To Put Objects in
-obj_main_frame_2 = Frame(obj_canvas)
-obj_main_frame_2.bind("<Configure>", lambda e: obj_canvas.configure(scrollregion=obj_canvas.bbox("all")))
-
-# Canvas Config
-obj_canvas.create_window((0, 0), window=obj_main_frame_2, anchor="nw")
-obj_canvas.configure(yscrollcommand=obj_y_scrollbar.set)
-obj_canvas.configure(xscrollcommand=obj_x_scrollbar.set)
-obj_canvas.pack(side="left", fill="both", expand=True)
-
-obj_button_width = 22
-obj_buttons_width = 30
-obj_buttons_height = 1
-obj_button_x_space = 2
-obj_button_y_space = 4
-obj_font_size = 18
-# NEW OBJECT Button
-obj_new_obj_button = Button(obj_main_buttons_frame, text="New Object", bg="#5fafde", fg="White", padx=obj_buttons_width,
-                            pady=obj_buttons_height, font=("Times New Roman", obj_font_size), relief=FLAT, width=obj_button_width,
-                            command=object_buttons_func.obj_new_window)
-obj_new_obj_button.pack(padx=obj_button_x_space, pady=obj_button_y_space)
-
-# EDIT OBJECT Button
-obj_edit_obj_button = Button(obj_main_buttons_frame, text="Edit Object", bg="#5fafde", fg="White", padx=obj_buttons_width,
-                             pady=obj_buttons_height, font=("Times New Roman", obj_font_size), relief=FLAT, width=obj_button_width,
-                             command=object_buttons_func.obj_edt_window)
-obj_edit_obj_button.pack(padx=obj_button_x_space, pady=obj_button_y_space)
-# -------------------------------------------
-# THIS IS THE END OF THE "OBJECTS" TAB CODE
 # -------------------------------------------
 # -------------------------------------------
 # THIS FOLLOWING CODE IS FOR "TEST" TAB
@@ -678,21 +785,19 @@ test_canvas.pack(side="left", fill="both", expand=True)
 test_button_width = 22
 test_buttons_width = 30
 test_buttons_height = 1
-text_button_x_space = 2
+text_button_x_space = 500
 test_button_y_space = 4
 test_font_size = 18
 
-# CHECK ERRORS Button
-test_test_script_button = Button(test_main_buttons_frame, text="Check For Errors", bg="#5fafde", fg="White", padx=test_buttons_width,
-                                 pady=test_buttons_height, font=("Times New Roman", test_font_size), relief=FLAT, width=test_button_width,
-                                 command=error_buttons_func.function_runner)
-test_test_script_button.pack(padx=text_button_x_space, pady=test_button_y_space)
+check_button, compile_button = PhotoImage(file='Illustrations/Safety Check.png'), PhotoImage(file='Illustrations/Compile.png')
 
-# COMPILE DATA Button
-test_compile_script_button = Button(test_main_buttons_frame, text="Compile Data Into Game", bg="#5fafde", fg="White", padx=test_buttons_width,
-                                    pady=test_buttons_height, font=("Times New Roman", test_font_size), relief=FLAT, width=test_button_width, state=DISABLED,
-                                    command=None)
-test_compile_script_button.pack(padx=text_button_x_space, pady=test_button_y_space)
+# CHECK ERRORS BUTTON
+test_test_script_button = Button(test_main_buttons_frame, image=check_button, border=0, command=error_buttons_func.function_runner)
+test_test_script_button.grid(column=1, row=0, padx=630, pady=30)
+
+# COMPILE BUTTON
+test_compile_script_button = Button(test_main_buttons_frame, image=compile_button, border=0, command=None)
+test_compile_script_button.grid(column=1, row=1, padx=700, pady=20)
 # -------------------------------------------
 # THIS IS THE END OF THE "TEST" TAB CODE
 # -------------------------------------------

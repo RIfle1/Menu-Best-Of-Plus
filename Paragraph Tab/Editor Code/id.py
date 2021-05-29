@@ -130,6 +130,45 @@ def decoder_3(inp):
     return final_text
 
 
+def decoder_4(inp):
+    output_1 = inp.split("_")
+    cut_id_list = []
+    final_list = []
+    for id_x in output_1:
+        cut_id_x = re.findall('(\d+|[A-Za-z]+)', id_x)
+        cut_id_list.append(cut_id_x)
+
+    for id_x in cut_id_list:
+        inside_list = []
+
+        if id_x[0] == 'P':
+            inside_list.append('Paragraph N.')
+            inside_list.append(id_x[1])
+
+        final_list.append(inside_list)
+    return final_list
+
+
+def decoder_5(inp):
+    raw_code = decoder_4(inp)
+    output = []
+    for lt in raw_code:
+        inside_list = []
+        for index in range(len(lt)):
+            inside_list += ([f'{lt[index]}'])
+        output.append(inside_list)
+
+    final_text = ''
+    for lt in output:
+        for item in lt:
+            final_text += f'{item}'
+
+    return final_text
+
+
+"""print(decoder_5("S1_P1"))"""
+
+
 # Decoder to return the letter of an ID
 def id_str(inp):
     x_id = inp[0]
