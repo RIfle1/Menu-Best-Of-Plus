@@ -4,6 +4,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 import editor_settings
+import test_buttons_func
 import id
 
 
@@ -133,6 +134,7 @@ def p_new_insert():
 
 
 def p_new_window():
+    style_func()
     global p_new_wd, database
     database = editor_settings.database_module.database
     # Create New Window
@@ -269,7 +271,7 @@ def p_new_window():
 
     p_new_c_id_opt_menu()
 
-    style_func()
+    test_buttons_func.error_update()
 
     p_new_wd.mainloop()
 
@@ -375,7 +377,7 @@ def p_edt_save_enemy():
 
             # Show Success pop-up
             messagebox.showinfo("Success",
-                                f"Paragraph Number {id.id_int(p_edt_p_id)} Has Been Assigned Enemy {p_edt_mst_name} has been successfully modified.")
+                                f"Paragraph Number {id.id_int(p_edt_p_id)} Has Been Assigned Enemy {p_edt_mst_name}.")
         else:
             messagebox.showerror("Input Error", f'You Cannot Assign An Enemy And An NPC To A Paragraph', icon='warning')
 
@@ -518,6 +520,7 @@ def p_edt_p_end():
 
 
 def p_edt_window():
+    style_func()
     global p_edt_wd, database
     database = editor_settings.database_module.database
     p_edt_wd = Toplevel()
@@ -773,7 +776,7 @@ def p_edt_window():
         c = conn.cursor()
 
         # Get npc_id's that haven't been used
-        c.execute(f"""SELECT npc_id FROM npcs EXCEPT SELECT npc_id FROM paragraphs_list""")
+        c.execute(f"""SELECT npc_id FROM npcs""")
         p_edt_npc_id_list_raw = c.fetchall()
         p_edt_npc_id_list = id.raw_conv(p_edt_npc_id_list_raw)
 
@@ -803,7 +806,7 @@ def p_edt_window():
         c = conn.cursor()
 
         # Get mst_id's that haven't been used
-        c.execute(f"""SELECT mst_id FROM monsters EXCEPT SELECT mst_id FROM paragraphs_list""")
+        c.execute(f"""SELECT mst_id FROM monsters""")
         p_edt_mst_id_list_raw = c.fetchall()
         p_edt_mst_id_list = id.raw_conv(p_edt_mst_id_list_raw)
 
@@ -852,6 +855,6 @@ def p_edt_window():
     p_edt_s_id_opt_menu()
     p_edt_p_id_opt_menu()
 
-    style_func()
+    test_buttons_func.error_update()
 
     p_edt_wd.mainloop()

@@ -8,6 +8,7 @@ import tkinter.font as font
 import sqlite3
 import id
 import editor_settings
+import test_buttons_func
 
 
 def style_func():
@@ -65,6 +66,7 @@ def obj_new_save():
 
 
 def obj_new_window():
+    style_func()
     global obj_new_wd, database
     database = editor_settings.database_module.database
     # Create New Window
@@ -81,7 +83,6 @@ def obj_new_window():
     obj_new_wd.geometry(f"{window_x_2}x{window_y_2}+{pos_x_2}+{pos_y_2}")
 
     obj_new_frame_height = 200
-    obj_new_rest = window_y_2 - obj_new_frame_height * 2
 
     # Info Frame 1
     obj_new_info_frame_1 = LabelFrame(obj_new_wd, width=window_x_2, height=obj_new_frame_height)
@@ -90,7 +91,6 @@ def obj_new_window():
     obj_new_width = 42
     obj_new_pad = 10
     obj_new_entry_width = 49
-    obj_new_text_width = 37
 
     # Labels
     obj_new_name_label = ttk.Label(obj_new_info_frame_1, text="Object Name:", width=int(obj_new_width / 2), anchor=W)
@@ -110,7 +110,7 @@ def obj_new_window():
     obj_new_cancel_button = ttk.Button(obj_new_info_frame_1, text="Cancel", width=obj_new_width-1, command=obj_new_wd.destroy)
     obj_new_cancel_button.grid(row=1, column=1, padx=obj_new_pad, pady=obj_new_pad, stick="w")
 
-    style_func()
+    test_buttons_func.error_update()
 
     obj_new_wd.mainloop()
 
@@ -208,6 +208,7 @@ def obj_edt_edit():
 
 
 def obj_edt_window():
+    style_func()
     global obj_edt_wd, database
     database = editor_settings.database_module.database
     # Create New Window
@@ -227,7 +228,7 @@ def obj_edt_window():
     obj_edt_rest = window_y_2 - obj_edt_frame_height * 2
 
     # Main Frame
-    obj_edt_main_frame = LabelFrame(obj_edt_wd, width=window_x_2, height=obj_edt_frame_height)
+    obj_edt_main_frame = Frame(obj_edt_wd, width=window_x_2, height=obj_edt_frame_height)
     obj_edt_main_frame.pack(fill="both")
 
     # Info Frame 0
@@ -299,7 +300,7 @@ def obj_edt_window():
 
     obj_edt_obj_name_opt_menu()
 
-    style_func()
+    test_buttons_func.error_update()
 
     obj_edt_wd.mainloop()
 

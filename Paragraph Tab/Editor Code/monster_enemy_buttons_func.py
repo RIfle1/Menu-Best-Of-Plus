@@ -8,6 +8,7 @@ import tkinter.font as font
 import sqlite3
 import id
 import editor_settings
+import test_buttons_func
 
 
 def style_func():
@@ -69,6 +70,7 @@ def mst_new_save():
 
 
 def mst_new_window():
+    style_func()
     global mst_new_wd, database
     database = editor_settings.database_module.database
     # Create New Window
@@ -97,7 +99,6 @@ def mst_new_window():
     mst_new_width = 42
     mst_new_pad = 10
     mst_new_entry_width = 49
-    mst_new_text_width = 37
 
     # Labels
     npc_new_type_label = ttk.Label(mst_new_info_frame_1, text="Select Enemy Type:", width=int(mst_new_width / 2), anchor=W)
@@ -127,7 +128,7 @@ def mst_new_window():
     npc_new_cancel_button = ttk.Button(mst_new_button_frame, text="Cancel", width=mst_new_width-1, command=mst_new_wd.destroy)
     npc_new_cancel_button.grid(row=0, column=1, padx=mst_new_pad, pady=mst_new_pad, stick="w")
 
-    style_func()
+    test_buttons_func.error_update()
 
     mst_new_wd.mainloop()
 
@@ -225,6 +226,7 @@ def mst_edt_edit():
 
 
 def mst_edt_window():
+    style_func()
     global mst_edt_wd, database
     database = editor_settings.database_module.database
     # Create New Window
@@ -243,11 +245,11 @@ def mst_edt_window():
     mst_edt_frame_height = 200
     mst_edt_rest = window_y_2 - mst_edt_frame_height * 2
     # Info Frame 0
-    mst_edt_info_frame_0 = LabelFrame(mst_edt_wd, width=window_x_2, height=mst_edt_frame_height)
+    mst_edt_info_frame_0 = Frame(mst_edt_wd, width=window_x_2, height=mst_edt_frame_height)
     mst_edt_info_frame_0.pack(fill="both", side=TOP)
 
     # Button Frame
-    mst_edt_button_frame = LabelFrame(mst_edt_wd, height=mst_edt_rest / 2, width=window_x_2)
+    mst_edt_button_frame = Frame(mst_edt_wd, height=mst_edt_rest / 2, width=window_x_2)
     mst_edt_button_frame.pack(fill="both")
 
     mst_edt_width = 42
@@ -310,7 +312,7 @@ def mst_edt_window():
 
     mst_edt_mst_name_opt_menu()
 
-    style_func()
+    test_buttons_func.error_update()
 
     mst_edt_wd.mainloop()
 

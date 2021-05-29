@@ -8,6 +8,7 @@ import tkinter.font as font
 import sqlite3
 import id
 import editor_settings
+import test_buttons_func
 
 
 def style_func():
@@ -27,7 +28,8 @@ def s_new_save():
     # Create Table
     c.execute("""CREATE TABLE IF NOT EXISTS stories
     (s_id text, 
-    s_text text)""")
+    s_text text,
+    ch_id text)""")
 
     # Script to create a new story number and to replace a number if a story has been deleted
     c.execute("""SELECT s_id FROM stories ORDER BY s_id""")
@@ -92,6 +94,7 @@ def s_new_save():
 
 # Function for new story window
 def s_new_window():
+    style_func()
     global s_new_wd, database
     database = editor_settings.database_module.database
     # Create New Window
@@ -168,7 +171,7 @@ def s_new_window():
 
     s_new_ch_id_opt_menu()
 
-    style_func()
+    test_buttons_func.error_update()
 
     s_new_wd.mainloop()
 
@@ -246,6 +249,7 @@ def s_del_delete():
 
 # Function to open edit window
 def s_edt_window():
+    style_func()
     global s_edt_wd, database
     database = editor_settings.database_module.database
     # Create New Window
@@ -330,6 +334,6 @@ def s_edt_window():
 
     s_edt_s_id_opt_menu()
 
-    style_func()
+    test_buttons_func.error_update()
 
     s_edt_wd.mainloop()

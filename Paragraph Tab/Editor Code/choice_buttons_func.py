@@ -8,6 +8,8 @@ import tkinter.font as font
 import sqlite3
 import id
 import editor_settings
+import test_buttons_func
+
 
 def style_func():
     c_font_size = 11
@@ -162,6 +164,7 @@ def c_new_save():
 
 
 def c_new_window():
+    style_func()
     global c_new_wd, database
     database = editor_settings.database_module.database
     # Create New Window
@@ -332,7 +335,7 @@ def c_new_window():
 
     c_new_s_id_opt_menu()
 
-    style_func()
+    test_buttons_func.error_update()
 
     c_new_wd.mainloop()
 
@@ -548,8 +551,13 @@ def c_edt_assign_object_save():
     # Get c_id
     c_edt_c_id = c_edt_c_id_variable.get()
 
-    # Get c_id number
-    c_ed_c_id_num = id.id_int(c_edt_c_id)
+    if len(id.decoder_2(c_edt_c_id)) == 3:
+        # Get c_id number
+        c_ed_c_id_num = id.id_int(c_edt_c_id)
+        c_ed_p_id_num = id.id_int(id.decoder_2(c_edt_c_id)[-2])
+    else:
+        c_ed_c_id_num = id.id_int(id.decoder_2(c_edt_c_id)[-2])
+        c_ed_p_id_num = id.id_int(id.decoder_2(c_edt_c_id)[-3])
 
     if c_edt_obj_name != 'Assign No Object':
         # Get Object's id
@@ -558,18 +566,19 @@ def c_edt_assign_object_save():
         c_edt_obj_id = id.raw_conv(c_edt_obj_id_raw)[0]
 
         c.execute(f"""UPDATE choices SET obj_id = '{c_edt_obj_id}' WHERE c_id = '{c_edt_c_id}'""")
-        messagebox.showinfo("Success", f"Choice Number {c_ed_c_id_num} Has Been Assigned Object '{c_edt_obj_name}' As A Condition.")
+        messagebox.showinfo("Success", f"Choice Number {c_ed_c_id_num} In Paragraph Number {c_ed_p_id_num} Has Been Assigned Object '{c_edt_obj_name}' As A Condition.")
 
     else:
         c.execute(f"""UPDATE choices SET obj_id = 'None' WHERE c_id = '{c_edt_c_id}'""")
         messagebox.showinfo("Success",
-                            f"Choice Number {c_ed_c_id_num} Condition Has Been Removed.")
+                            f"Choice Number {c_ed_c_id_num} Condition In Paragraph Number {c_ed_p_id_num} Has Been Removed.")
 
     conn.commit()
 
 
 # Function to open edit window
 def c_edt_window():
+    style_func()
     global c_edt_wd, database
     database = editor_settings.database_module.database
     # Create New Window
@@ -823,6 +832,6 @@ def c_edt_window():
     c_edt_obj_id_opt_menu()
     c_edt_s_id_opt_menu()
 
-    style_func()
+    test_buttons_func.error_update()
 
     c_edt_wd.mainloop()

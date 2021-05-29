@@ -8,6 +8,7 @@ import tkinter.font as font
 import sqlite3
 import id
 import editor_settings
+import test_buttons_func
 
 
 def style_func():
@@ -65,6 +66,7 @@ def npc_new_save():
 
 
 def npc_new_window():
+    style_func()
     global npc_new_wd, database
     database = editor_settings.database_module.database
     # Create New Window
@@ -108,7 +110,7 @@ def npc_new_window():
     npc_new_cancel_button = ttk.Button(npc_new_info_frame_1, text="Cancel", width=npc_new_width-1, command=npc_new_wd.destroy)
     npc_new_cancel_button.grid(row=1, column=1, padx=npc_new_pad, pady=npc_new_pad, stick="w")
 
-    style_func()
+    test_buttons_func.error_update()
 
     npc_new_wd.mainloop()
 
@@ -206,6 +208,7 @@ def npc_edt_edit():
 
 
 def npc_edt_window():
+    style_func()
     global npc_edt_wd, database
     database = editor_settings.database_module.database
     # Create New Window
@@ -224,11 +227,11 @@ def npc_edt_window():
     npc_edt_frame_height = 200
     npc_edt_rest = window_y_2 - npc_edt_frame_height * 2
     # Info Frame 0
-    npc_edt_info_frame_0 = LabelFrame(npc_edt_wd, width=window_x_2, height=npc_edt_frame_height)
+    npc_edt_info_frame_0 = Frame(npc_edt_wd, width=window_x_2, height=npc_edt_frame_height)
     npc_edt_info_frame_0.pack(fill="both", side=TOP)
 
     # Button Frame
-    npc_edt_button_frame = LabelFrame(npc_edt_wd, height=npc_edt_rest / 2, width=window_x_2)
+    npc_edt_button_frame = Frame(npc_edt_wd, height=npc_edt_rest / 2, width=window_x_2)
     npc_edt_button_frame.pack(fill="both")
 
     npc_edt_width = 42
@@ -291,6 +294,6 @@ def npc_edt_window():
 
     npc_edt_npc_name_opt_menu()
 
-    style_func()
+    test_buttons_func.error_update()
 
     npc_edt_wd.mainloop()

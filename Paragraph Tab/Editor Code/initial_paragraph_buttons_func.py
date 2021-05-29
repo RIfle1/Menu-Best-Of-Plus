@@ -8,6 +8,7 @@ import tkinter.font as font
 import sqlite3
 import id
 import editor_settings
+import test_buttons_func
 
 
 def style_func():
@@ -66,6 +67,7 @@ def ip_new_insert():
 
 
 def ip_new_window():
+    style_func()
     global ip_new_wd, database
     database = editor_settings.database_module.database
     # Create New Window
@@ -172,7 +174,7 @@ def ip_new_window():
 
     ip_new_s_id_opt_menu()
 
-    style_func()
+    test_buttons_func.error_update()
 
     ip_new_wd.mainloop()
 
@@ -264,6 +266,7 @@ def ip_del_delete():
 
 # Function to open edit window
 def ip_edt_window():
+    style_func()
     global ip_edt_wd, database
     database = editor_settings.database_module.database
     # Create New Window
@@ -384,6 +387,6 @@ def ip_edt_window():
 
     ip_edt_ip_id_opt_menu()
 
-    style_func()
+    test_buttons_func.error_update()
 
     ip_edt_wd.mainloop()

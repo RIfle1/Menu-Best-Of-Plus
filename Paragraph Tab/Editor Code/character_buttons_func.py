@@ -8,6 +8,7 @@ import tkinter.font as font
 import sqlite3
 import id
 import editor_settings
+import test_buttons_func
 
 
 def style_func():
@@ -45,49 +46,54 @@ def ch_new_save():
              ch_attack integer,
              ch_background text)""")
 
-    # Error check:
-    try:
-        int(ch_new_life_entry_var.get())
-        int(ch_new_speed_entry_var.get())
-        int(ch_new_defense_entry_var.get())
-        int(ch_new_attack_entry_var.get())
-        # Insert into table
-        c.execute("""INSERT INTO characters VALUES (
-        :ch_id, 
-        :ch_name, 
-        :ch_breed, 
-        :ch_life, 
-        :ch_speed, 
-        :ch_defense, 
-        :ch_attack, 
-        :ch_background)""",
-            {
-                'ch_id': str(id.ch_id(ch_new_ch_id)),
-                'ch_name': str(ch_new_name_entry_var.get()),
-                'ch_breed': str(ch_new_breed_entry_var.get()),
-                'ch_life': int(ch_new_life_entry_var.get()),
-                'ch_speed': int(ch_new_speed_entry_var.get()),
-                'ch_defense': int(ch_new_defense_entry_var.get()),
-                'ch_attack': int(ch_new_attack_entry_var.get()),
-                'ch_background': str(ch_new_background_text_entry.get("1.0", "end"))
-            })
-        # Success Message
-        messagebox.showinfo("Success", f'Character Number {ch_new_ch_id} Has Been Successfully Created.')
-        # Clear the Text Boxes
-        ch_new_name_entry.delete(0, END)
-        ch_new_breed_entry.delete(0, END)
-        ch_new_life_entry.delete(0, END)
-        ch_new_speed_entry.delete(0, END)
-        ch_new_defense_entry.delete(0, END)
-        ch_new_attack_entry.delete(0, END)
-        ch_new_background_text_entry.delete("1.0", "end")
-    except ValueError:
-        messagebox.showerror('Value Error', 'Life, Speed, Defense and Attack Must Be Numbers.', icon="warning")
+    if len(ch_new_background_text_entry.get("1.0", "end")) != 1:
+        # Error check:
+        try:
+            int(ch_new_life_entry_var.get())
+            int(ch_new_speed_entry_var.get())
+            int(ch_new_defense_entry_var.get())
+            int(ch_new_attack_entry_var.get())
+            # Insert into table
+            c.execute("""INSERT INTO characters VALUES (
+            :ch_id, 
+            :ch_name, 
+            :ch_breed, 
+            :ch_life, 
+            :ch_speed, 
+            :ch_defense, 
+            :ch_attack, 
+            :ch_background)""",
+                {
+                    'ch_id': str(id.ch_id(ch_new_ch_id)),
+                    'ch_name': str(ch_new_name_entry_var.get()),
+                    'ch_breed': str(ch_new_breed_entry_var.get()),
+                    'ch_life': int(ch_new_life_entry_var.get()),
+                    'ch_speed': int(ch_new_speed_entry_var.get()),
+                    'ch_defense': int(ch_new_defense_entry_var.get()),
+                    'ch_attack': int(ch_new_attack_entry_var.get()),
+                    'ch_background': str(ch_new_background_text_entry.get("1.0", "end"))
+                })
+            # Success Message
+            messagebox.showinfo("Success", f'Character {str(ch_new_name_entry_var.get())} Has Been Successfully Created.')
+            # Clear the Text Boxes
+            ch_new_name_entry.delete(0, END)
+            ch_new_breed_entry.delete(0, END)
+            ch_new_life_entry.delete(0, END)
+            ch_new_speed_entry.delete(0, END)
+            ch_new_defense_entry.delete(0, END)
+            ch_new_attack_entry.delete(0, END)
+            ch_new_background_text_entry.delete("1.0", "end")
+        except ValueError:
+            messagebox.showerror('Value Error', 'Life, Speed, Defense and Attack Must Be Numbers.', icon="warning")
+    else:
+        messagebox.showerror('Input Error', 'Character Background Text Is Empty', icon="warning")
+
     # Commit changes
     conn.commit()
 
 
 def ch_new_window():
+    style_func()
     global ch_new_wd, database
     database = editor_settings.database_module.database
     # Create New Window
@@ -183,7 +189,7 @@ def ch_new_window():
     ch_new_cancel_button = ttk.Button(ch_new_button_frame, text="Cancel", width=ch_new_width, command=ch_new_wd.destroy)
     ch_new_cancel_button.grid(row=0, column=1, padx=ch_new_pad, pady=ch_new_pad, stick="w")
 
-    style_func()
+    test_buttons_func.error_update()
 
     ch_new_wd.mainloop()
 
@@ -244,8 +250,6 @@ def ch_edt_delete():
         ch_edt_background_text_entry.delete("1.0", "end")
 
         ch_edt_ch_name_opt_menu()
-
-
 
 
 def ch_edt_insert():
@@ -340,6 +344,7 @@ def ch_edt_edit():
 
 
 def ch_edt_window():
+    style_func()
     global ch_edt_wd, database
     database = editor_settings.database_module.database
     # Create New Window
@@ -347,7 +352,7 @@ def ch_edt_window():
     ch_edt_wd.title("Edit A Character")
     screen_x_2 = ch_edt_wd.winfo_screenwidth()
     screen_y_2 = ch_edt_wd.winfo_screenheight()
-    window_x_2 = 505
+    window_x_2 = 555
     window_y_2 = 482
     ch_edt_wd.minsize(window_x_2, window_y_2)
     ch_edt_wd.maxsize(window_x_2, window_y_2)
@@ -358,11 +363,11 @@ def ch_edt_window():
     ch_edt_frame_height = 200
     ch_edt_rest = window_y_2 - ch_edt_frame_height * 2
     # Info Frame 0
-    ch_edt_info_frame_0 = LabelFrame(ch_edt_wd, width=window_x_2, height=ch_edt_frame_height)
+    ch_edt_info_frame_0 = Frame(ch_edt_wd, width=window_x_2, height=ch_edt_frame_height)
     ch_edt_info_frame_0.pack(fill="both", side=TOP)
 
     # Button Frame
-    ch_edt_button_frame = LabelFrame(ch_edt_wd, height=ch_edt_rest / 2, width=window_x_2)
+    ch_edt_button_frame = Frame(ch_edt_wd, height=ch_edt_rest / 2, width=window_x_2)
     ch_edt_button_frame.pack(fill="both")
 
     ch_edt_width = 42
@@ -372,7 +377,7 @@ def ch_edt_window():
 
     # Labels
     ch_edt_select_ch_label = ttk.Label(ch_edt_info_frame_0, text="Select Character:", width=int(ch_edt_width / 2), anchor=W)
-    ch_edt_select_ch_label.grid(row=0, column=0, padx=(ch_edt_pad, ch_edt_pad-3), pady=ch_edt_pad, stick="w")
+    ch_edt_select_ch_label.grid(row=0, column=0, padx=(ch_edt_pad, ch_edt_pad+55), pady=ch_edt_pad, stick="w")
 
     ch_edt_name_label = ttk.Label(ch_edt_info_frame_0, text="Name:", width=int(ch_edt_width / 2), anchor=W)
     ch_edt_name_label.grid(row=1, column=0, padx=ch_edt_pad, pady=ch_edt_pad, stick="w")
@@ -431,7 +436,7 @@ def ch_edt_window():
     ch_edt_background_text_entry.grid(row=7, column=1, padx=ch_edt_pad, pady=ch_edt_pad)
 
     # Buttons
-    ch_edt_width_buttons = 13
+    ch_edt_width_buttons = 15
     ch_edt_save_changes_button = ttk.Button(ch_edt_button_frame, text="Save Changes", width=ch_edt_width_buttons,
                                       command=ch_edt_edit)
     ch_edt_save_changes_button.grid(row=0, column=0, padx=(ch_edt_pad + 9, ch_edt_pad), pady=ch_edt_pad, stick="w")
@@ -473,7 +478,7 @@ def ch_edt_window():
 
     ch_edt_ch_name_opt_menu()
 
-    style_func()
+    test_buttons_func.error_update()
 
     ch_edt_wd.mainloop()
 

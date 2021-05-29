@@ -15,6 +15,8 @@ database_module.database = 'Editor.db'
 
 
 def new_save():
+    global database
+    database = database_module.database
     # get path of editor_settings location
     path = os.path.dirname(__file__)
 
@@ -23,7 +25,7 @@ def new_save():
                                                defaultextension=".db", filetypes=[("database files", "*.db")])
 
     # Create backup with selected name from memory
-    conn = sqlite3.connect('file:my_db?mode=memory&cache=shared', detect_types=sqlite3.PARSE_DECLTYPES, uri=True)
+    conn = sqlite3.connect(database, detect_types=sqlite3.PARSE_DECLTYPES, uri=True)
     backup = sqlite3.connect(f'file:{db_name_dir}', detect_types=sqlite3.PARSE_DECLTYPES, uri=True)
     with backup:
         conn.backup(backup)
@@ -34,7 +36,7 @@ def new_save():
     db_name = os.path.basename(db_name_dir)
 
     if db_name_dir != '':
-        messagebox.showinfo("Save Editor", f"Success, New Editor Save '{db_name}' Has Been Created.\n(Be sure to Refresh In Options)")
+        messagebox.showinfo("Save Editor", f"Success, New Editor Save '{db_name}' Has Been Created.")
 
     # Change The WHOLE data base
     database_module.database = f'{db_name_dir}'
@@ -49,7 +51,7 @@ def load_save():
     db_name = os.path.basename(db_name_dir)
 
     if db_name_dir != '':
-        messagebox.showinfo("Load Editor", f"Success, Editor Save '{db_name}' Has Been Loaded.\n(Be sure to Refresh In Options)")
+        messagebox.showinfo("Load Editor", f"Success, Editor Save '{db_name}' Has Been Loaded.")
 
     database_module.database = f'{db_name_dir}'
 
