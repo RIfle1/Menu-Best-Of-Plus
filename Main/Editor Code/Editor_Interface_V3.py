@@ -1,10 +1,8 @@
 # All necessary imports
-import time
 import tkinter
 from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
-import tkinter.font as font
 import sqlite3
 import story_button_func
 import initial_paragraph_buttons_func
@@ -336,9 +334,8 @@ def new_story_print():
         main_story_text_frame = LabelFrame(main_story_info_frame, text='STORY TEXT', font=main_font)
         main_story_text_frame.pack(fill="both", side=LEFT)
 
-        initial_paragraph_message = Message(main_story_text_frame, text=s_text, width=messages_width, font=main_font, anchor=N)
-        initial_paragraph_message.pack(padx=padding, pady=padding, side=TOP)
-
+        story_text_message = Message(main_story_text_frame, text=s_text, width=messages_width, font=main_font, anchor=N)
+        story_text_message.pack(padx=padding, pady=padding, side=TOP)
 
         # Display All initial Paragraphs With Their Info
         c.execute(
