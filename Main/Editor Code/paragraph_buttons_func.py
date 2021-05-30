@@ -30,7 +30,6 @@ def p_new_save():
         mst_id text,
         npc_bool integer,
         mst_bool integer,
-        obj_id text,
         end_bool integer)""")
 
     # Get all needed id's
@@ -75,7 +74,7 @@ def p_new_save():
     if f'{p_new_s_id}' == f'{p_new_c_p_id}':
         if p_new_text_length != 1:
             c.execute(
-                "INSERT INTO paragraphs_list VALUES (:s_id, :lp_id, :p_text, :npc_id, :mst_id, :npc_bool, :mst_bool, :obj_id, :end_bool)",
+                "INSERT INTO paragraphs_list VALUES (:s_id, :lp_id, :p_text, :npc_id, :mst_id, :npc_bool, :mst_bool, :end_bool)",
                 {
                     "s_id": f"{p_new_s_id}",
                     "lp_id": f"{p_new_s_id}_{id.conv('p_id', p_new_new_p_id)}",
@@ -84,7 +83,6 @@ def p_new_save():
                     "mst_id": 'None',
                     "npc_bool": 0,
                     "mst_bool": 0,
-                    "obj_id": 'None',
                     "end_bool": 0
                 })
 
@@ -274,45 +272,6 @@ def p_new_window():
     test_buttons_func.error_update()
 
     p_new_wd.mainloop()
-
-
-def p_edt_save_object():
-    conn = sqlite3.connect(database, uri=True)
-    c = conn.cursor()
-
-    p_edt_s_id = p_edt_s_id_variable.get()
-    p_edt_p_id = p_edt_p_id_variable.get()
-
-    p_edt_obj_name = p_edt_obj_name_variable.get()
-
-    # Get obj_id with obj_name
-    if p_edt_obj_name != 'None':
-        c.execute(f"""SELECT obj_id FROM objects where obj_name = '{p_edt_obj_name}'""")
-        p_edt_obj_id_raw = c.fetchall()
-        p_edt_obj_id = id.raw_conv(p_edt_obj_id_raw)[0]
-    else:
-        p_edt_obj_id = 'None'
-
-    c.execute(f"""SELECT end_bool FROM paragraphs_list WHERE pl_id = '{p_edt_p_id}'""")
-    p_edt_end_bool_raw = c.fetchall()
-    p_edt_end_bool = id.raw_conv(p_edt_end_bool_raw)[0]
-
-    if p_edt_end_bool == 0:
-        c.execute("""UPDATE paragraphs_list SET obj_id = :obj_id WHERE pl_id = :pl_id""",
-                          {
-                              "pl_id": f'{p_edt_p_id}',
-                              "obj_id": f"{p_edt_obj_id}"
-                          })
-
-        # Show Success pop-up
-        messagebox.showinfo("Success", f"Paragraph Number {id.id_int(p_edt_p_id)} in Story Number {id.id_int(p_edt_s_id)} has been assigned {p_edt_obj_name} as a drop item.")
-    else:
-        messagebox.showerror("Cannot Perform Action", f"Paragraph Number {id.id_int(p_edt_p_id)} is set to an ending "
-                                                      f"paragraph, therefore it cannot have any drops assigned to "
-                                                      f"it.\nYou can change that by setting 'Ending Paragraph' To "
-                                                      f"'False'.")
-
-    conn.commit()
 
 
 def p_edt_save_enemy():
@@ -507,15 +466,14 @@ def p_edt_p_end():
 
     else:
         c.execute(f"""UPDATE paragraphs_list SET 
-        end_bool = '{p_edt_p_end_bool}',
-        obj_id = 'None'
+        end_bool = '{p_edt_p_end_bool}'
         
         WHERE pl_id = '{p_edt_p_id}'""")
 
         c.execute(f"""DELETE FROM choices WHERE c_id LIKE '{p_edt_p_id}%'""")
 
         messagebox.showinfo("Ending Paragraph", f"Paragraph Number {id.id_int(p_edt_p_id)} Has Been Set To An Ending Paragraph."
-                                                f"\nThis Paragraph Can No Longer Have Choices Or Objects Assigned to it.")
+                                                f"\nThis Paragraph Can No Longer Have Choices Assigned to it.")
     conn.commit()
 
 
@@ -574,20 +532,6 @@ def p_edt_window():
     p_edt_spec_frame_2 = Frame(p_edt_select_npc_frame, height=p_edt_info_frame_height, width=window_x_2)
     p_edt_spec_frame_2.pack(fill="both")
 
-    # Select Object Frame
-    p_edt_select_object_frame = LabelFrame(p_edt_select_spec_frame, height=p_edt_info_frame_height, width=window_x_2)
-    p_edt_select_object_frame.pack(fill="both", expand=True)
-
-    # Spec Frame 3
-    p_edt_spec_frame_3 = Frame(p_edt_select_object_frame, height=p_edt_info_frame_height, width=window_x_2)
-    p_edt_spec_frame_3.pack(fill="both")
-
-    # Spec Frame 4 (Button)
-    p_edt_spec_frame_4 = Frame(p_edt_select_object_frame, height=p_edt_info_frame_height, width=window_x_2)
-    p_edt_spec_frame_4.pack(fill="both")
-
-    #
-
     # Bottom Frame
     p_edt_bottom_frame = Frame(p_edt_wd, height=p_edt_info_frame_height, width=window_x_2)
     p_edt_bottom_frame.pack(fill="both", side=BOTTOM, expand=True)
@@ -613,7 +557,7 @@ def p_edt_window():
     p_edt_p_end_frame.pack(fill="both", side=RIGHT)
 
     # Paragraph Ending Frame_0
-    p_edt_p_end_frame_0 = LabelFrame(p_edt_p_end_frame, height=p_edt_info_frame_height, width=window_x_2)
+    p_edt_p_end_frame_0 = LabelFrame(p_edt_select_spec_frame, height=p_edt_info_frame_height, width=window_x_2)
     p_edt_p_end_frame_0.pack(fill="x", side=TOP)
 
     # Paragraph Ending Frame 1
@@ -645,9 +589,6 @@ def p_edt_window():
 
     p_edt_mst_name_label = ttk.Label(p_edt_spec_frame_1, text="Or Select Enemy Name:", width=int(p_edt_width / 2), anchor=W)
     p_edt_mst_name_label.grid(row=3, column=0, padx=(p_edt_pad, p_edt_pad - 6), pady=p_edt_pad, stick="w")
-
-    p_edt_obj_name_label = ttk.Label(p_edt_spec_frame_3, text="Select Object Drop:", width=int(p_edt_width / 2), anchor=W)
-    p_edt_obj_name_label.grid(row=0, column=0, padx=(p_edt_pad, p_edt_pad - 6), pady=p_edt_pad, stick="w")
 
     p_edt_decode_id_label_text = ttk.Label(p_edt_info_frame_1, text="Decoded ID:", width=int(p_edt_width / 2), anchor=NW)
     p_edt_decode_id_label_text.grid(row=2, column=0, padx=(p_edt_pad, p_edt_pad - 5), pady=p_edt_pad, stick="nw")
@@ -692,10 +633,6 @@ def p_edt_window():
                                     command=p_edt_save_enemy)
     p_edt_submit_enemy_button.grid(row=0, column=0, padx=p_edt_pad, pady=p_edt_pad, stick="w", ipadx=157)
 
-    p_edt_submit_object_button = ttk.Button(p_edt_spec_frame_4, text="Submit Object Changes", width=int(p_edt_width / 2),
-                                    command=p_edt_save_object)
-    p_edt_submit_object_button.grid(row=0, column=0, padx=p_edt_pad, pady=p_edt_pad, stick="w", ipadx=157)
-
     #
 
     p_edt_width_buttons = 19
@@ -721,10 +658,10 @@ def p_edt_window():
 
     p_edt_submit_enemy_button = ttk.Button(p_edt_p_end_frame_2, text="Submit Paragraph Changes", width=int(p_edt_width / 2),
                                        command=p_edt_p_end)
-    p_edt_submit_enemy_button.grid(row=0, column=0, padx=p_edt_pad, pady=p_edt_pad, stick="w", ipadx=157)
+    p_edt_submit_enemy_button.grid(row=0, column=0, padx=p_edt_pad, pady=(p_edt_pad+5, p_edt_pad), stick="w", ipadx=157)
 
 
-    global p_edt_s_id_opt_menu, p_edt_p_id_opt_menu, p_edt_npc_name_opt_menu, p_edt_mst_name_opt_menu, p_edt_obj_name_opt_menu
+    global p_edt_s_id_opt_menu, p_edt_p_id_opt_menu, p_edt_npc_name_opt_menu, p_edt_mst_name_opt_menu
 
     def p_edt_s_id_opt_menu():
         conn = sqlite3.connect(database, uri=True)
@@ -763,7 +700,6 @@ def p_edt_window():
 
             p_edt_npc_name_opt_menu()
             p_edt_mst_name_opt_menu()
-            p_edt_obj_name_opt_menu()
 
         else:
             messagebox.showerror("Index Error", "No Existing Paragraphs Found")
@@ -828,27 +764,6 @@ def p_edt_window():
 
         if not p_edt_mst_name_list:
             messagebox.showerror("Index Error", "No Existing Enemies Found")
-
-        conn.commit()
-
-    def p_edt_obj_name_opt_menu():
-        conn = sqlite3.connect(database, uri=True)
-        c = conn.cursor()
-
-        # Get obj_name's
-        c.execute(f"""SELECT obj_name FROM objects""")
-        p_edt_obj_name_list_raw = c.fetchall()
-        p_edt_obj_name_list = id.raw_conv(p_edt_obj_name_list_raw)
-
-        global p_edt_obj_name_variable
-        p_edt_obj_name_variable = StringVar()
-        p_edt_obj_name_list.append('None')
-        p_edt_mst_name_opt_menu_var = ttk.OptionMenu(p_edt_spec_frame_3, p_edt_obj_name_variable, p_edt_obj_name_list[-1], *p_edt_obj_name_list)
-        p_edt_mst_name_opt_menu_var.configure(width=p_edt_option_width)
-        p_edt_mst_name_opt_menu_var.grid(row=0, column=1, pady=p_edt_pad, padx=p_edt_pad, stick="ew")
-
-        if not p_edt_obj_name_list:
-            messagebox.showerror("Index Error", "No Existing Objects Found")
 
         conn.commit()
 

@@ -206,7 +206,7 @@ def npc_enemy_checker():
     conn.commit()
 
 
-def objects_checker():
+def objects_drop_checker():
     global database
     database = editor_settings.database_module.database
     conn = sqlite3.connect(database, uri=True)
@@ -214,7 +214,7 @@ def objects_checker():
 
     warning_list = []
 
-    c.execute(f"""SELECT obj_id from objects EXCEPT SELECT obj_id FROM paragraphs_list""")
+    c.execute(f"""SELECT obj_id from objects EXCEPT SELECT obj_id FROM choices""")
     obj_id_list_raw = c.fetchall()
     obj_id_list = id.raw_conv(obj_id_list_raw)
 
@@ -226,7 +226,44 @@ def objects_checker():
         obj_name_list.append(obj_name)
 
     for obj_name in obj_name_list:
-        warning_list.append(f"Object '{obj_name}' Has No Assigned Paragraph\n")
+        warning_list.append(f"Object '{obj_name}' Has No Assigned Choice\n")
+        error_counter.errors += 1
+
+    warning_text = ''
+
+    if warning_list:
+        for text in warning_list:
+            warning_text += f'{text}\n'
+        warning_text += '###'
+
+        errors_file = open("errors.txt", "a")
+        errors_file.write(warning_text)
+        errors_file.close()
+
+    conn.commit()
+
+
+def objects_condition_checker():
+    global database
+    database = editor_settings.database_module.database
+    conn = sqlite3.connect(database, uri=True)
+    c = conn.cursor()
+
+    warning_list = []
+
+    c.execute(f"""SELECT obj_id from choices EXCEPT SELECT con_id FROM choices""")
+    con_id_list_raw = c.fetchall()
+    con_id_list = id.raw_conv(con_id_list_raw)
+
+    con_obj_name_list = []
+    for con_id in con_id_list:
+        c.execute(f"""SELECT obj_name from objects WHERE obj_id = '{con_id}'""")
+        con_name_raw = c.fetchall()
+        con_name = id.raw_conv(con_name_raw)[0]
+        con_obj_name_list.append(con_name)
+
+    for con_name in con_obj_name_list:
+        warning_list.append(f"Object '{con_name}' Has Been Assigned As A Drop But Not As A Condition\n")
         error_counter.errors += 1
 
     warning_text = ''
@@ -310,7 +347,8 @@ def function_runner():
     story_checker()
     paragraphs_checker()
     npc_enemy_checker()
-    objects_checker()
+    objects_drop_checker()
+    objects_condition_checker()
     choice_checker()
 
     # Update the number of errors
@@ -352,16 +390,18 @@ def compile_game():
             for item in path_raw_2:
                 path += f'{item}\\'
 
-            print(path)
+            database_name_raw = database.split('/')
+
+            database_name = database_name_raw[-1]
 
             # Create Database In Player Saved Games Folder
             conn = sqlite3.connect(database, detect_types=sqlite3.PARSE_DECLTYPES, uri=True)
-            backup = sqlite3.connect(f"file:{path}/Player Code/Saved Games/player_{database}", detect_types=sqlite3.PARSE_DECLTYPES, uri=True)
+            backup = sqlite3.connect(f"file:{path}/Player Code/Saved Games/player_{database_name}", detect_types=sqlite3.PARSE_DECLTYPES, uri=True)
             with backup:
                 conn.backup(backup)
             backup.close()
             conn.close()
 
-            messagebox.showinfo("Save Editor", f"Success, New Player Game 'player_{database}' Has Been Created.")
+            messagebox.showinfo("Save Editor", f"Success, New Player Game 'player_{database_name}' Has Been Created.")
     else:
         messagebox.showerror("Unable To Compile", f"There Are Still Some Errors In Your Story.")

@@ -15,11 +15,11 @@ ch_button_x_scrollbar = Scrollbar(ch_scroll_bar_frame, orient="horizontal", comm
 ch_button_x_scrollbar.pack(side="bottom", fill="x")
 
 # Frame To Put Objects in
-inside_character_frame = Frame(ch_canvas)
-inside_character_frame.bind("<Configure>", lambda e: ch_canvas.configure(scrollregion=ch_canvas.bbox("all")))
+inv_inside_frame = Frame(ch_canvas)
+inv_inside_frame.bind("<Configure>", lambda e: ch_canvas.configure(scrollregion=ch_canvas.bbox("all")))
 
 # Canvas Config
-ch_canvas.create_window((0, 0), window=inside_character_frame, anchor="nw")
+ch_canvas.create_window((0, 0), window=inv_inside_frame, anchor="nw")
 ch_canvas.configure(yscrollcommand=ch_button_y_scrollbar.set)
 ch_canvas.configure(xscrollcommand=ch_button_x_scrollbar.set)
 ch_canvas.pack(side="left", fill="both", expand=True)
@@ -38,12 +38,13 @@ ch_button_x_scrollbar = Scrollbar(ch_scroll_bar_frame, orient="horizontal", comm
 ch_button_x_scrollbar.pack(side="bottom", fill="x")
 
 # Frame To Put Objects in
-inside_character_frame = Frame(ch_canvas)
-inside_character_frame.bind("<Configure>", lambda e: ch_canvas.configure(scrollregion=ch_canvas.bbox("all")))
+inv_inside_frame = Frame(ch_canvas)
+inv_inside_frame.bind("<Configure>", lambda e: ch_canvas.configure(scrollregion=ch_canvas.bbox("all")))
 
 # Canvas Config
-ch_canvas.create_window((0, 0), window=inside_character_frame, anchor="nw")
+ch_canvas.create_window((0, 0), window=inv_inside_frame, anchor="nw")
 ch_canvas.configure(xscrollcommand=ch_button_x_scrollbar.set)
 ch_canvas.pack(side="left", fill="both", expand=True)
+
 
 

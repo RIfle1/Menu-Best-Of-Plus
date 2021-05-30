@@ -29,7 +29,9 @@ def load_story():
 
 
 def clear_frame():
-    for widget in main_frame.winfo_children():
+    for widget in game_frame.winfo_children():
+        widget.destroy()
+    for widget in inventory_frame.winfo_children():
         widget.destroy()
 
 
@@ -51,13 +53,13 @@ def print_paragraph(choice_id):
     p_id_number = id.id_int(p_id)
 
     # Main Frames
-    paragraph_text_frame = LabelFrame(main_frame, text=f"PARAGRAPH N.{p_id_number}\t Character:{ch_name}", font=main_font, labelanchor="n")
+    paragraph_text_frame = LabelFrame(game_frame, text=f"PARAGRAPH N.{p_id_number}\t Character: {ch_name}", font=main_font, labelanchor="n")
     paragraph_text_frame.pack(fill='both', side=TOP)
 
-    paragraph_choices_frame = LabelFrame(main_frame, text=f"PARAGRAPH CHOICES", font=main_font, labelanchor="n")
+    paragraph_choices_frame = LabelFrame(game_frame, text=f"PARAGRAPH CHOICES", font=main_font, labelanchor="n")
     paragraph_choices_frame.pack(fill='both', side=TOP)
 
-    next_button_frame = LabelFrame(main_frame)
+    next_button_frame = LabelFrame(game_frame)
     next_button_frame.pack(fill='both', side=BOTTOM)
 
     # Story Message
@@ -68,9 +70,55 @@ def print_paragraph(choice_id):
     p_text_message = Message(paragraph_text_frame, text=p_text, width=messages_width, font=main_font, anchor=N)
     p_text_message.pack(padx=padding, pady=padding, anchor="center")
 
-    # Initial Paragraph Choices Message
+    # Scroll Bar stuff
+    inv_scroll_bar_frame = Frame(inventory_frame)
+    inv_scroll_bar_frame.pack(fill="both", expand=True)
+
+    # Create Canvas
+    inv_canvas = Canvas(inv_scroll_bar_frame)
+
+    # Create ScrollBar
+    inv_button_y_scrollbar = Scrollbar(inv_scroll_bar_frame, orient="vertical", command=inv_canvas.yview)
+    inv_button_y_scrollbar.pack(side="right", fill="y")
+    inv_button_x_scrollbar = Scrollbar(inv_scroll_bar_frame, orient="horizontal", command=inv_canvas.xview)
+    inv_button_x_scrollbar.pack(side="bottom", fill="x")
+
+    # Frame To Put Objects in
+    inv_inside_frame = Frame(inv_canvas)
+    inv_inside_frame.bind("<Configure>", lambda e: inv_canvas.configure(scrollregion=inv_canvas.bbox("all")))
+
+    # Canvas Config
+    inv_canvas.create_window((0, 0), window=inv_inside_frame, anchor="nw")
+    inv_canvas.configure(yscrollcommand=inv_button_y_scrollbar.set)
+    inv_canvas.configure(xscrollcommand=inv_button_x_scrollbar.set)
+    inv_canvas.pack(side="left", fill="both", expand=True)
+
+    for obj_name in inventory:
+        # Add Frame For Each Item
+        item_frame = LabelFrame(inv_inside_frame)
+        item_frame.pack(fill="x", side=TOP)
+
+        # Add Message with Item Into Frame
+        item_message = Message(item_frame, text=obj_name, width=messages_width, font=main_font, anchor=N)
+        item_message.pack(padx=padding, pady=padding, anchor="center")
+
+    # Add Object Assigned To Paragraph To Inventory
+    c.execute(f"""SELECT obj_id from paragraphs_list WHERE pl_id = '{p_id}'""")
+    obj_id_raw = c.fetchall()
+    obj_id = id.raw_conv(obj_id_raw)[0]
+
+    if obj_id != 'None':
+        c.execute(f"""SELECT obj_name from objects WHERE obj_id = '{obj_id}'""")
+        obj_name_raw = c.fetchall()
+        obj_name = id.raw_conv(obj_name_raw)[0]
+
+        inventory.append(obj_name)
+
+    # Paragraph Choices Message
     c.execute(f"""SELECT c_id, c_text, obj_id FROM choices WHERE c_id LIKE '{p_id}%'""")
     choices_info_list = c.fetchall()
+
+    choice_button_list = []
 
     for choice in choices_info_list:
         c_id = choice[0]
@@ -88,8 +136,10 @@ def print_paragraph(choice_id):
         int_pg_choice_text_message.grid(column=0, row=0, stick="n", padx=padding, pady=padding)
 
         # Choice Button
-        next_button = ttk.Button(next_button_frame, text=f"Choice N.{choice_number}", command=partial(print_paragraph, c_id))
-        next_button.pack(padx=padding, pady=padding, anchor="center")
+        choice_button = ttk.Button(next_button_frame, text=f"Choice N.{choice_number}", command=partial(print_paragraph, c_id))
+        choice_button.pack(padx=padding, pady=padding, anchor="center")
+
+        choice_button_list.append(choice_button)
 
 
     conn.commit()
@@ -114,13 +164,13 @@ def print_ip():
     ip_id = progress_list[2]
 
     # Main Frames
-    ip_text_frame = LabelFrame(main_frame, text=f"INITIAL PARAGRAPH\t Character:{ch_name}", font=main_font, labelanchor="n")
+    ip_text_frame = LabelFrame(game_frame, text=f"INITIAL PARAGRAPH\t Character: {ch_name}", font=main_font, labelanchor="n")
     ip_text_frame.pack(fill='both', side=TOP)
 
-    ip_choices_frame = LabelFrame(main_frame, text=f"INITIAL PARAGRAPH CHOICES", font=main_font, labelanchor="n")
+    ip_choices_frame = LabelFrame(game_frame, text=f"INITIAL PARAGRAPH CHOICES", font=main_font, labelanchor="n")
     ip_choices_frame.pack(fill='both', side=TOP)
 
-    next_button_frame = LabelFrame(main_frame)
+    next_button_frame = LabelFrame(game_frame)
     next_button_frame.pack(fill='both', side=BOTTOM)
 
     # Initial Paragraph Text Message
@@ -134,8 +184,6 @@ def print_ip():
     # Initial Paragraph Choices Message
     c.execute(f"""SELECT c_id, c_text, obj_id FROM choices WHERE c_id LIKE '{ip_id}%'""")
     choices_info_list = c.fetchall()
-
-    choice_button_list = []
 
     for choice in choices_info_list:
         c_id = choice[0]
@@ -172,10 +220,10 @@ def print_story():
     ch_name = progress_list[1]
 
     # Main Frames
-    story_frame = LabelFrame(main_frame, text=f"STORY\tCharacter: {ch_name}", font=main_font, labelanchor="n")
+    story_frame = LabelFrame(game_frame, text=f"STORY\tCharacter: {ch_name}", font=main_font, labelanchor="n")
     story_frame.pack(fill='both', side=TOP)
 
-    next_button_frame = LabelFrame(main_frame)
+    next_button_frame = LabelFrame(game_frame)
     next_button_frame.pack(fill='both', side=BOTTOM)
 
 
@@ -240,7 +288,7 @@ def character_select():
     except sqlite3.OperationalError:
         print("check character_select in player")
 
-    main_character_frame = Frame(main_frame)
+    main_character_frame = Frame(game_frame)
     main_character_frame.pack(fill="both")
 
     # Scroll Bar stuff
@@ -264,7 +312,7 @@ def character_select():
     ch_canvas.configure(xscrollcommand=ch_button_x_scrollbar.set)
     ch_canvas.pack(side="left", fill="both", expand=True)
 
-    select_character_main_frame = LabelFrame(main_frame)
+    select_character_main_frame = LabelFrame(game_frame)
     select_character_main_frame.pack(fill="both", side=BOTTOM)
 
     select_character_inside_frame = Frame(select_character_main_frame)
@@ -364,11 +412,15 @@ options_menu.add_command(label="Quit", command=None)
 main_menu.add_cascade(label="File", menu=file_menu)
 main_menu.add_cascade(label="Options", menu=options_menu)
 
-# Main Frame
-main_frame = LabelFrame(player)
-main_frame.pack(fill="both", expand=True)
+# Game Frame
+game_frame = LabelFrame(player)
+game_frame.pack(fill="both", side=LEFT, expand=True)
 
-info_message = Message(main_frame, text="LOAD A STORY IN FILE", width=600, font=("Times New Roman", 40))
+# Inventory Frame
+inventory_frame = LabelFrame(player, text="Inventory", width=300, font=main_font)
+inventory_frame.pack(fill="both", side=RIGHT)
+
+info_message = Message(game_frame, text="LOAD A STORY IN FILE", width=600, font=("Times New Roman", 40))
 info_message.place(relx=.5, rely=.5, anchor="center")
 
 player.config(menu=main_menu)

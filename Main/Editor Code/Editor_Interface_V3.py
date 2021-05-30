@@ -384,9 +384,9 @@ def new_story_print():
                 obj_name = id.raw_conv(obj_name_raw)
 
                 if not obj_name:
-                    obj = "No Condition"
+                    obj_drop = "No Object Drop"
                 else:
-                    obj = obj_name[0]
+                    obj_drop = obj_name[0]
 
                 if len(id.decoder_2(c_id)) == 3:
                     choice_number = id.int_list(id.decoder_2(c_id))[-1]
@@ -402,19 +402,20 @@ def new_story_print():
                 int_pg_choice_text_label = Label(int_pg_choice_frame, text='Choice Text:', width=labels_width, font=main_font, anchor=NW)
                 int_pg_choice_text_label.grid(column=0, row=0, stick="w", padx=padding, pady=padding)
 
-                int_pg_choice_condition_label = Label(int_pg_choice_frame, text='Choice Condition:', width=labels_width, font=main_font, anchor=NW)
-                int_pg_choice_condition_label.grid(column=0, row=1, stick="w", padx=padding, pady=padding)
+                int_choice_drop_label = Label(int_pg_choice_frame, text='Choice Drop:', width=labels_width, font=main_font, anchor=NW)
+                int_choice_drop_label.grid(column=0, row=1, stick="w", padx=padding, pady=padding)
 
                 # Messages To display in each choice frame
                 int_pg_choice_text_message = Message(int_pg_choice_frame, text=f'{c_text}', width=messages_width, font=main_font, anchor=NW)
                 int_pg_choice_text_message.grid(column=1, row=0, stick="nw", padx=padding, pady=padding)
 
-                int_pg_choice_condition_message = Message(int_pg_choice_frame, text=f'{obj}', width=messages_width, font=main_font, anchor=NW)
-                int_pg_choice_condition_message.grid(column=1, row=1, stick="nw", padx=padding, pady=padding)
+                int_choice_drop_message = Message(int_pg_choice_frame, text=f'{obj_drop}', width=messages_width, font=main_font, anchor=NW)
+                int_choice_drop_message.grid(column=1, row=1, stick="nw", padx=padding, pady=padding)
+
 
         # Display All Paragraphs With Their Info
-        c.execute(f"""SELECT pl_id, p_text, npc_id, mst_id, obj_id FROM paragraphs_list WHERE s_id = '{s_id}' 
-        EXCEPT SELECT pl_id, p_text, npc_id, mst_id, obj_id FROM paragraphs_list WHERE end_bool = {1}""")
+        c.execute(f"""SELECT pl_id, p_text, npc_id, mst_id FROM paragraphs_list WHERE s_id = '{s_id}' 
+        EXCEPT SELECT pl_id, p_text, npc_id, mst_id FROM paragraphs_list WHERE end_bool = {1}""")
         paragraphs_info_list = c.fetchall()
 
         if paragraphs_info_list:
@@ -429,11 +430,6 @@ def new_story_print():
             p_text = paragraph[1]
             npc_id = paragraph[2]
             mst_id = paragraph[3]
-            obj_id = paragraph[4]
-
-            c.execute(f"""SELECT obj_name from objects WHERE obj_id = '{obj_id}'""")
-            obj_name_raw = c.fetchall()
-            obj_name = id.raw_conv(obj_name_raw)
 
             c.execute(f"""SELECT mst_name from monsters WHERE mst_id = '{mst_id}'""")
             mst_name_raw = c.fetchall()
@@ -442,11 +438,6 @@ def new_story_print():
             c.execute(f"""SELECT npc_name from npcs WHERE npc_id = '{npc_id}'""")
             npc_name_raw = c.fetchall()
             npc_name = id.raw_conv(npc_name_raw)
-
-            if not obj_name:
-                obj = "No Drop Assigned"
-            else:
-                obj = obj_name[0]
 
             if npc_id == 'None' and mst_id == "None":
                 enemy = "Unassigned NPC"
@@ -458,19 +449,13 @@ def new_story_print():
             paragraph_info_frame = LabelFrame(main_paragraph_info_frame, text=f'{id.decoder_5(pl_id)}\t{enemy}', font=main_font, labelanchor="n")
             paragraph_info_frame.pack(fill="both", side=LEFT)
 
-            paragraph_object_frame = LabelFrame(paragraph_info_frame, text='Paragraph Object', font=main_font, labelanchor="n")
-            paragraph_object_frame.pack(fill="both")
-
-            paragraph_object_message = Message(paragraph_object_frame, text=obj, width=messages_width, font=main_font, anchor=NW)
-            paragraph_object_message.pack(padx=padding, pady=padding)
-
             paragraph_text_frame = LabelFrame(paragraph_info_frame, text='Paragraph Text', font=main_font, labelanchor="n")
             paragraph_text_frame.pack(fill="both")
 
             paragraph_text_message = Message(paragraph_text_frame, text=p_text, width=messages_width, font=main_font, anchor=NW)
             paragraph_text_message.pack(padx=padding, pady=padding)
 
-            c.execute(f"""SELECT c_id, c_text, obj_id FROM choices WHERE c_id LIKE '{pl_id}%'""")
+            c.execute(f"""SELECT c_id, c_text, obj_id, con_id FROM choices WHERE c_id LIKE '{pl_id}%'""")
             choices_info_list = c.fetchall()
 
             if choices_info_list:
@@ -483,15 +468,25 @@ def new_story_print():
                 c_id = choice[0]
                 c_text = choice[1]
                 obj_id = choice[2]
+                con_id = choice[3]
 
                 c.execute(f"""SELECT obj_name FROM objects WHERE obj_id = '{obj_id}'""")
                 obj_name_raw = c.fetchall()
                 obj_name = id.raw_conv(obj_name_raw)
 
                 if not obj_name:
-                    obj = "No Condition"
+                    obj_drop = "No Object Drop"
                 else:
-                    obj = obj_name[0]
+                    obj_drop = obj_name[0]
+
+                c.execute(f"""SELECT obj_name FROM objects WHERE obj_id = '{con_id}'""")
+                con_name_raw = c.fetchall()
+                con_name = id.raw_conv(con_name_raw)
+
+                if not con_name:
+                    obj_con = "No Condition"
+                else:
+                    obj_con = con_name[0]
 
                 if len(id.decoder_2(c_id)) == 3:
                     choice_number = id.int_list(id.decoder_2(c_id))[-1]
@@ -507,15 +502,21 @@ def new_story_print():
                 pg_choice_text_label = Label(pg_choice_frame, text='Choice Text:', width=labels_width, font=main_font, anchor=NW)
                 pg_choice_text_label.grid(column=0, row=0, stick="w", padx=padding, pady=padding)
 
+                pg_choice_drop_label = Label(pg_choice_frame, text='Choice Drop:', width=labels_width, font=main_font, anchor=NW)
+                pg_choice_drop_label.grid(column=0, row=1, stick="w", padx=padding, pady=padding)
+
                 pg_choice_condition_label = Label(pg_choice_frame, text='Choice Condition:', width=labels_width, font=main_font, anchor=NW)
-                pg_choice_condition_label.grid(column=0, row=1, stick="w", padx=padding, pady=padding)
+                pg_choice_condition_label.grid(column=0, row=2, stick="w", padx=padding, pady=padding)
 
                 # Messages To display in each choice frame
                 pg_choice_text_message = Message(pg_choice_frame, text=f'{c_text}', width=messages_width, font=main_font, anchor=NW)
                 pg_choice_text_message.grid(column=1, row=0, stick="nw", padx=padding, pady=padding)
 
-                pg_choice_condition_message = Message(pg_choice_frame, text=f'{obj}', width=messages_width, font=main_font, anchor=NW)
-                pg_choice_condition_message.grid(column=1, row=1, stick="nw", padx=padding, pady=padding)
+                pg_choice_drop_message = Message(pg_choice_frame, text=f'{obj_drop}', width=messages_width, font=main_font, anchor=NW)
+                pg_choice_drop_message.grid(column=1, row=1, stick="nw", padx=padding, pady=padding)
+
+                pg_choice_condition_message = Message(pg_choice_frame, text=f'{obj_con}', width=messages_width, font=main_font, anchor=NW)
+                pg_choice_condition_message.grid(column=1, row=2, stick="nw", padx=padding, pady=padding)
 
         # Display All Ending Paragraphs With Their Info
         c.execute(f"""SELECT pl_id, p_text, npc_id, mst_id FROM paragraphs_list WHERE s_id = '{s_id}' 
@@ -538,10 +539,17 @@ def new_story_print():
 
             if npc_id == 'None' and mst_id == "None":
                 enemy = "Unassigned NPC"
+
             elif npc_id == "None":
-                enemy = mst_id
+                c.execute(f"""SELECT mst_name FROM monsters WHERE mst_id = '{mst_id}'""")
+                mst_name_raw = c.fetchall()
+                mst_name = id.raw_conv(mst_name_raw)[0]
+                enemy = mst_name
             else:
-                enemy = npc_id
+                c.execute(f"""SELECT npc_name FROM npcs WHERE npc_id = '{npc_id}'""")
+                npc_name_raw = c.fetchall()
+                npc_name = id.raw_conv(npc_name_raw)[0]
+                enemy = npc_name
 
             paragraph_info_frame = LabelFrame(main_end_paragraph_info_frame, text=f'{id.decoder_5(pl_id)}\t{enemy}',
                                               font=main_font, labelanchor="n")
@@ -577,12 +585,12 @@ cursor.execute("""CREATE TABLE IF NOT EXISTS paragraphs_list
                                                            mst_id text,
                                                            npc_bool integer,
                                                            mst_bool integer,
-                                                           obj_id text,
                                                            end_bool integer)""")
 cursor.execute("""CREATE TABLE IF NOT EXISTS choices
                                                        (s_id text,
                                                        ip_id text,
                                                        c_id text,
+                                                       con_id text,
                                                        obj_id text,
                                                        c_text text)""")
 cursor.execute("""CREATE TABLE IF NOT EXISTS characters
@@ -677,7 +685,7 @@ tabControl.add(test_tab, text="Test / Compile")
 tabControl.pack(expand=1, fill="both")
 
 # -------------------------------------------
-# THIS FOLLOWING CODE IS FOR "PARAGRAPH" TAB
+# THIS FOLLOWING CODE IS FOR "CREATE A STORY" TAB
 # -------------------------------------------
 # ALL MAIN FRAMES
 
@@ -787,7 +795,7 @@ new_obj_button = Button(pg_main_buttons_frame, image=edit_object_image, border=0
 new_obj_button.grid(column=7, row=1, padx=main_pad_x, pady=main_pad_y)
 
 # -------------------------------------------
-# THIS IS THE END OF THE "PARAGRAPH" TAB CODE
+# THIS IS THE END OF THE "CREATE A STORY" TAB CODE
 # -------------------------------------------
 # -------------------------------------------
 # THIS FOLLOWING CODE IS FOR "TEST" TAB

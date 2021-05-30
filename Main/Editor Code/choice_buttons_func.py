@@ -88,6 +88,7 @@ def c_new_save():
     (s_id text,
     ip_id text,
     c_id text,
+    con_id text,
     obj_id text,
     c_text text)""")
 
@@ -132,11 +133,12 @@ def c_new_save():
                     c_new_c_number = int(c_new_c_number)
                     if c_new_c_text_length != 1:
                         if c_new_c_number > 0:
-                            c.execute("INSERT INTO choices VALUES (:s_id, :ip_id, :c_id, :obj_id, :c_text)",
+                            c.execute("INSERT INTO choices VALUES (:s_id, :ip_id, :c_id, :con_id, :obj_id, :c_text)",
                                       {
                                           "s_id": f"{c_new_s_id}",
                                           "ip_id": f"{c_new_ip_id}",
                                           "c_id": f"{c_new_c_id}",
+                                          "con_id": 'None',
                                           "obj_id": 'None',
                                           "c_text": str(c_new_choice_text_entry.get("1.0", "end"))
                                       })
@@ -315,7 +317,6 @@ def c_new_window():
             c_new_wd.destroy()
 
         conn.commit()
-
 
     def c_new_to_p_id_opt_menu():
         conn = sqlite3.connect(database, uri=True)
@@ -541,7 +542,7 @@ def c_del_assign_paragraph_delete():
     c_edt_c_id_opt_menu()
 
 
-def c_edt_assign_object_save():
+def c_edt_assign_object_save():  # (Drop)
     conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
@@ -566,12 +567,49 @@ def c_edt_assign_object_save():
         c_edt_obj_id = id.raw_conv(c_edt_obj_id_raw)[0]
 
         c.execute(f"""UPDATE choices SET obj_id = '{c_edt_obj_id}' WHERE c_id = '{c_edt_c_id}'""")
-        messagebox.showinfo("Success", f"Choice Number {c_ed_c_id_num} In Paragraph Number {c_ed_p_id_num} Has Been Assigned Object '{c_edt_obj_name}' As A Condition.")
+        messagebox.showinfo("Success",
+                            f"Choice Number {c_ed_c_id_num} In Paragraph Number {c_ed_p_id_num} Has Been Assigned Object '{c_edt_obj_name}' As A Drop.")
 
     else:
         c.execute(f"""UPDATE choices SET obj_id = 'None' WHERE c_id = '{c_edt_c_id}'""")
         messagebox.showinfo("Success",
-                            f"Choice Number {c_ed_c_id_num} Condition In Paragraph Number {c_ed_p_id_num} Has Been Removed.")
+                            f"Choice Number {c_ed_c_id_num}'s Drop In Paragraph Number {c_ed_p_id_num} Has Been Removed.")
+
+    conn.commit()
+
+
+def c_edt_assign_condition_save():  # (Condition)
+    conn = sqlite3.connect(database, uri=True)
+    c = conn.cursor()
+
+    # Get Condition's Name
+    c_edt_con_name = c_edt_con_name_variable.get()
+
+    # Get c_id
+    c_edt_c_id = c_edt_c_id_variable.get()
+
+    if len(id.decoder_2(c_edt_c_id)) == 3:
+        # Get c_id number
+        c_ed_c_id_num = id.id_int(c_edt_c_id)
+        c_ed_p_id_num = id.id_int(id.decoder_2(c_edt_c_id)[-2])
+    else:
+        c_ed_c_id_num = id.id_int(id.decoder_2(c_edt_c_id)[-2])
+        c_ed_p_id_num = id.id_int(id.decoder_2(c_edt_c_id)[-3])
+
+    if c_edt_con_name != 'Assign No Condition':
+        # Get Object's id
+        c.execute(f"""SELECT obj_id FROM objects where obj_name ='{c_edt_con_name}'""")
+        c_edt_con_id_raw = c.fetchall()
+        c_edt_con_id = id.raw_conv(c_edt_con_id_raw)[0]
+
+        c.execute(f"""UPDATE choices SET con_id = '{c_edt_con_id}' WHERE c_id = '{c_edt_c_id}'""")
+        messagebox.showinfo("Success", f"Choice Number {c_ed_c_id_num} In Paragraph Number {c_ed_p_id_num} Has Been Assigned Object '{c_edt_con_name}' As A Condition.")
+
+
+    else:
+        c.execute(f"""UPDATE choices SET con_id = 'None' WHERE c_id = '{c_edt_c_id}'""")
+        messagebox.showinfo("Success", f"Choice Number {c_ed_c_id_num}'s Condition In Paragraph Number {c_ed_p_id_num} Has Been Removed.")
+
 
     conn.commit()
 
@@ -615,9 +653,13 @@ def c_edt_window():
     c_edt_select_info_frame_2.pack(fill="y")
 
 
-    # Assign Object (Condition) MAIN Frame
-    c_edt_assign_object_frame_0 = LabelFrame(c_edt_info_frame_up, height=c_edt_info_frame_height, width=window_x_2)
-    c_edt_assign_object_frame_0.pack(fill="both", side=RIGHT)
+    # Assign OBJECT AND CONDITION MAIN FRAME
+    c_edt_assign_object_frame = Frame(c_edt_info_frame_up, height=c_edt_info_frame_height, width=window_x_2)
+    c_edt_assign_object_frame.pack(fill="both", side=RIGHT)
+
+    # Assign Object MAIN Frame
+    c_edt_assign_object_frame_0 = LabelFrame(c_edt_assign_object_frame, height=c_edt_info_frame_height, width=window_x_2)
+    c_edt_assign_object_frame_0.pack(fill="both")
 
     # Assign Object Frame 1
     c_edt_assign_object_frame_1 = Frame(c_edt_assign_object_frame_0, height=c_edt_info_frame_height, width=window_x_2)
@@ -626,6 +668,18 @@ def c_edt_window():
     # Assign Object Frame 2
     c_edt_assign_object_frame_2 = Frame(c_edt_assign_object_frame_0, height=c_edt_info_frame_height, width=window_x_2)
     c_edt_assign_object_frame_2.pack(fill="y", side=BOTTOM)
+
+    # Select Condition MAIN Frame
+    c_edt_select_condition_frame = LabelFrame(c_edt_assign_object_frame, height=c_edt_info_frame_height, width=window_x_2)
+    c_edt_select_condition_frame.pack(fill="both", expand=True)
+
+    # Select Condition Frame 1
+    c_edt_select_condition_frame_1 = Frame(c_edt_select_condition_frame, height=c_edt_info_frame_height, width=window_x_2)
+    c_edt_select_condition_frame_1.pack(fill="y")
+
+    # Select Condition Frame 2
+    c_edt_select_condition_frame_2 = Frame(c_edt_select_condition_frame, height=c_edt_info_frame_height, width=window_x_2)
+    c_edt_select_condition_frame_2.pack(fill="y", side=BOTTOM)
 
 
     # Info Frame DOWN
@@ -675,8 +729,13 @@ def c_edt_window():
 
     #
 
-    c_edt_object_id_label = ttk.Label(c_edt_assign_object_frame_1, text="Select Condition Name:", width=int(c_edt_width / 2), anchor=W)
+    c_edt_object_id_label = ttk.Label(c_edt_assign_object_frame_1, text="Select Object Drop:", width=int(c_edt_width / 2), anchor=W)
     c_edt_object_id_label.grid(row=0, column=0, padx=c_edt_pad-3, pady=c_edt_pad, stick="w")
+
+    #
+
+    p_edt_obj_name_label = ttk.Label(c_edt_select_condition_frame_1, text="Select Condition:", width=int(c_edt_width / 2), anchor=W)
+    p_edt_obj_name_label.grid(row=0, column=0, padx=c_edt_pad, pady=c_edt_pad, stick="w")
 
     #
 
@@ -735,14 +794,16 @@ def c_edt_window():
 
     # Buttons Assign Object
     p_edt_width_buttons_3 = 31
-    p_edt_save_p_to_c_button = ttk.Button(c_edt_assign_object_frame_2, text="Assign Object To Choice",
-                                      width=p_edt_width_buttons_3, command=c_edt_assign_object_save)
-    p_edt_save_p_to_c_button.grid(row=0, column=0, padx=c_edt_pad, pady=c_edt_pad, stick="w", ipadx=120)
+    p_edt_save_p_to_c_button = ttk.Button(c_edt_assign_object_frame_2, text="Submit Object Changes", width=p_edt_width_buttons_3, command=c_edt_assign_object_save)
+    p_edt_save_p_to_c_button.grid(row=0, column=0, padx=c_edt_pad, pady=(c_edt_pad+25, c_edt_pad), stick="w", ipadx=120)
+
+    # Buttons Assign Condition
+    p_edt_submit_object_button = ttk.Button(c_edt_select_condition_frame_2, text="Submit Condition Changes", width=p_edt_width_buttons_3, command=c_edt_assign_condition_save)
+    p_edt_submit_object_button.grid(row=0, column=0, padx=c_edt_pad, pady=c_edt_pad, stick="w", ipadx=120)
 
     # Button Submit
-    c_edt_submit_id_button = ttk.Button(c_edt_select_info_frame_2, text="Submit Information",
-                                        width=p_edt_width_buttons_3, command=c_edt_decode_id)
-    c_edt_submit_id_button.grid(row=0, column=0, padx=c_edt_pad, pady=c_edt_pad, stick="w", ipadx=128)
+    c_edt_submit_id_button = ttk.Button(c_edt_select_info_frame_2, text="Submit Information", width=p_edt_width_buttons_3, command=c_edt_decode_id)
+    c_edt_submit_id_button.grid(row=0, column=0, padx=(c_edt_pad, c_edt_pad+2), pady=c_edt_pad, stick="w", ipadx=128)
 
     global c_edt_s_id_opt_menu, c_edt_c_id_opt_menu
 
@@ -817,19 +878,49 @@ def c_edt_window():
         c = conn.cursor()
 
         c.execute(f"""SELECT obj_name FROM objects""")
-        c_edt_obj_namelist_raw = c.fetchall()
-        c_edt_obj_name_list = id.raw_conv(c_edt_obj_namelist_raw)
+        c_edt_obj_name_list_raw = c.fetchall()
+        c_edt_obj_name_list = id.raw_conv(c_edt_obj_name_list_raw)
 
         global c_edt_obj_name_variable
         c_edt_obj_name_variable = StringVar()
         c_edt_obj_name_list.append('Assign No Object')
-        c_edt_pl_id_opt_menu_var = ttk.OptionMenu(c_edt_assign_object_frame_1, c_edt_obj_name_variable, c_edt_obj_name_list[-1], *c_edt_obj_name_list)
-        c_edt_pl_id_opt_menu_var.config(width=c_edt_option_width)
-        c_edt_pl_id_opt_menu_var.grid(row=0, column=1, pady=c_edt_pad, padx=c_edt_pad, stick="ew")
+        c_edt_obj_id_opt_menu_var = ttk.OptionMenu(c_edt_assign_object_frame_1, c_edt_obj_name_variable, c_edt_obj_name_list[-1], *c_edt_obj_name_list)
+        c_edt_obj_id_opt_menu_var.config(width=c_edt_option_width)
+        c_edt_obj_id_opt_menu_var.grid(row=0, column=1, pady=c_edt_pad, padx=c_edt_pad, stick="ew")
+
+        conn.commit()
+
+    def c_edt_con_id_opt_menu():
+        conn = sqlite3.connect(database, uri=True)
+        c = conn.cursor()
+
+        c.execute(f"""SELECT obj_id FROM choices""")
+        c_edt_obj_id_list_raw = c.fetchall()
+        c_edt_obj_id_list_raw_2 = id.raw_conv(c_edt_obj_id_list_raw)
+
+        c_edt_obj_id_list = []
+        for obj_id in c_edt_obj_id_list_raw_2:
+            if obj_id != 'None':
+                c_edt_obj_id_list.append(obj_id)
+
+        c_edt_con_name_list = []
+        for obj_id in c_edt_obj_id_list:
+            c.execute(f"""SELECT obj_name FROM objects WHERE obj_id = '{obj_id}'""")
+            c_edt_con_name_raw = c.fetchall()
+            c_edt_con_name = id.raw_conv(c_edt_con_name_raw)[0]
+            c_edt_con_name_list.append(c_edt_con_name)
+
+        global c_edt_con_name_variable
+        c_edt_con_name_variable = StringVar()
+        c_edt_con_name_list.append('Assign No Condition')
+        c_edt_con_id_opt_menu_var = ttk.OptionMenu(c_edt_select_condition_frame_1, c_edt_con_name_variable, c_edt_con_name_list[-1], *c_edt_con_name_list)
+        c_edt_con_id_opt_menu_var.config(width=c_edt_option_width)
+        c_edt_con_id_opt_menu_var.grid(row=0, column=1, pady=c_edt_pad, padx=c_edt_pad, stick="ew")
 
         conn.commit()
 
     c_edt_obj_id_opt_menu()
+    c_edt_con_id_opt_menu()
     c_edt_s_id_opt_menu()
 
     test_buttons_func.error_update()
