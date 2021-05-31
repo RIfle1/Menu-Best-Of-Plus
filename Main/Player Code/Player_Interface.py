@@ -141,7 +141,6 @@ def print_paragraph(choice_id):
 
         choice_button_list.append(choice_button)
 
-
     conn.commit()
 
 
