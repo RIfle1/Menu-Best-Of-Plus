@@ -102,8 +102,8 @@ def print_paragraph(choice_id):
         item_message = Message(item_frame, text=obj_name, width=messages_width, font=main_font, anchor=N)
         item_message.pack(padx=padding, pady=padding, anchor="center")
 
-    # Add Object Assigned To Paragraph To Inventory
-    c.execute(f"""SELECT obj_id from paragraphs_list WHERE pl_id = '{p_id}'""")
+    # Add Object Assigned To Choice To Inventory
+    c.execute(f"""SELECT obj_id from choices WHERE  c_id = '{choice_id}'""")
     obj_id_raw = c.fetchall()
     obj_id = id.raw_conv(obj_id_raw)[0]
 
@@ -224,8 +224,6 @@ def print_story():
 
     next_button_frame = LabelFrame(game_frame)
     next_button_frame.pack(fill='both', side=BOTTOM)
-
-
 
     # Story Message
     c.execute(f"""SELECT s_text from stories WHERE s_id = '{s_id}'""")

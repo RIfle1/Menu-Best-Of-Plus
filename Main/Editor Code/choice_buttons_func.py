@@ -805,7 +805,7 @@ def c_edt_window():
     c_edt_submit_id_button = ttk.Button(c_edt_select_info_frame_2, text="Submit Information", width=p_edt_width_buttons_3, command=c_edt_decode_id)
     c_edt_submit_id_button.grid(row=0, column=0, padx=(c_edt_pad, c_edt_pad+2), pady=c_edt_pad, stick="w", ipadx=128)
 
-    global c_edt_s_id_opt_menu, c_edt_c_id_opt_menu
+    global c_edt_s_id_opt_menu, c_edt_c_id_opt_menu, c_edt_con_id_opt_menu
 
     def c_edt_s_id_opt_menu():
         conn = sqlite3.connect(database, uri=True)
@@ -888,13 +888,15 @@ def c_edt_window():
         c_edt_obj_id_opt_menu_var.config(width=c_edt_option_width)
         c_edt_obj_id_opt_menu_var.grid(row=0, column=1, pady=c_edt_pad, padx=c_edt_pad, stick="ew")
 
+        c_edt_con_id_opt_menu()
+
         conn.commit()
 
     def c_edt_con_id_opt_menu():
         conn = sqlite3.connect(database, uri=True)
         c = conn.cursor()
 
-        c.execute(f"""SELECT obj_id FROM choices""")
+        c.execute(f"""SELECT obj_id FROM choices UNION SELECT obj_id FROM choices""")
         c_edt_obj_id_list_raw = c.fetchall()
         c_edt_obj_id_list_raw_2 = id.raw_conv(c_edt_obj_id_list_raw)
 
