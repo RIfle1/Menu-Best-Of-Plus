@@ -72,6 +72,7 @@ def ip_new_window():
     database = editor_settings.database_module.database
     # Create New Window
     ip_new_wd = Toplevel()
+    ip_new_wd.grab_set()
     ip_new_wd.title("Create An Initial Paragraph")
     screen_x_2 = ip_new_wd.winfo_screenwidth()
     screen_y_2 = ip_new_wd.winfo_screenheight()
@@ -271,6 +272,7 @@ def ip_edt_window():
     database = editor_settings.database_module.database
     # Create New Window
     ip_edt_wd = Toplevel()
+    ip_edt_wd.grab_set()
     ip_edt_wd.title("Edit Initial Paragraph")
     screen_x_2 = ip_edt_wd.winfo_screenwidth()
     screen_y_2 = ip_edt_wd.winfo_screenheight()

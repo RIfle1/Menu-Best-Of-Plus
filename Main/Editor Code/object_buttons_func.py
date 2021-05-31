@@ -71,6 +71,7 @@ def obj_new_window():
     database = editor_settings.database_module.database
     # Create New Window
     obj_new_wd = Toplevel()
+    obj_new_wd.grab_set()
     obj_new_wd.title("Create A New Object")
     screen_x_2 = obj_new_wd.winfo_screenwidth()
     screen_y_2 = obj_new_wd.winfo_screenheight()
@@ -213,6 +214,7 @@ def obj_edt_window():
     database = editor_settings.database_module.database
     # Create New Window
     obj_edt_wd = Toplevel()
+    obj_edt_wd.grab_set()
     obj_edt_wd.title("Edit An Object")
     screen_x_2 = obj_edt_wd.winfo_screenwidth()
     screen_y_2 = obj_edt_wd.winfo_screenheight()

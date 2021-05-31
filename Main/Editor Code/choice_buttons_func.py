@@ -171,6 +171,7 @@ def c_new_window():
     database = editor_settings.database_module.database
     # Create New Window
     c_new_wd = Toplevel()
+    c_new_wd.grab_set()
     c_new_wd.title("Create A New Choice")
     screen_x_2 = c_new_wd.winfo_screenwidth()
     screen_y_2 = c_new_wd.winfo_screenheight()
@@ -605,11 +606,9 @@ def c_edt_assign_condition_save():  # (Condition)
         c.execute(f"""UPDATE choices SET con_id = '{c_edt_con_id}' WHERE c_id = '{c_edt_c_id}'""")
         messagebox.showinfo("Success", f"Choice Number {c_ed_c_id_num} In Paragraph Number {c_ed_p_id_num} Has Been Assigned Object '{c_edt_con_name}' As A Condition.")
 
-
     else:
         c.execute(f"""UPDATE choices SET con_id = 'None' WHERE c_id = '{c_edt_c_id}'""")
         messagebox.showinfo("Success", f"Choice Number {c_ed_c_id_num}'s Condition In Paragraph Number {c_ed_p_id_num} Has Been Removed.")
-
 
     conn.commit()
 
@@ -621,6 +620,7 @@ def c_edt_window():
     database = editor_settings.database_module.database
     # Create New Window
     c_edt_wd = Toplevel()
+    c_edt_wd.grab_set()
     c_edt_wd.title("Edit Choices")
     screen_x_2 = c_edt_wd.winfo_screenwidth()
     screen_y_2 = c_edt_wd.winfo_screenheight()

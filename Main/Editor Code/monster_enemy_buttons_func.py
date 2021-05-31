@@ -75,6 +75,7 @@ def mst_new_window():
     database = editor_settings.database_module.database
     # Create New Window
     mst_new_wd = Toplevel()
+    mst_new_wd.grab_set()
     mst_new_wd.title("Create An Enemy")
     screen_x_2 = mst_new_wd.winfo_screenwidth()
     screen_y_2 = mst_new_wd.winfo_screenheight()
@@ -231,6 +232,7 @@ def mst_edt_window():
     database = editor_settings.database_module.database
     # Create New Window
     mst_edt_wd = Toplevel()
+    mst_edt_wd.grab_set()
     mst_edt_wd.title("Edit An Enemy")
     screen_x_2 = mst_edt_wd.winfo_screenwidth()
     screen_y_2 = mst_edt_wd.winfo_screenheight()

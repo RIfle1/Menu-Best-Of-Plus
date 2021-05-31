@@ -137,6 +137,7 @@ def p_new_window():
     database = editor_settings.database_module.database
     # Create New Window
     p_new_wd = Toplevel()
+    p_new_wd.grab_set()
     p_new_wd.title("Create A New Paragraph")
     screen_x_2 = p_new_wd.winfo_screenwidth()
     screen_y_2 = p_new_wd.winfo_screenheight()
@@ -482,6 +483,7 @@ def p_edt_window():
     global p_edt_wd, database
     database = editor_settings.database_module.database
     p_edt_wd = Toplevel()
+    p_edt_wd.grab_set()
     p_edt_wd.title("Edit Paragraphs")
     screen_x_2 = p_edt_wd.winfo_screenwidth()
     screen_y_2 = p_edt_wd.winfo_screenheight()

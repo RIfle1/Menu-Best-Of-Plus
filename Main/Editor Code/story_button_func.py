@@ -99,6 +99,7 @@ def s_new_window():
     database = editor_settings.database_module.database
     # Create New Window
     s_new_wd = Toplevel()
+    s_new_wd.grab_set()
     s_new_wd.title("Create A New Story")
     screen_x_2 = s_new_wd.winfo_screenwidth()
     screen_y_2 = s_new_wd.winfo_screenheight()
@@ -254,6 +255,7 @@ def s_edt_window():
     database = editor_settings.database_module.database
     # Create New Window
     s_edt_wd = Toplevel()
+    s_edt_wd.grab_set()
     s_edt_wd.title("Edit A Story")
     screen_x_2 = s_edt_wd.winfo_screenwidth()
     screen_y_2 = s_edt_wd.winfo_screenheight()

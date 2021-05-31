@@ -71,6 +71,7 @@ def npc_new_window():
     database = editor_settings.database_module.database
     # Create New Window
     npc_new_wd = Toplevel()
+    npc_new_wd.grab_set()
     npc_new_wd.title("Create A New NPC")
     screen_x_2 = npc_new_wd.winfo_screenwidth()
     screen_y_2 = npc_new_wd.winfo_screenheight()
@@ -213,6 +214,7 @@ def npc_edt_window():
     database = editor_settings.database_module.database
     # Create New Window
     npc_edt_wd = Toplevel()
+    npc_edt_wd.grab_set()
     npc_edt_wd.title("Edit An NPC")
     screen_x_2 = npc_edt_wd.winfo_screenwidth()
     screen_y_2 = npc_edt_wd.winfo_screenheight()

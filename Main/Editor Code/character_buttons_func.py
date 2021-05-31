@@ -98,6 +98,7 @@ def ch_new_window():
     database = editor_settings.database_module.database
     # Create New Window
     ch_new_wd = Toplevel()
+    ch_new_wd.grab_set()
     ch_new_wd.title("Create A New Character")
     screen_x_2 = ch_new_wd.winfo_screenwidth()
     screen_y_2 = ch_new_wd.winfo_screenheight()
@@ -349,6 +350,7 @@ def ch_edt_window():
     database = editor_settings.database_module.database
     # Create New Window
     ch_edt_wd = Toplevel()
+    ch_edt_wd.grab_set()
     ch_edt_wd.title("Edit A Character")
     screen_x_2 = ch_edt_wd.winfo_screenwidth()
     screen_y_2 = ch_edt_wd.winfo_screenheight()
