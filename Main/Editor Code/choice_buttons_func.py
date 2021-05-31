@@ -1,12 +1,10 @@
 # Imports
-import time
-import tkinter
 from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
-import tkinter.font as font
 import sqlite3
 import id
+import os
 import editor_settings
 import test_buttons_func
 
@@ -98,14 +96,17 @@ def c_new_save():
     # Id sandwich
     c_new_from_p_id = id.decoder_2(c_new_from_p_id_variable.get())[-1]
     c_new_p_id = c_new_from_p_id_variable.get()
-    c_new_c_number = c_new_get_choice_id_entry.get()
+    c_new_c_number_raw = c_new_get_choice_id_entry.get()
+    c_new_c_number = c_new_c_number_raw.replace(" ", "")
 
     if c_new_to_p_id_variable.get() == 'Assign No Paragraph':
         c_new_to_p_id = ''
-        c_new_c_id = f'{c_new_s_id}_{c_new_from_p_id}_C{c_new_c_number}'
+        c_new_c_id_raw = f'{c_new_s_id}_{c_new_from_p_id}_C{c_new_c_number}'
+        c_new_c_id = c_new_c_id_raw.replace(' ', '')
     else:
         c_new_to_p_id = id.decoder_2(c_new_to_p_id_variable.get())[-1]
-        c_new_c_id = f'{c_new_s_id}_{c_new_from_p_id}_C{c_new_c_number}_{c_new_to_p_id}'
+        c_new_c_id_raw = f'{c_new_s_id}_{c_new_from_p_id}_C{c_new_c_number}_{c_new_to_p_id}'
+        c_new_c_id = c_new_c_id_raw.replace(' ', '')
 
     c.execute(f"""SELECT c_id FROM choices WHERE c_id LIKE '{c_new_p_id}%'""")
     c_new_c_id_list_raw = c.fetchall()
@@ -171,6 +172,8 @@ def c_new_window():
     database = editor_settings.database_module.database
     # Create New Window
     c_new_wd = Toplevel()
+    path = os.path.dirname(__file__)
+    c_new_wd.iconbitmap(f'{path}/Illustrations/Icon/editor_icon_2.ico')
     c_new_wd.grab_set()
     c_new_wd.title("Create A New Choice")
     screen_x_2 = c_new_wd.winfo_screenwidth()
@@ -620,6 +623,8 @@ def c_edt_window():
     database = editor_settings.database_module.database
     # Create New Window
     c_edt_wd = Toplevel()
+    path = os.path.dirname(__file__)
+    c_edt_wd.iconbitmap(f'{path}/Illustrations/Icon/editor_icon_2.ico')
     c_edt_wd.grab_set()
     c_edt_wd.title("Edit Choices")
     screen_x_2 = c_edt_wd.winfo_screenwidth()

@@ -1,12 +1,10 @@
 # All necessary imports
-import time
-import tkinter
 from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
-import tkinter.font as font
 import sqlite3
 import id
+import os
 import editor_settings
 import test_buttons_func
 
@@ -40,27 +38,30 @@ def npc_new_save():
 
     npc_new_npc_name = npc_new_name_entry_var.get()
 
-    c.execute(f"""SELECT npc_name FROM npcs WHERE npc_name = '{npc_new_npc_name}'""")
-    npc_new_name_list_raw = c.fetchall()
-    npc_new_name_list = id.raw_conv(npc_new_name_list_raw)
+    try:
+        c.execute(f"""SELECT npc_name FROM npcs WHERE npc_name = '{npc_new_npc_name}'""")
+        npc_new_name_list_raw = c.fetchall()
+        npc_new_name_list = id.raw_conv(npc_new_name_list_raw)
 
-    if not npc_new_npc_name == '':
-        if not npc_new_name_list:
-            c.execute("""INSERT INTO npcs VALUES (
-                       :npc_id, 
-                       :npc_name)""",
-                      {
-                          'npc_id': str(id.npc_id(npc_new_npc_id)),
-                          'npc_name': str(npc_new_npc_name),
-                      })
+        if not npc_new_npc_name == '':
+            if not npc_new_name_list:
+                c.execute("""INSERT INTO npcs VALUES (
+                           :npc_id, 
+                           :npc_name)""",
+                          {
+                              'npc_id': str(id.npc_id(npc_new_npc_id)),
+                              'npc_name': str(npc_new_npc_name),
+                          })
 
-            messagebox.showinfo("Success", f'NPC {npc_new_npc_name} Has Been Successfully Created.')
-            # Clear the Text Boxes
-            npc_new_name_entry.delete(0, END)
+                messagebox.showinfo("Success", f'NPC {npc_new_npc_name} Has Been Successfully Created.')
+                # Clear the Text Boxes
+                npc_new_name_entry.delete(0, END)
+            else:
+                messagebox.showerror("Duplication Error", f"NPC Called '{npc_new_npc_name}' Already Exists.", icon='warning')
         else:
-            messagebox.showerror("Duplication Error", f"NPC Called '{npc_new_npc_name}' Already Exists.", icon='warning')
-    else:
-        messagebox.showerror("Input Error", f"NPC Has To Be Named.", icon='warning')
+            messagebox.showerror("Input Error", f"NPC Has To Be Named.", icon='warning')
+    except sqlite3.OperationalError:
+        messagebox.showerror("Input Error", "No Weird Symbols In NPC Name Please")
 
     conn.commit()
 
@@ -71,6 +72,8 @@ def npc_new_window():
     database = editor_settings.database_module.database
     # Create New Window
     npc_new_wd = Toplevel()
+    path = os.path.dirname(__file__)
+    npc_new_wd.iconbitmap(f'{path}/Illustrations/Icon/editor_icon_2.ico')
     npc_new_wd.grab_set()
     npc_new_wd.title("Create A New NPC")
     screen_x_2 = npc_new_wd.winfo_screenwidth()
@@ -190,18 +193,20 @@ def npc_edt_edit():
     c = conn.cursor()
 
     npc_edt_npc_name_old = npc_edt_npc_name_var.get()
-
     npc_edt_npc_name = npc_edt_name_entry.get()
-    if npc_edt_npc_name != '':
-        c.execute(f"""UPDATE npcs SET npc_name = '{npc_edt_npc_name}' WHERE npc_name = '{npc_edt_npc_name_old}'""")
+    try:
+        if npc_edt_npc_name != '':
+            c.execute(f"""UPDATE npcs SET npc_name = '{npc_edt_npc_name}' WHERE npc_name = '{npc_edt_npc_name_old}'""")
 
-        messagebox.showinfo("Success", f"NPC '{npc_edt_npc_name_old}' has been successfully Renamed.")
+            messagebox.showinfo("Success", f"NPC '{npc_edt_npc_name_old}' has been successfully Renamed.")
 
-        # Clear the Text Boxes
-        npc_edt_name_entry.delete(0, END)
+            # Clear the Text Boxes
+            npc_edt_name_entry.delete(0, END)
 
-    else:
-        messagebox.showerror("Input Error", f'Input a Name', icon='warning')
+        else:
+            messagebox.showerror("Input Error", f'Input a Name', icon='warning')
+    except sqlite3.OperationalError:
+        messagebox.showerror("Input Error", "No Weird Symbols In NPC Name Please")
 
     conn.commit()
 
@@ -214,6 +219,8 @@ def npc_edt_window():
     database = editor_settings.database_module.database
     # Create New Window
     npc_edt_wd = Toplevel()
+    path = os.path.dirname(__file__)
+    npc_edt_wd.iconbitmap(f'{path}/Illustrations/Icon/editor_icon_2.ico')
     npc_edt_wd.grab_set()
     npc_edt_wd.title("Edit An NPC")
     screen_x_2 = npc_edt_wd.winfo_screenwidth()

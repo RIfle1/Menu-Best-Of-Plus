@@ -1,12 +1,10 @@
 # Imports
 import sqlite3
-from tkinter import *
 from tkinter import messagebox
 import editor_settings
 import id
 import sys
 import os
-import shutil
 
 error_counter = sys.modules[__name__]
 

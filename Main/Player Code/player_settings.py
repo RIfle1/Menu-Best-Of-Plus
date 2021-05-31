@@ -63,14 +63,19 @@ def save_position():
         directory = f"{folder_name[0]}_saves"
         path = os.path.dirname(__file__)
 
-        file_name_dir = filedialog.asksaveasfilename(initialdir=f"{path}/Saved Games/{directory}", title="Select File Name", defaultextension=".txt", initialfile="save1", filetypes=[("text files", "*.txt")])
+        file_name_dir = filedialog.asksaveasfilename(initialdir=f"{path}/Saved Games/{directory}",
+                                                     title="Select File Name", defaultextension=".txt",
+                                                     initialfile="save1", filetypes=[("text files", "*.txt")])
 
         temporary_save_location = f'{path}/Saved Games/temporary_save.txt'
         save_location = f'{file_name_dir}'
 
-        shutil.copyfile(temporary_save_location, save_location)
+        if save_location:
+            shutil.copyfile(temporary_save_location, save_location)
 
-        messagebox.showinfo("New Save", f"Success, New Save For Story {folder_name[0]} Has Been Created.")
+            messagebox.showinfo("New Save", f"Success, New Save For Story {folder_name[0]} Has Been Created.")
+        else:
+            pass
 
     except AttributeError:
         pass

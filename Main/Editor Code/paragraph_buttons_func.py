@@ -6,6 +6,7 @@ from tkinter import messagebox
 import editor_settings
 import test_buttons_func
 import id
+import os
 
 
 def style_func():
@@ -137,6 +138,8 @@ def p_new_window():
     database = editor_settings.database_module.database
     # Create New Window
     p_new_wd = Toplevel()
+    path = os.path.dirname(__file__)
+    p_new_wd.iconbitmap(f'{path}/Illustrations/Icon/editor_icon_2.ico')
     p_new_wd.grab_set()
     p_new_wd.title("Create A New Paragraph")
     screen_x_2 = p_new_wd.winfo_screenwidth()
@@ -477,6 +480,8 @@ def p_edt_window():
     global p_edt_wd, database
     database = editor_settings.database_module.database
     p_edt_wd = Toplevel()
+    path = os.path.dirname(__file__)
+    p_edt_wd.iconbitmap(f'{path}/Illustrations/Icon/editor_icon_2.ico')
     p_edt_wd.grab_set()
     p_edt_wd.title("Edit Paragraphs")
     screen_x_2 = p_edt_wd.winfo_screenwidth()

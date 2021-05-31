@@ -1,12 +1,10 @@
 # Imports
-import time
-import tkinter
 from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
-import tkinter.font as font
 import sqlite3
 import id
+import os
 import editor_settings
 import test_buttons_func
 
@@ -72,6 +70,8 @@ def ip_new_window():
     database = editor_settings.database_module.database
     # Create New Window
     ip_new_wd = Toplevel()
+    path = os.path.dirname(__file__)
+    ip_new_wd.iconbitmap(f'{path}/Illustrations/Icon/editor_icon_2.ico')
     ip_new_wd.grab_set()
     ip_new_wd.title("Create An Initial Paragraph")
     screen_x_2 = ip_new_wd.winfo_screenwidth()
@@ -272,6 +272,8 @@ def ip_edt_window():
     database = editor_settings.database_module.database
     # Create New Window
     ip_edt_wd = Toplevel()
+    path = os.path.dirname(__file__)
+    ip_edt_wd.iconbitmap(f'{path}/Illustrations/Icon/editor_icon_2.ico')
     ip_edt_wd.grab_set()
     ip_edt_wd.title("Edit Initial Paragraph")
     screen_x_2 = ip_edt_wd.winfo_screenwidth()

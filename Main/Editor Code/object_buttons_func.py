@@ -1,12 +1,10 @@
 # All necessary imports
-import time
-import tkinter
 from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
-import tkinter.font as font
 import sqlite3
 import id
+import os
 import editor_settings
 import test_buttons_func
 
@@ -40,27 +38,30 @@ def obj_new_save():
 
     obj_new_obj_name = obj_new_name_entry_var.get()
 
-    c.execute(f"""SELECT obj_name FROM objects WHERE obj_name = '{obj_new_obj_name}'""")
-    obj_new_name_list_raw = c.fetchall()
-    obj_new_name_list = id.raw_conv(obj_new_name_list_raw)
+    try:
+        c.execute(f"""SELECT obj_name FROM objects WHERE obj_name = '{obj_new_obj_name}'""")
+        obj_new_name_list_raw = c.fetchall()
+        obj_new_name_list = id.raw_conv(obj_new_name_list_raw)
 
-    if not obj_new_obj_name == '':
-        if not obj_new_name_list:
-            c.execute("""INSERT INTO objects VALUES (
-                       :obj_id, 
-                       :obj_name)""",
-                      {
-                          'obj_id': str(id.obj_id(obj_new_obj_id)),
-                          'obj_name': str(obj_new_obj_name),
-                      })
+        if not obj_new_obj_name == '':
+            if not obj_new_name_list:
+                c.execute("""INSERT INTO objects VALUES (
+                           :obj_id, 
+                           :obj_name)""",
+                          {
+                              'obj_id': str(id.obj_id(obj_new_obj_id)),
+                              'obj_name': str(obj_new_obj_name),
+                          })
 
-            messagebox.showinfo("Success", f'Object {obj_new_obj_name} Has Been Successfully Created.')
-            # Clear the Text Boxes
-            obj_new_name_entry.delete(0, END)
+                messagebox.showinfo("Success", f'Object {obj_new_obj_name} Has Been Successfully Created.')
+                # Clear the Text Boxes
+                obj_new_name_entry.delete(0, END)
+            else:
+                messagebox.showerror("Duplication Error", f"Object Called '{obj_new_obj_name}' Already Exists.", icon='warning')
         else:
-            messagebox.showerror("Duplication Error", f"Object Called '{obj_new_obj_name}' Already Exists.", icon='warning')
-    else:
-        messagebox.showerror("Input Error", f"Object Has to be named", icon='warning')
+            messagebox.showerror("Input Error", f"Object Has to be named", icon='warning')
+    except sqlite3.OperationalError:
+        messagebox.showerror("Input Error", "No Weird Symbols In Objects Name Please")
 
     conn.commit()
 
@@ -71,6 +72,8 @@ def obj_new_window():
     database = editor_settings.database_module.database
     # Create New Window
     obj_new_wd = Toplevel()
+    path = os.path.dirname(__file__)
+    obj_new_wd.iconbitmap(f'{path}/Illustrations/Icon/editor_icon_2.ico')
     obj_new_wd.grab_set()
     obj_new_wd.title("Create A New Object")
     screen_x_2 = obj_new_wd.winfo_screenwidth()
@@ -193,13 +196,15 @@ def obj_edt_edit():
 
     obj_edt_obj_name = obj_edt_name_entry.get()
     if obj_edt_obj_name != '':
-        c.execute(f"""UPDATE objects SET obj_name = '{obj_edt_obj_name}' WHERE obj_name = '{obj_edt_obj_name_old}'""")
+        try:
+            c.execute(f"""UPDATE objects SET obj_name = '{obj_edt_obj_name}' WHERE obj_name = '{obj_edt_obj_name_old}'""")
 
-        messagebox.showinfo("Success", f"Object '{obj_edt_obj_name_old}' has been successfully Renamed.")
+            messagebox.showinfo("Success", f"Object '{obj_edt_obj_name_old}' has been successfully Renamed.")
 
-        # Clear the Text Boxes
-        obj_edt_name_entry.delete(0, END)
-
+            # Clear the Text Boxes
+            obj_edt_name_entry.delete(0, END)
+        except sqlite3.OperationalError:
+            messagebox.showerror("Input Error", "No Weird Symbols In Objects Name Please")
     else:
         messagebox.showerror("Input Error", f'Input a Name', icon='warning')
 
@@ -214,6 +219,8 @@ def obj_edt_window():
     database = editor_settings.database_module.database
     # Create New Window
     obj_edt_wd = Toplevel()
+    path = os.path.dirname(__file__)
+    obj_edt_wd.iconbitmap(f'{path}/Illustrations/Icon/editor_icon_2.ico')
     obj_edt_wd.grab_set()
     obj_edt_wd.title("Edit An Object")
     screen_x_2 = obj_edt_wd.winfo_screenwidth()

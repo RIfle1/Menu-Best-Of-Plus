@@ -1,12 +1,10 @@
 # All necessary imports
-import time
-import tkinter
 from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
-import tkinter.font as font
 import sqlite3
 import id
+import os
 import editor_settings
 import test_buttons_func
 
@@ -30,63 +28,78 @@ def ch_new_save():
     ch_new_ch_id_list_raw = c.fetchall()
     ch_new_ch_id_list = id.raw_conv(ch_new_ch_id_list_raw)
 
-    if not ch_new_ch_id_list:
-        ch_new_ch_id = 1
-    else:
-        ch_new_ch_id = int(id.max_num(id.int_list(ch_new_ch_id_list))) + 1
+    try:
+        # Check That Character doesn't exist already
+        c.execute(f"""SELECT ch_name FROM characters WHERE ch_name = '{ch_new_name_entry_var.get()}'""")
+        ch_new_name_list_raw = c.fetchall()
+        ch_new_name_list = id.raw_conv(ch_new_name_list_raw)
 
-    # Create Table
-    c.execute("""CREATE TABLE IF NOT EXISTS characters
-             (ch_id text,
-             ch_name text, 
-             ch_breed text,
-             ch_life integer,
-             ch_speed integer,
-             ch_defense integer,
-             ch_attack integer,
-             ch_background text)""")
+        c.execute(f"""SELECT ch_breed FROM characters WHERE ch_breed = '{ch_new_breed_entry_var.get()}'""")
 
-    if len(ch_new_background_text_entry.get("1.0", "end")) != 1:
-        # Error check:
-        try:
-            int(ch_new_life_entry_var.get())
-            int(ch_new_speed_entry_var.get())
-            int(ch_new_defense_entry_var.get())
-            int(ch_new_attack_entry_var.get())
-            # Insert into table
-            c.execute("""INSERT INTO characters VALUES (
-            :ch_id, 
-            :ch_name, 
-            :ch_breed, 
-            :ch_life, 
-            :ch_speed, 
-            :ch_defense, 
-            :ch_attack, 
-            :ch_background)""",
-                {
-                    'ch_id': str(id.ch_id(ch_new_ch_id)),
-                    'ch_name': str(ch_new_name_entry_var.get()),
-                    'ch_breed': str(ch_new_breed_entry_var.get()),
-                    'ch_life': int(ch_new_life_entry_var.get()),
-                    'ch_speed': int(ch_new_speed_entry_var.get()),
-                    'ch_defense': int(ch_new_defense_entry_var.get()),
-                    'ch_attack': int(ch_new_attack_entry_var.get()),
-                    'ch_background': str(ch_new_background_text_entry.get("1.0", "end"))
-                })
-            # Success Message
-            messagebox.showinfo("Success", f'Character {str(ch_new_name_entry_var.get())} Has Been Successfully Created.')
-            # Clear the Text Boxes
-            ch_new_name_entry.delete(0, END)
-            ch_new_breed_entry.delete(0, END)
-            ch_new_life_entry.delete(0, END)
-            ch_new_speed_entry.delete(0, END)
-            ch_new_defense_entry.delete(0, END)
-            ch_new_attack_entry.delete(0, END)
-            ch_new_background_text_entry.delete("1.0", "end")
-        except ValueError:
-            messagebox.showerror('Value Error', 'Life, Speed, Defense and Attack Must Be Numbers.', icon="warning")
-    else:
-        messagebox.showerror('Input Error', 'Character Background Text Is Empty', icon="warning")
+        if not ch_new_name_list:
+
+            if not ch_new_ch_id_list:
+                ch_new_ch_id = 1
+            else:
+                ch_new_ch_id = int(id.max_num(id.int_list(ch_new_ch_id_list))) + 1
+
+            # Create Table
+            c.execute("""CREATE TABLE IF NOT EXISTS characters
+                     (ch_id text,
+                     ch_name text, 
+                     ch_breed text,
+                     ch_life integer,
+                     ch_speed integer,
+                     ch_defense integer,
+                     ch_attack integer,
+                     ch_background text)""")
+
+            if len(ch_new_background_text_entry.get("1.0", "end")) != 1:
+                # Error check:
+                try:
+                    int(ch_new_life_entry_var.get())
+                    int(ch_new_speed_entry_var.get())
+                    int(ch_new_defense_entry_var.get())
+                    int(ch_new_attack_entry_var.get())
+                    # Insert into table
+                    c.execute("""INSERT INTO characters VALUES (
+                    :ch_id, 
+                    :ch_name, 
+                    :ch_breed, 
+                    :ch_life, 
+                    :ch_speed, 
+                    :ch_defense, 
+                    :ch_attack, 
+                    :ch_background)""",
+                        {
+                            'ch_id': f'{id.ch_id(ch_new_ch_id)}',
+                            'ch_name': f'{ch_new_name_entry_var.get()}',
+                            'ch_breed': f'{ch_new_breed_entry_var.get()}',
+                            'ch_life': int(ch_new_life_entry_var.get()),
+                            'ch_speed': int(ch_new_speed_entry_var.get()),
+                            'ch_defense': int(ch_new_defense_entry_var.get()),
+                            'ch_attack': int(ch_new_attack_entry_var.get()),
+                            'ch_background': str(ch_new_background_text_entry.get("1.0", "end"))
+                        })
+                    # Success Message
+                    messagebox.showinfo("Success", f'Character {str(ch_new_name_entry_var.get())} Has Been Successfully Created.')
+                    # Clear the Text Boxes
+                    ch_new_name_entry.delete(0, END)
+                    ch_new_breed_entry.delete(0, END)
+                    ch_new_life_entry.delete(0, END)
+                    ch_new_speed_entry.delete(0, END)
+                    ch_new_defense_entry.delete(0, END)
+                    ch_new_attack_entry.delete(0, END)
+                    ch_new_background_text_entry.delete("1.0", "end")
+                except ValueError:
+                    messagebox.showerror('Value Error', 'Life, Speed, Defense and Attack Must Be Numbers.', icon="warning")
+
+            else:
+                messagebox.showerror('Input Error', 'Character Background Text Is Empty', icon="warning")
+        else:
+            messagebox.showerror('Duplication Error', f"Character {ch_new_name_entry_var.get()} Already Exists")
+    except sqlite3.OperationalError:
+        messagebox.showerror("Input Error", "No Weird Symbols In Character Name Or Character Breed Please")
 
     # Commit changes
     conn.commit()
@@ -98,6 +111,8 @@ def ch_new_window():
     database = editor_settings.database_module.database
     # Create New Window
     ch_new_wd = Toplevel()
+    path = os.path.dirname(__file__)
+    ch_new_wd.iconbitmap(f'{path}/Illustrations/Icon/editor_icon_2.ico')
     ch_new_wd.grab_set()
     ch_new_wd.title("Create A New Character")
     screen_x_2 = ch_new_wd.winfo_screenwidth()
@@ -297,48 +312,55 @@ def ch_edt_edit():
     edt_ch_attack = ch_edt_attack_entry.get()
     edt_ch_defense = ch_edt_defense_entry.get()
     edt_ch_background = ch_edt_background_text_entry.get('1.0', 'end')
+
     try:
-        edt_ch_life = int(edt_ch_life)
-        edt_ch_speed = int(edt_ch_speed)
-        edt_ch_attack = int(edt_ch_attack)
-        edt_ch_defense = int(edt_ch_defense)
+        c.execute(f"""SELECT ch_name FROM characters WHERE ch_name = '{edt_ch_name}'""")
 
-        if edt_ch_name and edt_ch_breed and edt_ch_life and edt_ch_speed and edt_ch_attack and edt_ch_defense \
-                and edt_ch_background != '' \
-                and len(ch_edt_background_text_entry.get("1.0", "end")) != 1:
-            c.execute(f"""UPDATE characters SET
-                ch_name = :ch_name,
-                ch_breed = :ch_breed,
-                ch_life = :ch_life,
-                ch_speed = :ch_speed,
-                ch_attack = :ch_attack,
-                ch_defense = :ch_defense,
-                ch_background = :ch_background 
-    
-                WHERE ch_name ='{ch_edt_ch_name}'""",
-                      {"ch_name": f'{edt_ch_name}',
-                          "ch_breed": f'{edt_ch_breed}',
-                          "ch_life": f'{edt_ch_life}',
-                          "ch_speed": f'{edt_ch_speed}',
-                          "ch_attack": f'{edt_ch_attack}',
-                          "ch_defense": f'{edt_ch_defense}',
-                          "ch_background": f'{edt_ch_background}'})
-            messagebox.showinfo("Success",
-                                f"Character '{ch_edt_ch_name}' has been successfully modified.")
-            # Clear the Text Boxes
-            ch_edt_name_entry.delete(0, END)
-            ch_edt_breed_entry.delete(0, END)
-            ch_edt_life_entry.delete(0, END)
-            ch_edt_speed_entry.delete(0, END)
-            ch_edt_defense_entry.delete(0, END)
-            ch_edt_attack_entry.delete(0, END)
-            ch_edt_background_text_entry.delete("1.0", "end")
+        c.execute(f"""SELECT ch_breed FROM characters WHERE ch_breed = '{edt_ch_breed}'""")
 
-        else:
-            messagebox.showerror("Input Error", f'One Of The Inputs Are Empty', icon='warning')
-    except ValueError:
-        messagebox.showerror("Input Error", f'One Of The Stats Are Not a Number', icon='warning')
+        try:
+            edt_ch_life = int(edt_ch_life)
+            edt_ch_speed = int(edt_ch_speed)
+            edt_ch_attack = int(edt_ch_attack)
+            edt_ch_defense = int(edt_ch_defense)
 
+            if edt_ch_name and edt_ch_breed and edt_ch_life and edt_ch_speed and edt_ch_attack and edt_ch_defense \
+                    and edt_ch_background != '' \
+                    and len(ch_edt_background_text_entry.get("1.0", "end")) != 1:
+                c.execute(f"""UPDATE characters SET
+                        ch_name = :ch_name,
+                        ch_breed = :ch_breed,
+                        ch_life = :ch_life,
+                        ch_speed = :ch_speed,
+                        ch_attack = :ch_attack,
+                        ch_defense = :ch_defense,
+                        ch_background = :ch_background 
+
+                        WHERE ch_name ='{ch_edt_ch_name}'""",
+                          {"ch_name": f'{edt_ch_name}',
+                           "ch_breed": f'{edt_ch_breed}',
+                           "ch_life": f'{edt_ch_life}',
+                           "ch_speed": f'{edt_ch_speed}',
+                           "ch_attack": f'{edt_ch_attack}',
+                           "ch_defense": f'{edt_ch_defense}',
+                           "ch_background": f'{edt_ch_background}'})
+                messagebox.showinfo("Success",
+                                    f"Character '{ch_edt_ch_name}' has been successfully modified.")
+                # Clear the Text Boxes
+                ch_edt_name_entry.delete(0, END)
+                ch_edt_breed_entry.delete(0, END)
+                ch_edt_life_entry.delete(0, END)
+                ch_edt_speed_entry.delete(0, END)
+                ch_edt_defense_entry.delete(0, END)
+                ch_edt_attack_entry.delete(0, END)
+                ch_edt_background_text_entry.delete("1.0", "end")
+
+            else:
+                messagebox.showerror("Input Error", f'One Of The Inputs Are Empty', icon='warning')
+        except ValueError:
+            messagebox.showerror("Input Error", f'One Of The Stats Are Not a Number', icon='warning')
+    except sqlite3.OperationalError:
+        messagebox.showerror("Input Error", "No Weird Symbols In Character Name Or Character Breed Please")
     conn.commit()
 
     ch_edt_ch_name_opt_menu()
@@ -350,6 +372,8 @@ def ch_edt_window():
     database = editor_settings.database_module.database
     # Create New Window
     ch_edt_wd = Toplevel()
+    path = os.path.dirname(__file__)
+    ch_edt_wd.iconbitmap(f'{path}/Illustrations/Icon/editor_icon_2.ico')
     ch_edt_wd.grab_set()
     ch_edt_wd.title("Edit A Character")
     screen_x_2 = ch_edt_wd.winfo_screenwidth()

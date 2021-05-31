@@ -5,6 +5,7 @@ from tkinter import ttk
 import sqlite3
 import player_settings
 import id
+import os
 from functools import partial
 
 database = player_settings.database_module.database
@@ -23,8 +24,21 @@ def style_func():
 
 
 def force_exit_player_interface():
-    clear_temp_info()
-    player.destroy()
+    global database, progress_list
+    progress_list = player_settings.progress_module.progress_list
+    database = player_settings.database_module.database
+    if len(progress_list) >= 4:
+        warning_message = messagebox.askquestion("Quit?", "All Unsaved Progress Will Be Lost", icon='warning')
+        if warning_message == 'yes':
+            clear_temp_info()
+            player.destroy()
+        else:
+            save_position()
+            clear_temp_info()
+            player.destroy()
+    else:
+        clear_temp_info()
+        player.destroy()
 
 
 def exit_player_interface():
@@ -527,6 +541,8 @@ def character_select():
 
 
 player = Tk()
+path = os.path.dirname(__file__)
+player.iconbitmap(f'{path}/icons/game_icon_2.ico')
 style_func()
 player.title("Story Game")
 

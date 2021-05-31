@@ -1,12 +1,10 @@
 # All necessary imports
-import time
-import tkinter
 from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
-import tkinter.font as font
 import sqlite3
 import id
+import os
 import editor_settings
 import test_buttons_func
 
@@ -41,30 +39,33 @@ def mst_new_save():
 
     mst_new_mst_name = mst_new_name_entry_var.get()
 
-    c.execute(f"""SELECT mst_name FROM monsters WHERE mst_name = '{mst_new_mst_name}'""")
-    mst_new_name_list_raw = c.fetchall()
-    mst_new_name_list = id.raw_conv(mst_new_name_list_raw)
+    try:
+        c.execute(f"""SELECT mst_name FROM monsters WHERE mst_name = '{mst_new_mst_name}'""")
+        mst_new_name_list_raw = c.fetchall()
+        mst_new_name_list = id.raw_conv(mst_new_name_list_raw)
 
-    if not mst_new_mst_name == '':
-        if not mst_new_name_list:
-            c.execute("""INSERT INTO monsters VALUES (
-                       :mst_id, 
-                       :mst_name,
-                       :mst_type)""",
-                      {
-                          'mst_id': str(id.mst_id(mst_new_mst_id)),
-                          'mst_name': str(mst_new_name_entry_var.get()),
-                          'mst_type': str(mst_new_mst_type_var.get())
+        if not mst_new_mst_name == '':
+            if not mst_new_name_list:
+                c.execute("""INSERT INTO monsters VALUES (
+                           :mst_id, 
+                           :mst_name,
+                           :mst_type)""",
+                          {
+                              'mst_id': str(id.mst_id(mst_new_mst_id)),
+                              'mst_name': str(mst_new_name_entry_var.get()),
+                              'mst_type': str(mst_new_mst_type_var.get())
 
-                      })
+                          })
 
-            messagebox.showinfo("Success", f'{mst_new_mst_type_var.get()} Number {mst_new_mst_id} Has Been Successfully Created.')
-            # Clear the Text Boxes
-            mst_new_name_entry.delete(0, END)
+                messagebox.showinfo("Success", f'{mst_new_mst_type_var.get()} Number {mst_new_mst_id} Has Been Successfully Created.')
+                # Clear the Text Boxes
+                mst_new_name_entry.delete(0, END)
+            else:
+                messagebox.showerror("Duplication Error", f"{mst_new_mst_type_var.get()} Called '{mst_new_mst_name}' Already Exists.")
         else:
-            messagebox.showerror("Duplication Error", f"{mst_new_mst_type_var.get()} Called '{mst_new_mst_name}' Already Exists.")
-    else:
-        messagebox.showerror("Input Error", f"Enemy Has To Be Named.", icon='warning')
+            messagebox.showerror("Input Error", f"Enemy Has To Be Named.", icon='warning')
+    except sqlite3.OperationalError:
+        messagebox.showerror("Input Error", "No Weird Symbols In Enemy Name Please")
 
     conn.commit()
 
@@ -75,6 +76,8 @@ def mst_new_window():
     database = editor_settings.database_module.database
     # Create New Window
     mst_new_wd = Toplevel()
+    path = os.path.dirname(__file__)
+    mst_new_wd.iconbitmap(f'{path}/Illustrations/Icon/editor_icon_2.ico')
     mst_new_wd.grab_set()
     mst_new_wd.title("Create An Enemy")
     screen_x_2 = mst_new_wd.winfo_screenwidth()
@@ -210,16 +213,19 @@ def mst_edt_edit():
     mst_edt_mst_name_var = mst_new_mst_name_id_var.get()
 
     mst_edt_mst_name = mst_edt_name_entry.get()
-    if mst_edt_mst_name != '':
-        c.execute(f"""UPDATE monsters SET mst_name = '{mst_edt_mst_name}' WHERE mst_name = '{mst_edt_mst_name_var}'""")
+    try:
+        if mst_edt_mst_name != '':
+            c.execute(f"""UPDATE monsters SET mst_name = '{mst_edt_mst_name}' WHERE mst_name = '{mst_edt_mst_name_var}'""")
 
-        messagebox.showinfo("Success", f"Enemy '{mst_edt_mst_name_var}' has been successfully Renamed.")
+            messagebox.showinfo("Success", f"Enemy '{mst_edt_mst_name_var}' has been successfully Renamed.")
 
-        # Clear the Text Boxes
-        mst_edt_name_entry.delete(0, END)
+            # Clear the Text Boxes
+            mst_edt_name_entry.delete(0, END)
 
-    else:
-        messagebox.showerror("Input Error", f'Input a Name', icon='warning')
+        else:
+            messagebox.showerror("Input Error", f'Input a Name', icon='warning')
+    except sqlite3.OperationalError:
+        messagebox.showerror("Input Error", "No Weird Symbols In Enemy Name Please")
 
     conn.commit()
 

@@ -15,6 +15,7 @@ import object_buttons_func
 import test_buttons_func
 import editor_settings
 import id
+import os
 
 database = editor_settings.database_module.database
 
@@ -627,6 +628,8 @@ connection.commit()
 
 # Main App
 editor = Tk()
+path = os.path.dirname(__file__)
+editor.iconbitmap(f'{path}/Illustrations/Icon/editor_icon_2.ico')
 
 
 def close_window():
@@ -653,6 +656,7 @@ editor.title("Game Editor")
 
 window_x = editor.winfo_screenwidth()-30
 window_y = editor.winfo_screenheight()-110
+editor.minsize(window_x, window_y)
 editor.geometry(f"{window_x}x{window_y}+{10}+{10}")
 
 # Adding the Menus

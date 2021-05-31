@@ -1,12 +1,10 @@
 # Imports
-import time
-import tkinter
 from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
-import tkinter.font as font
 import sqlite3
 import id
+import os
 import editor_settings
 import test_buttons_func
 
@@ -99,6 +97,8 @@ def s_new_window():
     database = editor_settings.database_module.database
     # Create New Window
     s_new_wd = Toplevel()
+    path = os.path.dirname(__file__)
+    s_new_wd.iconbitmap(f'{path}/Illustrations/Icon/editor_icon_2.ico')
     s_new_wd.grab_set()
     s_new_wd.title("Create A New Story")
     screen_x_2 = s_new_wd.winfo_screenwidth()
@@ -255,6 +255,8 @@ def s_edt_window():
     database = editor_settings.database_module.database
     # Create New Window
     s_edt_wd = Toplevel()
+    path = os.path.dirname(__file__)
+    s_edt_wd.iconbitmap(f'{path}/Illustrations/Icon/editor_icon_2.ico')
     s_edt_wd.grab_set()
     s_edt_wd.title("Edit A Story")
     screen_x_2 = s_edt_wd.winfo_screenwidth()
