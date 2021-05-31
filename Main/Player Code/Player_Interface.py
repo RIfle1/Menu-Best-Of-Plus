@@ -8,11 +8,10 @@ import id
 from functools import partial
 
 database = player_settings.database_module.database
+progress_list = player_settings.progress_module.progress_list
+inventory_list = player_settings.inventory_module.inventory_list
 
 main_font = ("Times New Roman", 12)
-
-progress_list = []
-inventory = ['check']
 
 
 def style_func():
@@ -23,174 +22,264 @@ def style_func():
     ch_style.configure("TLabel", font=('Times New Roman', ch_font_size))
 
 
+def force_exit_player_interface():
+    clear_temp_info()
+    player.destroy()
+
+
+def exit_player_interface():
+    clear_temp_info()
+    player.destroy()
+
+
+def save_position():
+    global progress_list
+    progress_list = player_settings.progress_module.progress_list
+    if progress_list:
+        save_check = len(id.decoder_2(progress_list[-1]))
+        if save_check == 4:
+            player_settings.save_position()
+        else:
+            messagebox.showerror("Unable To Save", 'You Cannot Save This Early On In The Story.')
+    else:
+        messagebox.showerror("Unable To Save", "There's Nothing To Save.")
+
+
+def load_position():
+    global database, inventory_list, progress_list
+    inventory_list = player_settings.inventory_module.inventory_list
+    progress_list = player_settings.progress_module.progress_list
+    database = player_settings.database_module.database
+    if database and not progress_list:
+        player_settings.load_position()
+        inventory_list = player_settings.inventory_module.inventory_list
+        progress_list = player_settings.progress_module.progress_list
+        print_paragraph(progress_list[-1])
+
+    elif database and progress_list:
+        warning_message = messagebox.askquestion("Load Position", "All Unsaved Progress Will Be Lost", icon='warning')
+        if warning_message == 'yes':
+            player_settings.load_position()
+            inventory_list = player_settings.inventory_module.inventory_list
+            progress_list = player_settings.progress_module.progress_list
+            print_paragraph(progress_list[-1])
+        else:
+            pass
+    else:
+        messagebox.showerror("Error", "You Have To Load A Player Story First.")
+
+
 def load_story():
-    player_settings.load_story()
-    clear_frame()
-    clear_inventory()
-    inventory.append('check')
-    character_select()
+    # Function To Load Story
+    global database, inventory_list
+    inventory_list = player_settings.inventory_module.inventory_list
+    database = player_settings.database_module.database
+    if database:
+        warning_message = messagebox.askquestion("Load Story Again?", "All Unsaved Progress Will Be Lost", icon='warning')
+        if warning_message == 'yes':
+            player_settings.load_story()
+            # Clear frame
+            clear_frame()
+
+            # Clear all temporary info
+            clear_temp_info()
+
+            # Add 'check' to inventory (for choice condition purposes)
+            inventory_list.append('check')
+
+            # Run the first game function
+            character_select()
+        else:
+            pass
+    else:
+        player_settings.load_story()
+        # Clear frame
+        clear_frame()
+
+        # Clear all temporary info
+        clear_temp_info()
+
+        # Add 'check' to inventory (for choice condition purposes)
+        inventory_list.append('check')
+
+        # Run the first game function
+        character_select()
 
 
-def clear_inventory():
-    inventory.clear()
+def clear_temp_info():
+    global inventory_list, progress_list
+    inventory_list = player_settings.inventory_module.inventory_list
+    progress_list = player_settings.progress_module.progress_list
+    # Delete Temporary save info
+    temporary_file = open(f"Saved Games/temporary_save.txt", "w")
+    temporary_file.truncate(0)
+    temporary_file.close()
+
+    inventory_list.clear()
+    progress_list.clear()
 
 
 def clear_frame():
     for widget in game_frame.winfo_children():
         widget.destroy()
-    for widget in inventory_frame.winfo_children():
+    for widget in inv_inside_frame.winfo_children():
         widget.destroy()
 
 
 def print_paragraph(choice_id):
-    global database
+    global database, inventory_list, progress_list
+    inventory_list = player_settings.inventory_module.inventory_list
+    progress_list = player_settings.progress_module.progress_list
     database = player_settings.database_module.database
-    conn = sqlite3.connect(database, uri=True)
-    c = conn.cursor()
 
-    clear_frame()
+    try:
+        conn = sqlite3.connect(database, uri=True)
+        c = conn.cursor()
 
-    messages_width = 200
-    padding = 10
+        clear_frame()
 
-    s_id = progress_list[0]
-    ch_name = progress_list[1]
+        messages_width = 200
+        padding = 10
 
-    p_id = f'{s_id}_{id.decoder_2(choice_id)[-1]}'
-    p_id_number = id.id_int(p_id)
+        # Add Current Progress To List
+        progress_list.append(choice_id)
 
-    # Check If Next Paragraph Is An Ending Paragraph
-    c.execute(f"""SELECT end_bool FROM paragraphs_list WHERE pl_id = '{p_id}'""")
-    p_id_end_info_raw = c.fetchall()
-    p_id_end_info = id.raw_conv(p_id_end_info_raw)[0]
+        # Add Object Assigned To Choice To Inventory
+        c.execute(f"""SELECT obj_id from choices WHERE c_id = '{choice_id}'""")
+        obj_id_raw = c.fetchall()
+        obj_id = id.raw_conv(obj_id_raw)[0]
 
-    if p_id_end_info == 0:
-        paragraph_text = f"PARAGRAPH N.{p_id_number}\t Character: {ch_name}"
-        paragraph_choices_text = "PARAGRAPH CHOICES"
-    else:
-        paragraph_text = f"ENDING PARAGRAPH N.{p_id_number}\t Character: {ch_name}"
-        paragraph_choices_text = ''
+        if obj_id != 'None':
+            c.execute(f"""SELECT obj_name from objects WHERE obj_id = '{obj_id}'""")
+            obj_name_raw = c.fetchall()
+            obj_name = id.raw_conv(obj_name_raw)[0]
 
-    # Main Frames
-    paragraph_text_frame = LabelFrame(game_frame, text=paragraph_text, font=main_font, labelanchor="n")
-    paragraph_text_frame.pack(fill='both', side=TOP)
+            if obj_name not in inventory_list:
+                inventory_list.append(obj_name)
 
-    paragraph_choices_frame = LabelFrame(game_frame, text=paragraph_choices_text, font=main_font, labelanchor="n")
-    paragraph_choices_frame.pack(fill='both', side=TOP)
+        # Save Current Progress AND Inventory in a temporary .txt file
+        file = open(f"Saved Games/temporary_save.txt", "w")
+        file.write(database)
+        file.write('###')
 
-    next_button_frame = LabelFrame(game_frame)
-    next_button_frame.pack(fill='both', side=BOTTOM)
+        for info in progress_list:
+            file.write(f'{info}#')
 
-    # Story Message
-    c.execute(f"""SELECT p_text from paragraphs_list WHERE pl_id = '{p_id}'""")
-    p_text_raw = c.fetchall()
-    p_text = id.raw_conv(p_text_raw)[0]
+        file.write('##')
 
-    p_text_message = Message(paragraph_text_frame, text=p_text, width=messages_width, font=main_font, anchor=N)
-    p_text_message.pack(padx=padding, pady=padding, anchor="center")
+        for item in inventory_list:
+            file.write(f'{item}#')
 
-    # Scroll Bar stuff
-    inv_scroll_bar_frame = Frame(inventory_frame)
-    inv_scroll_bar_frame.pack(fill="both", expand=True)
+        file.close()
 
-    # Create Canvas
-    inv_canvas = Canvas(inv_scroll_bar_frame)
+        s_id = progress_list[0]
+        ch_name = progress_list[1]
 
-    # Create ScrollBar
-    inv_button_y_scrollbar = Scrollbar(inv_scroll_bar_frame, orient="vertical", command=inv_canvas.yview)
-    inv_button_y_scrollbar.pack(side="right", fill="y")
-    inv_button_x_scrollbar = Scrollbar(inv_scroll_bar_frame, orient="horizontal", command=inv_canvas.xview)
-    inv_button_x_scrollbar.pack(side="bottom", fill="x")
+        p_id = f'{s_id}_{id.decoder_2(choice_id)[-1]}'
+        p_id_number = id.id_int(p_id)
 
-    # Frame To Put Objects in
-    inv_inside_frame = Frame(inv_canvas)
-    inv_inside_frame.bind("<Configure>", lambda e: inv_canvas.configure(scrollregion=inv_canvas.bbox("all")))
+        # Check If Next Paragraph Is An Ending Paragraph
+        c.execute(f"""SELECT end_bool FROM paragraphs_list WHERE pl_id = '{p_id}'""")
+        p_id_end_info_raw = c.fetchall()
+        p_id_end_info = id.raw_conv(p_id_end_info_raw)[0]
 
-    # Canvas Config
-    inv_canvas.create_window((0, 0), window=inv_inside_frame, anchor="nw")
-    inv_canvas.configure(yscrollcommand=inv_button_y_scrollbar.set)
-    inv_canvas.configure(xscrollcommand=inv_button_x_scrollbar.set)
-    inv_canvas.pack(side="left", fill="both", expand=True)
+        if p_id_end_info == 0:
+            paragraph_text = f"PARAGRAPH N.{p_id_number}\t Character: {ch_name}"
+            paragraph_choices_text = "PARAGRAPH CHOICES"
+        else:
+            paragraph_text = f"ENDING PARAGRAPH N.{p_id_number}\t Character: {ch_name}"
+            paragraph_choices_text = ''
 
-    # Add Object Assigned To Choice To Inventory
-    c.execute(f"""SELECT obj_id from choices WHERE c_id = '{choice_id}'""")
-    obj_id_raw = c.fetchall()
-    obj_id = id.raw_conv(obj_id_raw)[0]
+        # Main Frames
+        paragraph_text_frame = LabelFrame(game_frame, text=paragraph_text, font=main_font, labelanchor="n")
+        paragraph_text_frame.pack(fill='both', side=TOP)
 
-    if obj_id != 'None':
-        c.execute(f"""SELECT obj_name from objects WHERE obj_id = '{obj_id}'""")
-        obj_name_raw = c.fetchall()
-        obj_name = id.raw_conv(obj_name_raw)[0]
+        paragraph_choices_frame = LabelFrame(game_frame, text=paragraph_choices_text, font=main_font, labelanchor="n")
+        paragraph_choices_frame.pack(fill='both', side=TOP)
 
-        inventory.append(obj_name)
+        next_button_frame = LabelFrame(game_frame)
+        next_button_frame.pack(fill='both', side=BOTTOM)
 
-    for obj_name in inventory:
-        if obj_name != 'check':
-            # Add Frame For Each Item
-            item_frame = LabelFrame(inv_inside_frame)
-            item_frame.pack(fill="x", side=TOP)
+        # Story Message
+        c.execute(f"""SELECT p_text from paragraphs_list WHERE pl_id = '{p_id}'""")
+        p_text_raw = c.fetchall()
+        p_text = id.raw_conv(p_text_raw)[0]
 
-            # Add Message with Item Into Frame
-            item_message = Message(item_frame, text=obj_name, width=messages_width, font=main_font, anchor=N)
-            item_message.pack(padx=padding, pady=padding, anchor="center")
+        p_text_message = Message(paragraph_text_frame, text=p_text, width=messages_width, font=main_font, anchor=N)
+        p_text_message.pack(padx=padding, pady=padding, anchor="center")
 
-    if p_id_end_info == 0:
-        # Paragraph Choices Message
-        c.execute(f"""SELECT c_id, c_text, con_id FROM choices WHERE c_id LIKE '{p_id}%'""")
-        choices_info_list = c.fetchall()
+        for obj_name in inventory_list:
+            if obj_name != 'check':
+                # Add Frame For Each Item
+                item_frame = LabelFrame(inv_inside_frame)
+                item_frame.pack(fill="x", side=TOP)
 
-        choice_button_list = []
+                # Add Message with Item Into Frame
+                item_message = Message(item_frame, text=obj_name, width=messages_width, font=main_font, anchor=N)
+                item_message.pack(padx=padding, pady=padding, anchor="center")
 
-        for choice in choices_info_list:
-            c_id = choice[0]
-            c_text = choice[1]
-            con_id = choice[2]
+        if p_id_end_info == 0:
+            # Paragraph Choices Message
+            c.execute(f"""SELECT c_id, c_text, con_id FROM choices WHERE c_id LIKE '{p_id}%'""")
+            choices_info_list = c.fetchall()
 
-            if con_id != 'None':
-                c.execute(f"""SELECT obj_name FROM objects WHERE obj_id = '{con_id}'""")
-                obj_name_raw = c.fetchall()
-                obj_name = id.raw_conv(obj_name_raw)[0]
-            else:
-                obj_name = 'check'
+            choice_button_list = []
 
-            print(obj_name)
-            print(inventory)
-            choice_number = id.int_list(id.decoder_2(c_id))[-2]
+            for choice in choices_info_list:
+                c_id = choice[0]
+                c_text = choice[1]
+                con_id = choice[2]
 
-            pg_choice_frame = LabelFrame(paragraph_choices_frame, text=f'Choice N.{choice_number}', font=main_font, labelanchor="n")
-            pg_choice_frame.pack(fill="both")
+                if con_id != 'None':
+                    c.execute(f"""SELECT obj_name FROM objects WHERE obj_id = '{con_id}'""")
+                    obj_name_raw = c.fetchall()
+                    obj_name = id.raw_conv(obj_name_raw)[0]
+                else:
+                    obj_name = 'check'
 
-            # Choice To display in each choice frame
-            pg_choice_text_message = Message(pg_choice_frame, text=f'{c_text}', width=messages_width, font=main_font, anchor=NW)
-            pg_choice_text_message.grid(column=0, row=0, stick="n", padx=padding, pady=padding)
+                choice_number = id.int_list(id.decoder_2(c_id))[-2]
 
-            # Choice Button
-            choice_button = ttk.Button(next_button_frame, text=f"Choice N.{choice_number}", state=DISABLED, command=partial(print_paragraph, c_id))
-            if obj_name in inventory:
-                choice_button['state'] = 'NORMAL'
-            choice_button.pack(padx=padding, pady=padding, anchor="center")
+                pg_choice_frame = LabelFrame(paragraph_choices_frame, text=f'Choice N.{choice_number}', font=main_font, labelanchor="n")
+                pg_choice_frame.pack(fill="both")
 
-            choice_button_list.append(choice_button)
-    else:
-        pg_end_frame = LabelFrame(paragraph_choices_frame, text=f'THIS IS ONE OF THE ENDINGS OF THE STORY', font=main_font, labelanchor="n")
-        pg_end_frame.pack(fill="both")
+                # Choice To display in each choice frame
+                pg_choice_text_message = Message(pg_choice_frame, text=f'{c_text}', width=messages_width, font=main_font, anchor=NW)
+                pg_choice_text_message.grid(column=0, row=0, stick="n", padx=padding, pady=padding)
 
-        pg_choice_text_message = Message(pg_end_frame, text='THANK YOU FOR PLAYING THIS STORY', width=600, font=("Times New Roman", 40))
-        pg_choice_text_message.pack(padx=padding, pady=padding, anchor="center")
+                # Choice Button
+                choice_button = ttk.Button(next_button_frame, state=DISABLED, command=partial(print_paragraph, c_id))
+                if obj_name in inventory_list:
+                    choice_button['text'] = f"Choice N.{choice_number}"
+                    choice_button['state'] = 'NORMAL'
+                else:
+                    choice_button['text'] = f"Choice N.{choice_number} (Required Object Missing)"
 
-        # Exit Button
-        exit_button = ttk.Button(next_button_frame, text=f"Exit Game", command=player.destroy)
-        exit_button.pack(padx=padding, pady=padding, anchor="center")
+                choice_button.pack(padx=padding, pady=padding, anchor="center")
 
-        # Load Story Button
-        load_story_button = ttk.Button(next_button_frame, text=f"Load Story", command=load_story)
-        load_story_button.pack(padx=padding, pady=padding, anchor="center")
+                choice_button_list.append(choice_button)
+        else:
+            pg_end_frame = LabelFrame(paragraph_choices_frame, text=f'THIS IS ONE OF THE ENDINGS OF THE STORY', font=main_font, labelanchor="n")
+            pg_end_frame.pack(fill="both")
 
-    conn.commit()
+            pg_choice_text_message = Message(pg_end_frame, text='THANK YOU FOR PLAYING THIS STORY', width=1000, font=("Times New Roman", 40), anchor=NW)
+            pg_choice_text_message.pack(padx=padding, pady=padding, anchor="center")
+
+            # Exit Button
+            exit_button = ttk.Button(next_button_frame, text=f"Exit Game", command=exit_player_interface)
+            exit_button.pack(padx=padding, pady=padding, anchor="center")
+
+            # Load Story Button
+            load_story_button = ttk.Button(next_button_frame, text=f"Load Story", command=load_story)
+            load_story_button.pack(padx=padding, pady=padding, anchor="center")
+
+        conn.commit()
+    except sqlite3.OperationalError:
+        messagebox.showerror("Save Error", "Save File Might Be Corrupted")
 
 
 def print_ip():
-    global database
+    global database, progress_list
+    progress_list = player_settings.progress_module.progress_list
     database = player_settings.database_module.database
     conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
@@ -250,8 +339,9 @@ def print_ip():
 
 
 def print_story():
-    global database
+    global database, progress_list
     database = player_settings.database_module.database
+    progress_list = player_settings.progress_module.progress_list
     conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
 
@@ -286,7 +376,8 @@ def print_story():
 
 
 def save_ch_progress():
-    global database
+    global database, progress_list
+    progress_list = player_settings.progress_module.progress_list
     database = player_settings.database_module.database
     conn = sqlite3.connect(database, uri=True)
     c = conn.cursor()
@@ -302,7 +393,6 @@ def save_ch_progress():
 
     progress_list.append(s_id)
     progress_list.append(ch_name)
-
     conn.commit()
 
     print_story()
@@ -411,21 +501,27 @@ def character_select():
         background_message = Message(ch_info_frame, text=str(ch[6]), width=messages_width, font=main_font, anchor=NW)
         background_message.grid(row=6, column=0, padx=padding, pady=padding, stick="nw")
 
-    c.execute(f"""SELECT ch_name FROM characters""")
-    ch_new_ch_name_id_ist_raw = c.fetchall()
-    ch_new_ch_name_id_list = id.raw_conv(ch_new_ch_name_id_ist_raw)
+    ch_new_ch_name_id_list = []
 
-    global ch_edt_ch_name_id_var
-    ch_edt_ch_name_id_var = StringVar()
-    ch_edt_ch_name_id_opt_menu_var = ttk.OptionMenu(select_character_inside_frame, ch_edt_ch_name_id_var,
-                                                    ch_new_ch_name_id_list[0], *ch_new_ch_name_id_list)
-    ch_edt_ch_name_id_opt_menu_var.pack(pady=padding, padx=padding, anchor=NW)
+    try:
+        c.execute(f"""SELECT ch_name FROM characters""")
+        ch_new_ch_name_id_ist_raw = c.fetchall()
+        ch_new_ch_name_id_list = id.raw_conv(ch_new_ch_name_id_ist_raw)
+    except sqlite3.OperationalError:
+        messagebox.showerror("Error", "Loading Operation Was Canceled Please Try Again.")
 
-    button_width = 15
+    if ch_new_ch_name_id_list:
+        global ch_edt_ch_name_id_var
+        ch_edt_ch_name_id_var = StringVar()
+        ch_edt_ch_name_id_opt_menu_var = ttk.OptionMenu(select_character_inside_frame, ch_edt_ch_name_id_var, ch_new_ch_name_id_list[0], *ch_new_ch_name_id_list)
 
-    select_button = ttk.Button(select_character_inside_frame, text="Select Character", width=button_width,
-                               command=save_ch_progress)
-    select_button.pack(padx=padding, pady=padding, anchor=NW)
+        ch_edt_ch_name_id_opt_menu_var.pack(pady=padding, padx=padding, anchor=NW)
+
+        button_width = 15
+
+        select_button = ttk.Button(select_character_inside_frame, text="Select Character", width=button_width,
+                                   command=save_ch_progress)
+        select_button.pack(padx=padding, pady=padding, anchor=NW)
 
     conn.commit()
 
@@ -443,13 +539,16 @@ player.geometry(f"{window_x}x{window_y}+{10}+{10}")
 main_menu = tkinter.Menu(player)
 
 file_menu = tkinter.Menu(main_menu, tearoff=0)
-file_menu.add_command(label="Load Story", command=load_story)
-file_menu.add_command(label="Save Position In Story", command=None)
+file_menu.add_command(label="Load Story Database", command=load_story)
+
+file_menu.add_command(label="-----------------------", state=DISABLED)
+
+file_menu.add_command(label="Save Position In Story", command=save_position)
+file_menu.add_command(label="Load Position In Story", command=load_position)
 
 options_menu = tkinter.Menu(main_menu, tearoff=0)
-options_menu.add_command(label="Dark Mode")
-options_menu.add_command(label="Refresh", command=None)
-options_menu.add_command(label="Quit", command=None)
+options_menu.add_command(label="Quit", command=force_exit_player_interface)
+
 
 main_menu.add_cascade(label="File", menu=file_menu)
 main_menu.add_cascade(label="Options", menu=options_menu)
@@ -462,9 +561,33 @@ game_frame.pack(fill="both", side=LEFT, expand=True)
 inventory_frame = LabelFrame(player, text="Inventory", width=300, font=main_font)
 inventory_frame.pack(fill="both", side=RIGHT)
 
+# Scroll Bar stuff
+inv_scroll_bar_frame = Frame(inventory_frame)
+inv_scroll_bar_frame.pack(fill="both", expand=True)
+
+# Create Canvas
+inv_canvas = Canvas(inv_scroll_bar_frame)
+
+# Create ScrollBar
+inv_button_y_scrollbar = Scrollbar(inv_scroll_bar_frame, orient="vertical", command=inv_canvas.yview)
+inv_button_y_scrollbar.pack(side="right", fill="y")
+inv_button_x_scrollbar = Scrollbar(inv_scroll_bar_frame, orient="horizontal", command=inv_canvas.xview)
+inv_button_x_scrollbar.pack(side="bottom", fill="x")
+
+# Frame To Put Objects in
+inv_inside_frame = Frame(inv_canvas)
+inv_inside_frame.bind("<Configure>", lambda e: inv_canvas.configure(scrollregion=inv_canvas.bbox("all")))
+
+# Canvas Config
+inv_canvas.create_window((0, 0), window=inv_inside_frame, anchor="nw")
+inv_canvas.configure(yscrollcommand=inv_button_y_scrollbar.set)
+inv_canvas.configure(xscrollcommand=inv_button_x_scrollbar.set)
+inv_canvas.pack(side="left", fill="both", expand=True)
+
 info_message = Message(game_frame, text="LOAD A STORY IN FILE", width=600, font=("Times New Roman", 40))
 info_message.place(relx=.5, rely=.5, anchor="center")
 
 player.config(menu=main_menu)
+player.protocol("WM_DELETE_WINDOW", force_exit_player_interface)
 player.mainloop()
 

@@ -306,6 +306,7 @@ def new_story_print():
     tab_x_scrollbar.pack(side="bottom", fill="x")
 
     # Frame To Put Objects in
+    global tab_main_frame_2
     tab_main_frame_2 = Frame(tab_canvas)
     tab_main_frame_2.bind("<Configure>", lambda e: tab_canvas.configure(scrollregion=tab_canvas.bbox("all")))
 
@@ -662,7 +663,6 @@ file_menu.add_command(label="Load Game Editor", command=load_save)
 file_menu.add_command(label="Save Game Editor", command=new_save)
 
 options_menu = tkinter.Menu(main_menu, tearoff=0)
-options_menu.add_command(label="Dark Mode")
 options_menu.add_command(label="Refresh", command=refresh)
 options_menu.add_command(label="Quit", command=quit_editor)
 
@@ -857,6 +857,12 @@ test_compile_script_button.grid(column=1, row=0, padx=main_pad_x, pady=main_pad_
 # -------------------------------------------
 
 refresh()
+
+info_message = Message(pg_main_story_frame, text="START CREATING A NEW STORY OR LOAD ONE IN FILE MENU", width=800, font=("Times New Roman", 40), anchor=NW)
+info_message.pack(padx=main_pad_x, pady=main_pad_y, anchor="nw")
+
+info_message_2 = Message(pg_main_story_frame, text="(Don't Forget To Refresh In Options)", width=600, font=("Times New Roman", 20), anchor=NW)
+info_message_2.pack(padx=main_pad_x, pady=main_pad_y, anchor="nw")
 
 editor.config(menu=main_menu)
 editor.protocol("WM_DELETE_WINDOW", close_window)
