@@ -252,9 +252,10 @@ def p_new_window():
         c = conn.cursor()
 
         c.execute(f"""SELECT c_id FROM choices ORDER BY c_id""")
-        p_new_c_id_ist_raw = c.fetchall()
+        p_new_c_id_list_raw = c.fetchall()
+        p_new_c_id_list_raw_2 = id.raw_conv(p_new_c_id_list_raw)
         # Get Only c_id's with no paragraphs assigned to them
-        p_new_c_id_list = id.c_id_sorter(id.raw_conv(p_new_c_id_ist_raw))
+        p_new_c_id_list = id.c_id_sorter(p_new_c_id_list_raw_2)
 
         if p_new_c_id_list:
             global p_new_p_id_variable

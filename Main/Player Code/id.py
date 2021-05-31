@@ -174,7 +174,6 @@ def id_str(inp):
     x_id = inp[0]
     return x_id
 
-
 # Decoder to transform a str in tuple in a list into a str in a list
 def raw_conv(inp):
     id_list = []
@@ -201,11 +200,12 @@ def loop_2(inp):
 # that already have a paragraph assigned to them
 def c_id_sorter(inp):
     output = []
-    for item in inp:
-        if len(item) == 8:
-            output.append(item)
+    for id_x in inp:
+        if id_str(decoder_2(id_x)[-1]) == 'C':
+            output.append(id_x)
     return output
 
+print(c_id_sorter(['S1_IP_C1_P1', 'S1_IP_C2_P3', 'S1_IP_C3_P2', 'S1_P1_C11_P2', 'S1_P1_C12_P2', 'S1_P2_C21_P3', 'S1_P2_C31_P3', 'S1_P3_C32', 'S1_P3_C35']))
 
 # Function to convert a list of id's to a list of their numbers
 def int_list(inp):

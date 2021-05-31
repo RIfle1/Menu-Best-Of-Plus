@@ -412,7 +412,6 @@ def new_story_print():
                 int_choice_drop_message = Message(int_pg_choice_frame, text=f'{obj_drop}', width=messages_width, font=main_font, anchor=NW)
                 int_choice_drop_message.grid(column=1, row=1, stick="nw", padx=padding, pady=padding)
 
-
         # Display All Paragraphs With Their Info
         c.execute(f"""SELECT pl_id, p_text, npc_id, mst_id FROM paragraphs_list WHERE s_id = '{s_id}' 
         EXCEPT SELECT pl_id, p_text, npc_id, mst_id FROM paragraphs_list WHERE end_bool = {1}""")
