@@ -408,6 +408,7 @@ def p_del_delete():
     c = conn.cursor()
     p_del_s_id = p_edt_s_id_variable.get()
     p_del_p_id = p_edt_p_id_variable.get()
+    p_del_p_id_cut = id.decoder_2(p_del_p_id)[-1]
 
     p_del_warning = messagebox.askquestion('Confirm Deletion',
                                            f'Are you sure you want to delete Paragraph Number {id.id_int(p_del_p_id)}?',
@@ -417,26 +418,18 @@ def p_del_delete():
         c.execute(f"""DELETE FROM paragraphs_list WHERE pl_id LIKE '{p_del_p_id}%'""")
         c.execute(f"""DELETE FROM choices WHERE c_id LIKE '{p_del_p_id}%'""")
 
-        # Delete the paragraph if it has been assigned to a choice
-        # Get paragraph ID (Only the end)
-        p_del_p_id_cut = id.decoder_2(p_del_p_id)[-1]
-
-        # Get c_id to modify
+        # Remove Paragraph If it was assigned to a choice
         c.execute(f"""SELECT c_id FROM choices WHERE c_id LIKE '%{p_del_p_id_cut}'""")
-        p_del_c_id_old_raw = c.fetchall()
+        c_id_list_raw = c.fetchall()
+        c_id_list = id.raw_conv(c_id_list_raw)
 
-        if p_del_c_id_old_raw:
-            p_del_c_id_old = id.raw_conv(p_del_c_id_old_raw)[0]
-
+        for c_id in c_id_list:
             # Modify id
-            p_de_c_id_new = id.p_del(p_del_c_id_old)
+            c_del_c_id_new = id.p_del(c_id)
 
             # Update table
-            c.execute("""UPDATE choices SET c_id = :c_id_new WHERE c_id = :c_id_old""",
-                      {
-                          "c_id_new": f"{p_de_c_id_new}",
-                          "c_id_old": f'{p_del_c_id_old}'
-                      })
+            c.execute(f"""UPDATE choices SET c_id = "{c_del_c_id_new}" WHERE c_id = '{c_id}'""")
+
 
         # Show Success pop-up
         messagebox.showinfo("Success",

@@ -12,7 +12,7 @@ database = player_settings.database_module.database
 main_font = ("Times New Roman", 12)
 
 progress_list = []
-inventory = []
+inventory = ['check']
 
 
 def style_func():
@@ -25,7 +25,14 @@ def style_func():
 
 def load_story():
     player_settings.load_story()
+    clear_frame()
+    clear_inventory()
+    inventory.append('check')
     character_select()
+
+
+def clear_inventory():
+    inventory.clear()
 
 
 def clear_frame():
@@ -52,11 +59,23 @@ def print_paragraph(choice_id):
     p_id = f'{s_id}_{id.decoder_2(choice_id)[-1]}'
     p_id_number = id.id_int(p_id)
 
+    # Check If Next Paragraph Is An Ending Paragraph
+    c.execute(f"""SELECT end_bool FROM paragraphs_list WHERE pl_id = '{p_id}'""")
+    p_id_end_info_raw = c.fetchall()
+    p_id_end_info = id.raw_conv(p_id_end_info_raw)[0]
+
+    if p_id_end_info == 0:
+        paragraph_text = f"PARAGRAPH N.{p_id_number}\t Character: {ch_name}"
+        paragraph_choices_text = "PARAGRAPH CHOICES"
+    else:
+        paragraph_text = f"ENDING PARAGRAPH N.{p_id_number}\t Character: {ch_name}"
+        paragraph_choices_text = ''
+
     # Main Frames
-    paragraph_text_frame = LabelFrame(game_frame, text=f"PARAGRAPH N.{p_id_number}\t Character: {ch_name}", font=main_font, labelanchor="n")
+    paragraph_text_frame = LabelFrame(game_frame, text=paragraph_text, font=main_font, labelanchor="n")
     paragraph_text_frame.pack(fill='both', side=TOP)
 
-    paragraph_choices_frame = LabelFrame(game_frame, text=f"PARAGRAPH CHOICES", font=main_font, labelanchor="n")
+    paragraph_choices_frame = LabelFrame(game_frame, text=paragraph_choices_text, font=main_font, labelanchor="n")
     paragraph_choices_frame.pack(fill='both', side=TOP)
 
     next_button_frame = LabelFrame(game_frame)
@@ -93,17 +112,8 @@ def print_paragraph(choice_id):
     inv_canvas.configure(xscrollcommand=inv_button_x_scrollbar.set)
     inv_canvas.pack(side="left", fill="both", expand=True)
 
-    for obj_name in inventory:
-        # Add Frame For Each Item
-        item_frame = LabelFrame(inv_inside_frame)
-        item_frame.pack(fill="x", side=TOP)
-
-        # Add Message with Item Into Frame
-        item_message = Message(item_frame, text=obj_name, width=messages_width, font=main_font, anchor=N)
-        item_message.pack(padx=padding, pady=padding, anchor="center")
-
     # Add Object Assigned To Choice To Inventory
-    c.execute(f"""SELECT obj_id from choices WHERE  c_id = '{choice_id}'""")
+    c.execute(f"""SELECT obj_id from choices WHERE c_id = '{choice_id}'""")
     obj_id_raw = c.fetchall()
     obj_id = id.raw_conv(obj_id_raw)[0]
 
@@ -114,32 +124,67 @@ def print_paragraph(choice_id):
 
         inventory.append(obj_name)
 
-    # Paragraph Choices Message
-    c.execute(f"""SELECT c_id, c_text, obj_id FROM choices WHERE c_id LIKE '{p_id}%'""")
-    choices_info_list = c.fetchall()
+    for obj_name in inventory:
+        if obj_name != 'check':
+            # Add Frame For Each Item
+            item_frame = LabelFrame(inv_inside_frame)
+            item_frame.pack(fill="x", side=TOP)
 
-    choice_button_list = []
+            # Add Message with Item Into Frame
+            item_message = Message(item_frame, text=obj_name, width=messages_width, font=main_font, anchor=N)
+            item_message.pack(padx=padding, pady=padding, anchor="center")
 
-    for choice in choices_info_list:
-        c_id = choice[0]
-        c_text = choice[1]
-        obj_id = choice[2]
-        choice_number = id.int_list(id.decoder_2(c_id))[-2]
+    if p_id_end_info == 0:
+        # Paragraph Choices Message
+        c.execute(f"""SELECT c_id, c_text, con_id FROM choices WHERE c_id LIKE '{p_id}%'""")
+        choices_info_list = c.fetchall()
 
-        int_pg_choice_frame = LabelFrame(paragraph_choices_frame, text=f'Choice N.{choice_number}', font=main_font,
-                                         labelanchor="n")
-        int_pg_choice_frame.pack(fill="both")
+        choice_button_list = []
 
-        # Choice To display in each choice frame
-        int_pg_choice_text_message = Message(int_pg_choice_frame, text=f'{c_text}', width=messages_width,
-                                             font=main_font, anchor=NW)
-        int_pg_choice_text_message.grid(column=0, row=0, stick="n", padx=padding, pady=padding)
+        for choice in choices_info_list:
+            c_id = choice[0]
+            c_text = choice[1]
+            con_id = choice[2]
 
-        # Choice Button
-        choice_button = ttk.Button(next_button_frame, text=f"Choice N.{choice_number}", command=partial(print_paragraph, c_id))
-        choice_button.pack(padx=padding, pady=padding, anchor="center")
+            if con_id != 'None':
+                c.execute(f"""SELECT obj_name FROM objects WHERE obj_id = '{con_id}'""")
+                obj_name_raw = c.fetchall()
+                obj_name = id.raw_conv(obj_name_raw)[0]
+            else:
+                obj_name = 'check'
 
-        choice_button_list.append(choice_button)
+            print(obj_name)
+            print(inventory)
+            choice_number = id.int_list(id.decoder_2(c_id))[-2]
+
+            pg_choice_frame = LabelFrame(paragraph_choices_frame, text=f'Choice N.{choice_number}', font=main_font, labelanchor="n")
+            pg_choice_frame.pack(fill="both")
+
+            # Choice To display in each choice frame
+            pg_choice_text_message = Message(pg_choice_frame, text=f'{c_text}', width=messages_width, font=main_font, anchor=NW)
+            pg_choice_text_message.grid(column=0, row=0, stick="n", padx=padding, pady=padding)
+
+            # Choice Button
+            choice_button = ttk.Button(next_button_frame, text=f"Choice N.{choice_number}", state=DISABLED, command=partial(print_paragraph, c_id))
+            if obj_name in inventory:
+                choice_button['state'] = 'NORMAL'
+            choice_button.pack(padx=padding, pady=padding, anchor="center")
+
+            choice_button_list.append(choice_button)
+    else:
+        pg_end_frame = LabelFrame(paragraph_choices_frame, text=f'THIS IS ONE OF THE ENDINGS OF THE STORY', font=main_font, labelanchor="n")
+        pg_end_frame.pack(fill="both")
+
+        pg_choice_text_message = Message(pg_end_frame, text='THANK YOU FOR PLAYING THIS STORY', width=600, font=("Times New Roman", 40))
+        pg_choice_text_message.pack(padx=padding, pady=padding, anchor="center")
+
+        # Exit Button
+        exit_button = ttk.Button(next_button_frame, text=f"Exit Game", command=player.destroy)
+        exit_button.pack(padx=padding, pady=padding, anchor="center")
+
+        # Load Story Button
+        load_story_button = ttk.Button(next_button_frame, text=f"Load Story", command=load_story)
+        load_story_button.pack(padx=padding, pady=padding, anchor="center")
 
     conn.commit()
 
