@@ -168,8 +168,8 @@ def ip_new_window():
             ip_new_s_id_opt_menu_var.grid(row=0, column=1, pady=ip_new_pad, padx=ip_new_pad, stick="ew")
 
         else:
-            messagebox.showerror("Index Error", "No Existing Stories Found")
             ip_new_wd.destroy()
+            messagebox.showerror("Index Error", "No Existing Stories Found")
 
         conn.commit()
 
@@ -384,8 +384,8 @@ def ip_edt_window():
             ip_edt_ip_id_opt_menu_var.grid(row=0, column=1, padx=ip_edt_pad, pady=ip_edt_pad, stick="ew")
 
         else:
-            messagebox.showerror("Index Error", "No Existing Initial Paragraphs Found")
             ip_edt_wd.destroy()
+            messagebox.showerror("Index Error", "No Existing Initial Paragraphs Found")
 
         conn.commit()
 

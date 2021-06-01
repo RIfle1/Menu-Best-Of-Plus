@@ -302,8 +302,8 @@ def obj_edt_window():
             obj_edt_obj_name_opt_menu_var.grid(row=0, column=1, pady=obj_edt_pad, padx=obj_edt_pad, stick="ew")
 
         else:
-            messagebox.showerror("Index Error", "No Existing Objects were Found")
             obj_edt_wd.destroy()
+            messagebox.showerror("Index Error", "No Existing Objects were Found")
 
         conn.commit()
 

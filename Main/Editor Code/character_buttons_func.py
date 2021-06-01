@@ -497,8 +497,8 @@ def ch_edt_window():
             ch_edt_ch_name_id_opt_menu_var.grid(row=0, column=1, pady=ch_edt_pad, padx=ch_edt_pad, stick="ew")
 
         else:
-            messagebox.showerror("Index Error", "No Existing Characters were Found")
             ch_edt_wd.destroy()
+            messagebox.showerror("Index Error", "No Existing Characters were Found")
 
         conn.commit()
 

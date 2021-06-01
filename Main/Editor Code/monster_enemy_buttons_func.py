@@ -313,8 +313,8 @@ def mst_edt_window():
             mst_edt_mst_name_id_opt_menu_var.grid(row=0, column=1, pady=mst_edt_pad, padx=mst_edt_pad, stick="ew")
 
         else:
-            messagebox.showerror("Index Error", "No Existing Enemies were Found")
             mst_edt_wd.destroy()
+            messagebox.showerror("Index Error", "No Existing Enemies were Found")
 
         conn.commit()
 

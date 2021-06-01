@@ -165,8 +165,8 @@ def s_new_window():
             s_new_ch_id_opt_menu_var.grid(row=0, column=1, padx=s_new_pad, pady=s_new_pad, stick="ew")
 
         else:
-            messagebox.showerror("Index Error", "No Available Characters Found")
             s_new_wd.destroy()
+            messagebox.showerror("Index Error", "No Available Characters Found")
 
         conn.commit()
 
@@ -331,8 +331,8 @@ def s_edt_window():
             s_edt_s_id_opt_menu_var.grid(row=0, column=1, padx=s_edt_pad, pady=s_edt_pad, stick="ew")
 
         else:
-            messagebox.showerror("Index Error", "No Existing Stories Found")
             s_edt_wd.destroy()
+            messagebox.showerror("Index Error", "No Existing Stories Found")
 
         conn.commit()
 

@@ -296,8 +296,8 @@ def npc_edt_window():
             npc_edt_npc_name_opt_menu_var.grid(row=0, column=1, pady=npc_edt_pad, padx=npc_edt_pad, stick="ew")
 
         else:
-            messagebox.showerror("Index Error", "No Existing NPC's were Found")
             npc_edt_wd.destroy()
+            messagebox.showerror("Index Error", "No Existing NPC's were Found")
 
         conn.commit()
 

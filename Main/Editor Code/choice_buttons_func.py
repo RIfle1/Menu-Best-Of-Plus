@@ -295,8 +295,8 @@ def c_new_window():
             c_new_from_p_id_opt_menu()
 
         else:
-            messagebox.showerror("Index Error", "No Existing Stories Found")
             c_new_wd.destroy()
+            messagebox.showerror("Index Error", "No Existing Stories Found")
 
         conn.commit()
 
@@ -317,8 +317,9 @@ def c_new_window():
             c_new_to_p_id_opt_menu()
 
         else:
-            messagebox.showerror("Index Error", "No Existing 'From Paragraphs' Found")
             c_new_wd.destroy()
+            messagebox.showerror("Index Error", "No Existing 'From Paragraphs' Found")
+
 
         conn.commit()
 
@@ -829,8 +830,8 @@ def c_edt_window():
             c_edt_c_id_opt_menu()
 
         else:
-            messagebox.showerror("Index Error", "No Existing Stories Found")
             c_edt_wd.destroy()
+            messagebox.showerror("Index Error", "No Existing Stories Found")
 
         conn.commit()
 
@@ -851,8 +852,8 @@ def c_edt_window():
             c_edt_pl_id_opt_menu()
 
         else:
-            messagebox.showerror("Index Error", "No Existing Choices Found")
             c_edt_wd.destroy()
+            messagebox.showerror("Index Error", "No Existing Choices Found")
 
         conn.commit()
 

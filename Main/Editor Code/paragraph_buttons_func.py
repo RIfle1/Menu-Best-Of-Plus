@@ -242,8 +242,8 @@ def p_new_window():
             p_new_s_id_opt_menu_var.grid(row=0, column=1, pady=p_new_pad, padx=p_new_pad, stick="ew")
 
         else:
-            messagebox.showerror("Index Error", "No Existing Stories Found")
             p_new_wd.destroy()
+            messagebox.showerror("Index Error", "No Existing Stories Found")
 
         conn.commit()
 
@@ -267,8 +267,8 @@ def p_new_window():
             p_new_c_id_opt_menu_var.grid(row=1, column=1, pady=p_new_pad, padx=p_new_pad, stick="ew")
 
         else:
-            messagebox.showerror("Index Error", "No Existing Choices were Found")
             p_new_wd.destroy()
+            messagebox.showerror("Index Error", "No Existing Choices were Found")
 
         conn.commit()
 
@@ -680,8 +680,8 @@ def p_edt_window():
             p_edt_s_id_opt_menu_var.grid(row=0, column=1, pady=p_edt_pad, padx=p_edt_pad, stick="ew")
 
         else:
-            messagebox.showerror("Index Error", "No Existing Stories Found")
             p_edt_wd.destroy()
+            messagebox.showerror("Index Error", "No Existing Stories Found")
 
         conn.commit()
 

@@ -21,6 +21,7 @@ database = editor_settings.database_module.database
 
 main_font = ("Times New Roman", 12)
 
+tab_main_frame_2 = None
 
 def quit_editor():
     close_window()
@@ -862,11 +863,8 @@ test_compile_script_button.grid(column=1, row=0, padx=main_pad_x, pady=main_pad_
 
 refresh()
 
-info_message = Message(pg_main_story_frame, text="START CREATING A NEW STORY OR LOAD ONE IN FILE MENU", width=800, font=("Times New Roman", 40), anchor=NW)
-info_message.pack(padx=main_pad_x, pady=main_pad_y, anchor="nw")
-
-info_message_2 = Message(pg_main_story_frame, text="(Don't Forget To Refresh In Options)", width=600, font=("Times New Roman", 20), anchor=NW)
-info_message_2.pack(padx=main_pad_x, pady=main_pad_y, anchor="nw")
+info_message = Label(tab_main_frame_2, text="START CREATING A NEW STORY OR LOAD ONE IN FILE MENU", width=80, font=("Times New Roman", 20))
+info_message.pack(padx=main_pad_x, pady=main_pad_y, side=TOP)
 
 editor.config(menu=main_menu)
 editor.protocol("WM_DELETE_WINDOW", close_window)

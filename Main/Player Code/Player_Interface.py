@@ -435,7 +435,7 @@ def character_select():
         print("check character_select in player")
 
     main_character_frame = Frame(game_frame)
-    main_character_frame.pack(fill="both")
+    main_character_frame.pack(fill="both", expand=True)
 
     # Scroll Bar stuff
     ch_scroll_bar_frame = Frame(main_character_frame)
@@ -443,11 +443,13 @@ def character_select():
 
     # Create Canvas
     global ch_canvas
-    ch_canvas = Canvas(ch_scroll_bar_frame, height=600)
+    ch_canvas = Canvas(ch_scroll_bar_frame)
 
     # Create ScrollBar
     ch_button_x_scrollbar = Scrollbar(ch_scroll_bar_frame, orient="horizontal", command=ch_canvas.xview)
+    ch_button_y_scrollbar = Scrollbar(ch_scroll_bar_frame, orient="vertical", command=ch_canvas.yview)
     ch_button_x_scrollbar.pack(side="bottom", fill="x")
+    ch_button_y_scrollbar.pack(side="right", fill="y")
 
     # Frame To Put Objects in
     inside_character_frame = Frame(ch_canvas)
@@ -456,6 +458,7 @@ def character_select():
     # Canvas Config
     ch_canvas.create_window((0, 0), window=inside_character_frame, anchor="nw")
     ch_canvas.configure(xscrollcommand=ch_button_x_scrollbar.set)
+    ch_canvas.configure(yscrollcommand=ch_button_y_scrollbar.set)
     ch_canvas.pack(side="left", fill="both", expand=True)
 
     select_character_main_frame = LabelFrame(game_frame)
@@ -569,12 +572,16 @@ options_menu.add_command(label="Quit", command=force_exit_player_interface)
 main_menu.add_cascade(label="File", menu=file_menu)
 main_menu.add_cascade(label="Options", menu=options_menu)
 
+# Main Frame
+main_frame = Frame(player)
+main_frame.pack(fill="both", expand=True)
+
 # Game Frame
-game_frame = LabelFrame(player)
+game_frame = LabelFrame(main_frame)
 game_frame.pack(fill="both", side=LEFT, expand=True)
 
 # Inventory Frame
-inventory_frame = LabelFrame(player, text="Inventory", width=300, font=main_font)
+inventory_frame = LabelFrame(main_frame, text="Inventory", width=300, font=main_font)
 inventory_frame.pack(fill="both", side=RIGHT)
 
 # Scroll Bar stuff
@@ -600,8 +607,11 @@ inv_canvas.configure(yscrollcommand=inv_button_y_scrollbar.set)
 inv_canvas.configure(xscrollcommand=inv_button_x_scrollbar.set)
 inv_canvas.pack(side="left", fill="both", expand=True)
 
-info_message = Message(game_frame, text="LOAD A STORY IN FILE", width=600, font=("Times New Roman", 40))
-info_message.place(relx=.5, rely=.5, anchor="center")
+main_pad_x = 10
+main_pad_y = 10
+
+info_message = Label(game_frame, text="LOAD A STORY IN FILE", width=80, font=("Times New Roman", 20))
+info_message.pack(padx=main_pad_x, pady=main_pad_y, side=TOP)
 
 player.config(menu=main_menu)
 player.protocol("WM_DELETE_WINDOW", force_exit_player_interface)
