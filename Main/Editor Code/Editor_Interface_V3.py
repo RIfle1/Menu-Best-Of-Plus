@@ -268,16 +268,7 @@ def obj_list():
     conn.commit()
 
 
-# Class to set tab number in new_tab function
-class NewTab(Frame):
-    def __init__(self, root, name):
-        Frame.__init__(self, root)
-
-        self.root = root
-        self.name = name
-
-
-# Function to print all created stories as tabs
+# Function to print all created stories
 def new_story_print():
     global database
     database = editor_settings.database_module.database
