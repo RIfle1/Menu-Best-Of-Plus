@@ -362,6 +362,7 @@ def ch_edt_edit():
     except sqlite3.OperationalError:
         messagebox.showerror("Input Error", "No Weird Symbols In Character Name Or Character Breed Please")
     conn.commit()
+    print(edt_ch_name)
 
     ch_edt_ch_name_opt_menu()
 
